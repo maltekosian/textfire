@@ -1,24 +1,53 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
  <head>
+ <title>memo board</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="">
-  <meta name="author" content="">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <meta charset="UTF-8">
+  <meta name="generator" content="Malte Kosian hogventure.com" />
+  <meta name="author" content="Malte Kosian" />
+  <meta name="keywords" 
+    content="adventure,game,editor,hidden,object,hog,malte,kosian,online,offline,application,html5,javascript,json" />
+  <meta name="description" content="An html5 based application to create interactive games - alpha" />
+  <meta name="title" content="online hogventure game editor" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta itemprop="name" content="hogventure HTML5 storytelling games editor">
+<meta itemprop="description" content="A small cooperative storytelling interactive fiction and games tool written in HTML5.">
+<meta itemprop="image" 
+content="https://lh6.googleusercontent.com/-goxBD9ty2YY/TtpfNuqlmCI/AAAAAAAAACE/13eLiefSioU/h250/welcome520x520.jpg">
+<link rel="shortcut icon" type="image/x-icon" href="http://hogventure.com/merger/favicon.ico">
+    <!-- Place this tag in the <head> of your document-->
+  <link href="https://plus.google.com/109095250078285369911" rel="publisher" />
+  <script type="text/javascript">
+    (function()
+    {var po = document.createElement("script");
+    po.type = "text/javascript"; po.async = true;po.src = "https://apis.google.com/js/plusone.js";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(po, s);
+    })();
+  </script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+  <script src="js/base64.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/datamodel.js" type="text/javascript" charset="utf-8"></script>
+
     <script src="js/bootstrap.min.js"></script>
     
     <!-- Le styles -->
-    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="css/application.css" rel="stylesheet">
-    <script src="js/bootstrap-select.js"></script>
-    <script src="js/bootstrap-switch.js"></script>
-    <script src="js/flatui-checkbox.js"></script>
-    <script src="js/flatui-radio.js"></script>
-    <script src="js/jquery.tagsinput.js"></script>
-    <script src="js/jquery.placeholder.js"></script>
-    <script src="js/jquery.stacktable.js"></script>
-    <!-- script src="http://vjs.zencdn.net/c/video.js"></ script-->
-    <script src="js/application.js"></script>
+    <script src="js/CanvasInput.min.js" type="text/javascript" charset="utf-8"></script>
+    <!--   script src="js/bootstrap-switch.js"></ script>
+    < script src="js/flatui-checkbox.js"></ script>
+    < script src="js/flatui-radio.js"></ script>
+    < script src="js/jquery.tagsinput.js"></ script>
+    < script src="js/jquery.placeholder.js"></ script>
+    < script src="js/jquery.stacktable.js"></ script>
+    < script src="http://vjs.zencdn.net/c/video.js"></ script-->
+    <script src="js/application.js" type="text/javascript" charset="utf-8"></script>
   <script>
 
   /**
@@ -409,9 +438,81 @@
     }
   }
 
+  /*########################################
+    basic functions
+  #########################################*/
+
+  function getElement(id) {
+    return document.getElementById(id);
+  }
+
+  function createElement(type) {
+    return document.createElement(type);
+  }
+
+  function doNothing(id) {
+    console.log('method "'+id+'" not implemented');
+  }
+
+  /**
+  a method that is the demonstrate the basics of the game-engine
+  missing is 
+    -requestAnimationFrame and 
+    -an intervalListener for non animation related processes aka threads
+    -double-buffering  
+  */
+  function drawCanvas() {
+    var cvs = getElement('canvas');
+    cvs.width = 480;
+    cvs.height = 320;
+    var ctx = cvs.getContext('2d');
+
+    ctx.fillStyle = 'rgba(102,102,204,0.75)';
+    ctx.strokeStyle = 'rgba(204,204,102,0.75)';
+
+    var img = new Image();
+    img.src = "http://hogventure.com/image/3piggies.jpg";
+    ctx.drawImage(img, 0, 0, 480, 320);
+    
+    ctx.beginPath();
+    ctx.moveTo(50,50);
+    ctx.lineTo(150, 50);
+    ctx.bezierCurveTo(150, 50, 175, 50, 175, 75);
+    ctx.lineTo(175, 100);
+    ctx.bezierCurveTo(175, 100, 175, 125, 150, 125);
+    ctx.lineTo(75, 125);
+    ctx.lineTo(50, 150);
+    ctx.lineTo(50, 125);
+    ctx.bezierCurveTo(50, 125, 25, 125, 25, 100);
+    ctx.lineTo(25, 75);
+    ctx.bezierCurveTo(25, 75, 25, 50, 50, 50);
+    
+    
+    for (var i = 0; i < 3; i++) {
+      ctx.moveTo(250, 50 + i * 75);
+      ctx.lineTo(350, 50 + i * 75);
+      ctx.bezierCurveTo(350, 50 + i * 75, 375, 50 + i * 75, 375, 75 + i * 75);
+      ctx.lineTo(375, 100 + i * 75);
+      ctx.bezierCurveTo(375, 100 + i * 75, 375, 125 + i * 75, 350, 125 + i * 75);
+      if (i==2) {
+        //ctx.lineTo(350, 125 + i * 75);
+        ctx.lineTo(350, 150 + i * 75);
+        ctx.lineTo(325, 125 + i * 75);
+      } 
+      ctx.lineTo(250, 125 + i * 75);
+      ctx.bezierCurveTo(250, 125 + i * 75, 225, 125 + i * 75, 225, 100 + i * 75);
+      ctx.lineTo(225, 75 + i * 75);
+      ctx.bezierCurveTo(225, 75 + i * 75, 225, 50 + i * 75, 250, 50 + i * 75);
+    }
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+  }
+
   function init() {
     game = new DialogGame();
     game.nextData('step1');
+    drawCanvas();
   }
   
   var game = null;
@@ -539,11 +640,13 @@
   #game {
     position: relative;
     background: #000; 
+    max-width: 50%;
     height: 500px; 
     min-height: 500px; 
     max-height: 500px; 
     width: 100%; 
     overflow: hidden;
+    float: right;
   }
 
   #game-inner {
@@ -554,6 +657,7 @@
   </style>
  </head>
  <body>
+    <canvas id="canvas" style="width: 480px; height: 320px; background: #ddd; float: left;"></canvas>
     <div id="game">
       <div id="game-inner"></div>
     </div>
