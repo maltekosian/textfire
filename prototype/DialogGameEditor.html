@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+ <title> New Document </title>
+ <meta name="Generator" content="EditPlus">
+ <meta name="Author" content="">
+ <meta name="Keywords" content="">
+ <meta name="Description" content="">
+ <script>
+  var currentDialog = null;
+  /**
+  {uid : 'uid auto generated', texts: [{uid: 'uid auto generated', text:'reference on base64 in textmanager', next: 'a uid reference', isWrong: false, points : 0, method: '?here?or'}], image: 'null or a image src or reference', x:null, y:null, w:null, h: null, color:null}
+  */
+  var data = [];
+
+  function addText() {
+    var currentTexts = currentDialog.texts;
+    var ele = getElement('text_box');
+    var _ele = createElement('input');
+    _ele.setAttribute('type','text');
+    _ele.setAttribute('id','text_'+currentTexts.length);
+    onchange="doNothing(this.id)";
+    ele.appendChild(_ele);
+    _ele = createElement('select');
+    _ele.setAttribute('id','text_'+currentTexts.length+'_next');
+    onchange="doNothing(this.id)";
+    ele.appendChild(_ele);
+    _ele = createElement('input');
+    _ele.setAttribute('type','checkbox');
+    onchange="doNothing(this.id)";
+    ele.appendChild(_ele);
+    _ele.setAttribute('id','isWrong_text_'+currentTexts.length);
+    onchange="doNothing(this.id)";
+    ele.appendChild(_ele);
+    _ele = createElement('select');
+    _ele.setAttribute('id','text_'+currentTexts.length+'_method');
+    onchange="doNothing(this.id)";
+    ele.appendChild(_ele);
+    _ele = createElement('br');
+    ele.appendChild(_ele);
+    var text = new GameText('text_'+currentTexts.length);
+    currentDialog.texts.push(text);
+  }
+
+  function addDialog() {
+    currentDialog = new GameDialog('dial_'+data.length);
+    data.push(currentDialog);
+    addText();
+  }
+
+  /*******************/
+  function GameText(_id) {
+    this.uid = _id;
+    this.next = null;
+    this.text = null;
+    this.isWrong = false;
+    this.points = 0;
+    this.method = null;
+    this.audio = null;
+    this.logo = null;
+  }
+
+  function GameDialog(_id) {
+    this.uid = _id;
+    this.texts = [];
+    this.image = null;
+    this.audio = null;
+    this.x = null;
+    this.y = null;
+    this.w = null;
+    this.h = null;
+    this.color = null;
+  }
+  /*******************/
+
+  function getElement(id) {
+    return document.getElementById(id);
+  }
+
+  function createElement(type) {
+    return document.createElement(type);
+  }
+
+  function doNothing(id) {
+    console.log();
+  }
+  /**
+  a method that is the demonstrate the basics of the game-engine
+  missing is 
+    -requestAnimationFrame and 
+    -an intervalListener for non animation related processes aka threads
+    -double-buffering  
+  */
+  function drawCanvas() {
+    var cvs = getElement('canvas');
+    cvs.width = 480;
+    cvs.height = 320;
+    var ctx = cvs.getContext('2d');
+
+    ctx.fillStyle = 'rgba(102,102,204,0.75)';
+    ctx.strokeStyle = 'rgba(204,204,102,0.75)';
+
+    var img = new Image();
+    img.src = "http://hogventure.com/image/3piggies.jpg";
+    ctx.drawImage(img, 0, 0, 480, 320);
+    
+    ctx.beginPath();
+    ctx.moveTo(50,50);
+    ctx.lineTo(150, 50);
+    ctx.bezierCurveTo(150, 50, 175, 50, 175, 75);
+    ctx.lineTo(175, 100);
+    ctx.bezierCurveTo(175, 100, 175, 125, 150, 125);
+    ctx.lineTo(75, 125);
+    ctx.lineTo(50, 150);
+    ctx.lineTo(50, 125);
+    ctx.bezierCurveTo(50, 125, 25, 125, 25, 100);
+    ctx.lineTo(25, 75);
+    ctx.bezierCurveTo(25, 75, 25, 50, 50, 50);
+    
+    
+    for (var i = 0; i < 3; i++) {
+      ctx.moveTo(250, 50 + i * 75);
+      ctx.lineTo(350, 50 + i * 75);
+      ctx.bezierCurveTo(350, 50 + i * 75, 375, 50 + i * 75, 375, 75 + i * 75);
+      ctx.lineTo(375, 100 + i * 75);
+      ctx.bezierCurveTo(375, 100 + i * 75, 375, 125 + i * 75, 350, 125 + i * 75);
+      if (i==2) {
+        //ctx.lineTo(350, 125 + i * 75);
+        ctx.lineTo(350, 150 + i * 75);
+        ctx.lineTo(325, 125 + i * 75);
+      } 
+      ctx.lineTo(250, 125 + i * 75);
+      ctx.bezierCurveTo(250, 125 + i * 75, 225, 125 + i * 75, 225, 100 + i * 75);
+      ctx.lineTo(225, 75 + i * 75);
+      ctx.bezierCurveTo(225, 75 + i * 75, 225, 50 + i * 75, 250, 50 + i * 75);
+    }
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+  }
+
+  function init() {
+    addDialog();
+    drawCanvas();
+  }
+  if (window.ondeviceready) {
+    document.addEventListener("deviceready", init, false);
+  } else {
+    window.onload = function() {
+      //intervalId =
+      setTimeout(init, 100);
+    }
+  }
+ </script>
+</head>
+<body>
+<button id="add_text_btn" onclick="addText();">add text</button>
+<div id="text_box"> 
+ <!--input type="text" id="text_0" onchange="" /><select id="text_0_next" onchange="" ></select><input type="checkbox" id="isWrong_text_0" data-tooltip="isWrong" onchange="" /><select id="text_0_method" onchange="" ></select><br /-->
+ <!--you may append more childs-->
+</div>
+<select id="text_general_method" onchange="" ></select><br />
+<button id="add_dialog_btn" >add dialog</button><br />
+<hr />
+<h1>Help</h1>
+the dialog game is a simple text adventure with text-inputs and selections of answers or questions.<br />
+Each dialog can have a background image or it will use the previous displayed background. Dialogs give audio support for background music, a single text or selection can play sound as a click reaction.<br />
+The data model contains dialogs and texts. A dialog is a single collection of one or more texts. A dialog will be visual presented in a bubble like you see on the left or a multi bubble like on the right.<br />
+<canvas id="canvas" style="width: 480px; height: 320px; background: #ddd;"></canvas>
+</body>
+</html>
