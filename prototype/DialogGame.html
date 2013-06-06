@@ -55,7 +55,7 @@
     an array of key-value storages
     {key: [..], value: [..]}
     */
-    this.variables = [];
+    this.keyValues = [];
     /**
 
     */
@@ -110,20 +110,20 @@
     /**
 
     */
-    this.setVariable = function(_k, _v) {
-      if (!this.hasVariable(_k)) {
-        this.variables.push({key: _k, value: _v});
+    this.setKeyValue = function(_k, _v) {
+      if (!this.hasKeyValue(_k)) {
+        this.keyValues.push({key: _k, value: _v});
       } else {
-        this.getVariable(_k).value = _v;
+        this.getKeyValue(_k).value = _v;
       }
     }
     /**
 
     */
-    this.getVariable = function(_k) {
-      for (var i = this.variables.length - 1; i >= 0; i--) {
-        if (this.variables[i].key == _k) {
-          return this.variables[i];
+    this.getKeyValue = function(_k) {
+      for (var i = this.keyValues.length - 1; i >= 0; i--) {
+        if (this.keyValues[i].key == _k) {
+          return this.keyValues[i];
         }      
       }
       return null;
@@ -131,10 +131,10 @@
     /**
 
     */
-    this.getVariableValue = function(_k) {
-      for (var i = this.variables.length - 1; i >= 0; i--) {
-        if (this.variables[i].key == _k) {
-          return this.variables[i].value;
+    this.getValueForKey = function(_k) {
+      for (var i = this.keyValues.length - 1; i >= 0; i--) {
+        if (this.keyValues[i].key == _k) {
+          return this.keyValues[i].value;
         }      
       }
       return null;
@@ -142,9 +142,9 @@
     /**
     
     */
-    this.hasVariable = function(_k) {
-      for (var i = this.variables.length - 1; i >= 0; i--) {
-        if (this.variables[i].key == _k) {
+    this.hasKeyValue = function(_k) {
+      for (var i = this.keyValues.length - 1; i >= 0; i--) {
+        if (this.keyValues[i].key == _k) {
           return true;
         }      
       }
@@ -232,7 +232,7 @@
       _ele.appendChild(ele);
       ele = document.createElement('div');
       ele.className = 'hans_bubble';
-      ele.innerHTML = currentData.texts[0].replace(/#name#/g, this.getVariableValue('name'));
+      ele.innerHTML = currentData.texts[0].replace(/#name#/g, this.getValueForKey('name'));
       _ele.appendChild(ele);
       _ele.style.position = 'relative';
       _ele.style.width = '50%';
@@ -278,7 +278,7 @@
     this.setKeyInput = function(eve, element, _nextDataId, _key) {
       console.log('setInputVar '+eve.keyCode+' + '+element.value+' + '+_key);
       if (eve.keyCode == 13) {
-        this.setVariable(_key, element.value);  
+        this.setKeyValue(_key, element.value);  
         this.nextData(_nextDataId);
       }
     }
@@ -336,7 +336,7 @@
         ele = document.createElement('div');
         ele.className = 'hans_bubble';
         ele.style.background = '#e00';
-        ele.innerHTML = n_text.texts[0].replace(/#name#/g, this.getVariableValue('name'))
+        ele.innerHTML = n_text.texts[0].replace(/#name#/g, this.getValueForKey('name'))
         _ele.appendChild(ele);
         _ele.style.position = 'relative';
         _ele.style.width = '50%';
