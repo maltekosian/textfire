@@ -40,13 +40,6 @@ content="https://lh6.googleusercontent.com/-goxBD9ty2YY/TtpfNuqlmCI/AAAAAAAAACE/
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="css/application.css" rel="stylesheet">
     <script src="js/CanvasInput.min.js" type="text/javascript" charset="utf-8"></script>
-    <!--   script src="js/bootstrap-switch.js"></ script>
-    < script src="js/flatui-checkbox.js"></ script>
-    < script src="js/flatui-radio.js"></ script>
-    < script src="js/jquery.tagsinput.js"></ script>
-    < script src="js/jquery.placeholder.js"></ script>
-    < script src="js/jquery.stacktable.js"></ script>
-    < script src="http://vjs.zencdn.net/c/video.js"></ script-->
     <script src="js/application.js" type="text/javascript" charset="utf-8"></script>
   <script>
 
@@ -55,6 +48,86 @@ content="https://lh6.googleusercontent.com/-goxBD9ty2YY/TtpfNuqlmCI/AAAAAAAAACE/
   and an UidCounter(Generator for unique Ids)
   */
   function DialogGame() {
+    /**
+
+    */
+    this.canvas = getElement('canvas');
+    /**
+
+    */
+    this.ctx = null;
+    /**
+
+    */
+    this.canvasWidth = 480;
+    /**
+
+    */
+    this.canvasHeight = 320;
+    /**
+
+    */
+    this.screenWidth = null;
+    /**
+
+    */
+    this.screenHeight = null;
+    /**
+
+    */
+    this.backbuffer = null;//createElement('canvas');
+    /**
+
+    */
+    this.btx = null;
+    /**
+
+    */
+    this.bufferWidth = 800;
+    /**
+
+    */
+    this.bufferHeight = 480;
+    /**
+
+    */
+    this.intervalId = null;
+    /**
+
+    */
+    this.intervalListeners = [];
+    /**
+
+    */
+    this.addIntervalListener = function(_name, _method, _t) {
+      this.intervalListeners.push(
+        {
+          name: _name,
+          m: _method,
+          t: _t,
+          ot: Date.now()
+        }
+      );
+    }
+    /**
+
+    */
+    this.removeIntervalListener = function(_name) {
+      for (var i = 0; i < this.intervalListeners.length; i++) {
+        if (this.intervalListeners[i].name == _name) {
+          this.intervalListeners[i] = null;
+          //the null listeners will be removed in update
+        }
+      }
+    }
+    /**
+
+    */
+    this.animationOldTime = null;
+    /**
+
+    */
+    this.animationTime = null;
     /**
     the array of dialog-text data
     each data-set has an unique id a text, a method, a speaker, a next
@@ -354,7 +427,7 @@ content="https://lh6.googleusercontent.com/-goxBD9ty2YY/TtpfNuqlmCI/AAAAAAAAACE/
     this.validateSelection = function(_dataId, _key) {
       var data = this.getData(_dataId);
       console.log(_key+', '+_dataId+', '+data.right);
-      if (isWrongSelection(data, _key)) {  
+      if (this.isWrongSelection(data, _key)) {  
         var next_data = this.getData(data.next);
         var _ele = document.createElement('div');
         var ele = document.createElement('div');
@@ -383,7 +456,7 @@ content="https://lh6.googleusercontent.com/-goxBD9ty2YY/TtpfNuqlmCI/AAAAAAAAACE/
     /**
 
     */
-    function isWrongSelection(data, _key) {
+    this.isWrongSelection = function(data, _key) {
       for (var i = 0; i < data.wrong.length; i++) {
         if (data.wrong[i] == _key) {
           return true; 
@@ -411,6 +484,128 @@ content="https://lh6.googleusercontent.com/-goxBD9ty2YY/TtpfNuqlmCI/AAAAAAAAACE/
     */
     this.setPoints = function(_p) {
       this.points = this.points + _p;
+    }
+    /**
+
+    */
+    this.updateInterval = function() {
+      var time = Date.now();
+      //console.log('updateInterval '+time);
+      var len = game.intervalListeners.length;
+      if (len > 0) {
+        for (var i = len - 1; i >= 0; i--) {
+          if (game.intervalListeners[i] != null) {
+            if (time + game.intervalListeners[i].t >= game.intervalListeners[i].ot) {
+              game.intervalListeners[i].m(time - game.intervalListeners[i].ot);  
+              game.intervalListeners[i].ot = time;            
+            }
+          } else {
+            game.intervalListeners.splice(i, 1);
+          } 
+        }       
+      }
+      /*if (!game.drawUpdate) {
+        return; has to be placed in the loop
+        look for gdbb
+      }*/
+      if (game.backbuffer == null) {
+        return;
+      }      
+      game.ctx.drawImage(game.backbuffer, 0, 0, 480, 320);//screenWidth, screenHeight here 
+      //only if it is canvasWidth and height!
+    }
+    /**
+      a method that is the demonstrate the basics of the game-engine
+        -requestAnimationFrame and 
+        -an intervalListener for non animation related processes aka threads
+        -double-buffering  
+      missing a real implementation of real data
+    */
+    this.drawBackBuffer = function(tdif) {
+      if (game.backbuffer == null) {
+        game.backbuffer = createElement('canvas');
+        game.backbuffer.width = game.bufferWidth;
+        game.backbuffer.height = game.bufferHeight;
+        game.btx = game.backbuffer.getContext('2d');
+      }
+      console.log('drawBackBuffer -> '+tdif);
+      //if (!game.drawUpdate) return;
+      game.btx.fillStyle = 'rgba(224,220,99,0.75)'; //#ddd863
+      game.btx.strokeStyle = 'rgba(224,254,250,0.75)';
+
+      var img = new Image();
+      img.src = "http://hogventure.com/image/3piggies.jpg";
+      game.btx.drawImage(img, 0, 0, game.bufferWidth, game.bufferHeight);//
+      
+      game.btx.beginPath();
+      game.btx.moveTo(50,50);
+      game.btx.lineTo(150, 50);
+      game.btx.bezierCurveTo(150, 50, 175, 50, 175, 75);
+      game.btx.lineTo(175, 100);
+      game.btx.bezierCurveTo(175, 100, 175, 125, 150, 125);
+      game.btx.lineTo(75, 125);
+      game.btx.lineTo(50, 150);
+      game.btx.lineTo(50, 125);
+      game.btx.bezierCurveTo(50, 125, 25, 125, 25, 100);
+      game.btx.lineTo(25, 75);
+      game.btx.bezierCurveTo(25, 75, 25, 50, 50, 50);
+      
+      
+      for (var i = 0; i < 3; i++) {
+        game.btx.moveTo(250, 50 + i * 75);
+        game.btx.lineTo(350, 50 + i * 75);
+        game.btx.bezierCurveTo(350, 50 + i * 75, 375, 50 + i * 75, 375, 75 + i * 75);
+        game.btx.lineTo(375, 100 + i * 75);
+        game.btx.bezierCurveTo(375, 100 + i * 75, 375, 125 + i * 75, 350, 125 + i * 75);
+        if (i==2) {
+          //game.btx.lineTo(350, 125 + i * 75);
+          game.btx.lineTo(350, 150 + i * 75);
+          game.btx.lineTo(325, 125 + i * 75);
+        } 
+        game.btx.lineTo(250, 125 + i * 75);
+        game.btx.bezierCurveTo(250, 125 + i * 75, 225, 125 + i * 75, 225, 100 + i * 75);
+        game.btx.lineTo(225, 75 + i * 75);
+        game.btx.bezierCurveTo(225, 75 + i * 75, 225, 50 + i * 75, 250, 50 + i * 75);
+      }
+      game.btx.closePath();
+      game.btx.stroke();
+      game.btx.fill();
+      //requestAnimationFrame(game.drawBackBuffer);
+    }
+    /**
+
+    */
+    this.requestBackBuffer = function() {
+      //console.log('requestBackBuffer');
+      //if (!game.drawUpdate) {
+      //only animate if needed!
+      game.animationOldTime = game.animationTime;
+      game.animationTime = Date.now();
+      game.drawBackBuffer( game.animationTime - game.animationOldTime);
+      //}
+      requestAnimationFrame(game.requestBackBuffer);
+    }
+    /**
+    this is the context of the game
+    so this is why any function that is called from here
+    refers to game instead of this (don't use this. -> use game.)
+    */
+    this.start = function() {
+      //game = this;
+      this.canvas = getElement('canvas');
+      this.canvas.width = 480;
+      this.canvas.height = 320;
+      this.ctx = this.canvas.getContext('2d');
+      this.intervalListeners = [];
+      try {
+        this.animationTime = Date.now();        
+        //test_requestAnimationFrame(this.requestBackBuffer);
+        requestAnimationFrame(this.requestBackBuffer);
+      } catch (e) {
+        this.addIntervalListener('gdbb', game.drawBackBuffer, 16);
+      }    
+      this.intervalId = setInterval(this.updateInterval, 10);
+      //to abbond an interval call clearInterval!
     }
     /**
     
@@ -442,84 +637,49 @@ content="https://lh6.googleusercontent.com/-goxBD9ty2YY/TtpfNuqlmCI/AAAAAAAAACE/
     basic functions
   #########################################*/
 
+  /**
+  @param id
+  @return {HTMLDomElement} or null
+  */
   function getElement(id) {
     return document.getElementById(id);
   }
-
+  /**
+  @param type
+  @return {HTMLDomElement}
+  */ 
   function createElement(type) {
     return document.createElement(type);
   }
+  /**
+  placebo method
+  does nothing except that it posts this to the console
+  use it for development to see if you have to implement
+  an event, method, callback or not
 
+  @param id
+  */
   function doNothing(id) {
     console.log('method "'+id+'" not implemented');
   }
-
-  /**
-  a method that is the demonstrate the basics of the game-engine
-  missing is 
-    -requestAnimationFrame and 
-    -an intervalListener for non animation related processes aka threads
-    -double-buffering  
-  */
-  function drawCanvas() {
-    var cvs = getElement('canvas');
-    cvs.width = 480;
-    cvs.height = 320;
-    var ctx = cvs.getContext('2d');
-
-    ctx.fillStyle = 'rgba(102,102,204,0.75)';
-    ctx.strokeStyle = 'rgba(204,204,102,0.75)';
-
-    var img = new Image();
-    img.src = "http://hogventure.com/image/3piggies.jpg";
-    ctx.drawImage(img, 0, 0, 480, 320);
     
-    ctx.beginPath();
-    ctx.moveTo(50,50);
-    ctx.lineTo(150, 50);
-    ctx.bezierCurveTo(150, 50, 175, 50, 175, 75);
-    ctx.lineTo(175, 100);
-    ctx.bezierCurveTo(175, 100, 175, 125, 150, 125);
-    ctx.lineTo(75, 125);
-    ctx.lineTo(50, 150);
-    ctx.lineTo(50, 125);
-    ctx.bezierCurveTo(50, 125, 25, 125, 25, 100);
-    ctx.lineTo(25, 75);
-    ctx.bezierCurveTo(25, 75, 25, 50, 50, 50);
-    
-    
-    for (var i = 0; i < 3; i++) {
-      ctx.moveTo(250, 50 + i * 75);
-      ctx.lineTo(350, 50 + i * 75);
-      ctx.bezierCurveTo(350, 50 + i * 75, 375, 50 + i * 75, 375, 75 + i * 75);
-      ctx.lineTo(375, 100 + i * 75);
-      ctx.bezierCurveTo(375, 100 + i * 75, 375, 125 + i * 75, 350, 125 + i * 75);
-      if (i==2) {
-        //ctx.lineTo(350, 125 + i * 75);
-        ctx.lineTo(350, 150 + i * 75);
-        ctx.lineTo(325, 125 + i * 75);
-      } 
-      ctx.lineTo(250, 125 + i * 75);
-      ctx.bezierCurveTo(250, 125 + i * 75, 225, 125 + i * 75, 225, 100 + i * 75);
-      ctx.lineTo(225, 75 + i * 75);
-      ctx.bezierCurveTo(225, 75 + i * 75, 225, 50 + i * 75, 250, 50 + i * 75);
-    }
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
-  }
-
   function init() {
     game = new DialogGame();
     game.nextData('step1');
-    drawCanvas();
+    //drawCanvas();
+    game.start();
   }
   
   var game = null;
   
-  window.onload = function() {
-    setTimeout(init, 100);
-  };
+  if (window.ondeviceready) {
+    document.addEventListener("deviceready", init, false);
+  } else {
+    window.onload = function() {
+      //intervalId =
+      setTimeout(init, 100);
+    }
+  }
   </script>
   <style type="text/css">
   body {

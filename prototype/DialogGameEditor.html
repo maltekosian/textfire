@@ -25,7 +25,7 @@
   <script type="text/javascript" src="js/editor.js" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
     function init() {
-      addDialog();
+      newDialog();
       //drawCanvas();
     }
     if (window.ondeviceready) {
@@ -41,24 +41,47 @@
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,900italic,900,700italic,700,500italic,500,400italic,300italic,300,100italic,100' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="css/main.css" type="text/css"/>
   <style type="text/css">
-
+    body, div, button, input, select, option, textarea, br {
+      font-family: Roberto, sans-serif;
+      font-size: 14px;
+      border: 0;
+      margin: 0;
+    }
+    
+    button, input, select, option, textarea {
+      background: #03c0a2;
+      color: #fffef8;
+      text-shadow: 1px 1px 0px #243;
+      border-right: 1px solid #fff;
+    }
+    input[type="checkbox"] {
+      -webkit-appearance: button;
+      box-sizing: inherrit;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      color: #000;
+      margin-bottom: -4px;
+      border: 4px solid #03c0a2;
+      font: -webkit-small-control;       
+    }
   </style>
 </head>
 <body>
-<button id="add_text_btn" onclick="addText();">add text</button>
+<button id="add_text_btn" onclick="addText();">add text</button><!-- will only be visible if the dialog is a select-->
 <div id="text_box"> 
  <!--input type="text" id="text_0" onchange="" /><select id="text_0_next" onchange="" ></select><input type="checkbox" id="wrong_text_0" data-tooltip="wrong" onchange="" /><select id="text_0_method" onchange="" ></select><br /-->
  <!--you may append more childs-->
 </div>
-<select id="text_general_method" onchange="doNothing(this.id);" >
+<br />
+<button id="add_dialog_btn" onclick="addDialog();">add dialog</button><select id="text_general_method" onchange="doNothing(this.id);" >
   <option>---</option>
   <option value="showText">showText</option>
   <option value="showKeyInout">showKeyInput</option>
   <option value="showSelect">showSelect</option>
   <option value="showTimer">showTimer</option>
   <option value="clearScreen">clearScreen</option>
-</select><br />
-<button id="add_dialog_btn" onclick="addDialog();">add dialog</button><br />
+</select><br /><!-- read this selection when a dialog is created -->
 <hr />
 <h1>Help</h1>
 the dialog game is a simple text adventure with text-inputs and selections of answers or questions.<br />
