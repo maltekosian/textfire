@@ -1,4 +1,5 @@
 /**
+*
 * @class Base64
 *  Base64 encode / decode
 *  http://www.webtoolkit.info/
