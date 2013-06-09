@@ -141,7 +141,8 @@ Licensed to hogventure.com under one
   @since 20130606
   */
   function addDialog() {
-    saveDialog(currentDialog, newDialog);
+    //saveDialog(currentDialog, newDialog);
+    newDialog();
   }
   /**
   @method saveDialog
@@ -160,6 +161,28 @@ Licensed to hogventure.com under one
     }
   }
   /**
+  @method selectDialog
+
+  interesting facts
+  australian lives there since 50.000 bc
+  with 250 languages and 600 dialects
+  they inventeted smoothed sharped sanded axes 15.000 years 
+  before any other human culture. The australian
+  culture is the first and therefore oldest living
+  culture of the humankind.
+  Cooks mind was not sharp enough to understand those facts.
+
+  @since 20130609
+  */
+  function selectDialog(data_id) {
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].uid == data_id) {
+        return data[i];
+      }
+    }
+    return null;
+  } 
+  /**
   @method newDialog
 
   an editor function
@@ -170,7 +193,7 @@ Licensed to hogventure.com under one
   */
   function newDialog() {
     currentDialog = new GameDialog('dial_'+data.length);
-    //data.push(currentDialog);
+    data.push(currentDialog);
     getElement('text_box').innerHTML = '';
     addText(getElement('text_general_method').value);
   }
@@ -238,6 +261,98 @@ Licensed to hogventure.com under one
       }
     }
     return null;
+  }
+
+  /*########################################
+    canvas functions
+  #########################################*/
+
+  function canvasLeftBubble(btx, x, y, cw, ch, w, h, text) {
+    //w = btx.font.textWidth(text);
+    //h = btx.font.textHeight(text);
+    btx.beginPath();
+    btx.moveTo(x * cw, y * cw);
+    btx.lineTo(x * cw + w * cw, y * cw);
+    btx.bezierCurveTo(x * cw + w * cw, y * cw, x * cw + w * cw + 10, y * cw, x * cw + w * cw + 10, y * cw + 10);
+    btx.lineTo(x * cw + w * cw + 10, y * cw + 20 );
+    btx.bezierCurveTo(x * cw + w * cw + 10, y * cw + 20, x * cw  + w * cw +10, y * cw + 30, x * cw  + w * cw, y * cw + 30);
+    btx.lineTo(x * cw + 10, y * cw + 30);
+    btx.lineTo(x * cw, y * cw + 40);
+    btx.lineTo(x * cw, y * cw + 30);
+    btx.bezierCurveTo(x * cw, y * cw + 30, x * cw - 10, y * cw + 30, x * cw - 10, y * cw + 20);
+    btx.lineTo(x * cw - 10, y * cw + 10);
+    btx.bezierCurveTo(x * cw - 10, y * cw + 10, x * cw - 10, y * cw, x * cw, y * cw);
+  }
+  
+  function canvasRightBubble(btx, x, y, cw, ch, w, h, text) {
+    //w = btx.font.textWidth(text);
+    //h = btx.font.textHeight(text);//fsz * text.length
+    btx.beginPath();
+    btx.moveTo(x * cw, y * cw);
+    btx.lineTo(x * cw + w * cw, y * cw);
+    btx.bezierCurveTo(x * cw + w * cw, y * cw, x * cw + w * cw + 10, y * cw, x * cw + w * cw + 10, y * cw + 10);
+    btx.lineTo(x * cw + w * cw + 10, y * cw + 20 );
+    btx.bezierCurveTo(x * cw + w * cw + 10, y * cw + 20, x * cw  + w * cw +10, y * cw + 30, x * cw  + w * cw, y * cw + 30);
+    btx.lineTo(x * cw + w * cw, y * cw + 30);
+    btx.lineTo(x * cw + w * cw, y * cw + 40);
+    btx.lineTo(x * cw + w * cw - 10, y * cw + 30);
+    btx.lineTo(x * cw, y * cw + 30);
+    btx.bezierCurveTo(x * cw, y * cw + 30, x * cw - 10, y * cw + 30, x * cw - 10, y * cw + 20);
+    btx.lineTo(x * cw - 10, y * cw + 10);
+    btx.bezierCurveTo(x * cw - 10, y * cw + 10, x * cw - 10, y * cw, x * cw, y * cw);
+  }
+
+  function canvasSimpleBubble(btx, x, y, cw, ch, w, h, text) {
+    //w = btx.font.textWidth(text);
+    //h = btx.font.textHeight(text);
+    btx.beginPath();
+    btx.moveTo(x * cw, y * cw);
+    btx.lineTo(x * cw + w * cw, y * cw);
+    btx.bezierCurveTo(x * cw + w * cw, y * cw, x * cw + w * cw + 10, y * cw, x * cw + w * cw + 10, y * cw + 10);
+    btx.lineTo(x * cw + w * cw + 10, y * cw + 20 );
+    btx.bezierCurveTo(x * cw + w * cw + 10, y * cw + 20, x * cw  + w * cw +10, y * cw + 30, x * cw  + w * cw, y * cw + 30);
+    btx.lineTo(x * cw, y * cw + 30);
+    btx.bezierCurveTo(x * cw, y * cw + 30, x * cw - 10, y * cw + 30, x * cw - 10, y * cw + 20);
+    btx.lineTo(x * cw - 10, y * cw + 10);
+    btx.bezierCurveTo(x * cw - 10, y * cw + 10, x * cw - 10, y * cw, x * cw, y * cw);
+  }
+
+  var overview = [];
+
+  function OverviewBubble(_x, _y, _w, _h) {
+    this.x = _x;
+    this.y = _y;
+    this.w = _w;
+    this.h = _h;
+
+    this.moveTo = function(_dx, _dy) {
+      this.x = this.x + _dx;
+      this.y = this.y + _dy;
+    }
+
+    this.isHit = function(_x, _y) {
+      return (this.x < _x && this.x + this.w > _x && this.y < _y && this.y + this.h > _y);
+    }
+  }
+
+  /*########################################
+    store and load functions
+  #########################################*/
+
+  function save() {
+    getElement('data_put').value = JSON.stringify(data);
+  }
+
+  function copyToClipboard() {
+    var text = getElement('data_put').value;
+    if (window.clipboardData) // Internet Explorer
+    {  
+        window.clipboardData.setData("Text", text);
+    } else {  
+        unsafeWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");  
+        var clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);  
+        clipboardHelper.copyString(text);
+    }
   }
 
   /*########################################
