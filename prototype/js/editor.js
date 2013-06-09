@@ -58,7 +58,18 @@ Licensed to hogventure.com under one
   @since 20130606
   */
   function addText(_method) {
-    console.log('addText '+_method);
+    console.log('addText '+_method);    
+    var text = new GameText('text_'+currentDialog.texts.length);
+    text.method = _method;
+    currentDialog.texts.push(text);
+    showText(_method);
+  }
+  /**
+  @method showText
+
+  @since 20130609
+  */
+  function showText(_method) {
     if (_method == 'showSelect') {
       getElement('add_text_btn').setAttribute('onclick', 'addText(\''+_method+'\');');
       getElement('add_text_btn').style.visibility = 'visible';
@@ -67,44 +78,30 @@ Licensed to hogventure.com under one
     }
     var currentTexts = currentDialog.texts;
     var ele = getElement('text_box');
-    var _ele = createElement('input');
-    _ele.setAttribute('type','text');
-    _ele.setAttribute('id','text_'+currentTexts.length);
-    _ele.setAttribute('onchange','setText(\'text_'+currentTexts.length+'\');');
-    ele.appendChild(_ele);
-    _ele = createElement('select');
-    _ele.setAttribute('id','text_'+currentTexts.length+'_dialog_next');
-    _ele.setAttribute('onchange','setNextDialog(\'text_'+currentTexts.length+'\');');
-    var __ele = null;
-    //instead updateNextDialogSelects is used
-    /*for (var i = 0; i < data.length; i++) {
-      __ele.createElement('option');
-      __ele.value = data[i].uid;
-      __ele.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length ? data[i].texts[0] : '') ));
-      _ele.appendChild(__ele);
-    }*/
-    ele.appendChild(_ele);
-    _ele = createElement('input');
-    _ele.setAttribute('type','checkbox');
-    _ele.setAttribute('onchange','doNothing(this.id);');
-    ele.appendChild(_ele);
-    _ele.setAttribute('id','wrong_text_'+currentTexts.length);
-    _ele.setAttribute('onchange','this.style.background!=\'rgb(0, 51, 51)\'|\'#003333\'?this.style.background=\'rgb(0, 51, 51)\':this.style.background=\'#fff\'');
-    ele.appendChild(_ele);
-    /*_ele = createElement('select');
-    _ele.setAttribute('id','text_'+currentTexts.length+'_method');
-    for (var i = 0; i < methods.length; i++) {
-      __ele = createElement('option');
-      __ele.value = methods[i];
-      __ele.appendChild(document.createTextNode(methods[i]));
-      _ele.appendChild(__ele);
+    ele.innerHTML = '';
+    for (var i = 0; i < currentTexts.length; i++) {
+      var _ele = createElement('input');
+      _ele.setAttribute('type','text');
+      _ele.setAttribute('id','text_'+i);
+      _ele.setAttribute('onchange','setText(\'text_'+i+'\');');
+      ele.appendChild(_ele);
+      _ele = createElement('select');
+      _ele.setAttribute('id','text_'+i+'_dialog_next');
+      _ele.setAttribute('onchange','setNextDialog(\'text_'+i+'\');');
+      var __ele = null;
+      
+      ele.appendChild(_ele);
+      _ele = createElement('input');
+      _ele.setAttribute('type','checkbox');
+      _ele.setAttribute('onchange','doNothing(this.id);');
+      
+      _ele.setAttribute('id','wrong_text_'+i);
+      _ele.setAttribute('onchange','this.style.background!=\'rgb(0, 51, 51)\'|\'#003333\'?this.style.background=\'rgb(0, 51, 51)\':this.style.background=\'#fff\'');
+      
+      _ele = createElement('br');
+      ele.appendChild(_ele);
     }
-    _ele.setAttribute('onchange','doNothing(this.id);');
-    ele.appendChild(_ele);*/
-    _ele = createElement('br');
-    ele.appendChild(_ele);
-    var text = new GameText('text_'+currentTexts.length);
-    currentDialog.texts.push(text);
+    
     updateNextDialogSelects();
   }
   /**
@@ -118,14 +115,31 @@ Licensed to hogventure.com under one
   function updateNextDialogSelects() {
     var ele = null; 
     var _ele = null; 
+    var select = getElement('select_dialog');
+    var _select = null; 
+    var right = getElement('dialogs_inner_right'); 
+    var _right = null;     
     for (var j = 0; j < currentDialog.texts.length; j++) {    
       ele = getElement('text_'+j+'_dialog_next');
       ele.innerHTML = '';
+      right.innerHTML = '';
+      select.innerHTML = '';
       for (var i = 0; i < data.length; i++) {         
         _ele = createElement('option');
         _ele.value = data[i].uid;
         _ele.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length > 0 ? data[i].texts[0].text : '') ));
         ele.appendChild(_ele);
+        _select = createElement('option');
+        _select.value = data[i].uid;
+        _select.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length > 0 ? data[i].texts[0].text : '') ));
+        if (data[i].uid == currentDialog.uid) {
+          _select.setAttribute('selected', 'selected');
+        }
+        select.appendChild(_select);
+        _right = createElement('li');
+        _right.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length > 0 ? data[i].texts[0].text : '') ));
+        _right.setAttribute('onclick','selectDialog(\''+data[i].uid+'\');');
+        right.appendChild(_right);
       }
     }
   }
@@ -175,6 +189,32 @@ Licensed to hogventure.com under one
   @since 20130609
   */
   function selectDialog(data_id) {
+    var _d = null;
+    if (data_id == null) {
+      data_id = getElement('select_dialog').value;
+      _d = getDialog(data_id);
+      if (_d == null) {
+        console.log('no Dialog selected');
+        return;
+      }
+    } else {
+      _d = getDialog(data_id);
+      if (_d == null) {
+        console.log('no Dialog for '+data_id);
+        return;
+      }
+    }
+    currentDialog = _d;
+    getElement('dialog_title').innerHTML = '';
+    getElement('dialog_title').appendChild(document.createTextNode('dialog.uid: ' + currentDialog.uid));
+    showText(currentDialog.texts[0].method);
+  }
+   /**
+  @method getDialog
+
+  @since 20130609
+  */
+  function getDialog(data_id) {
     for (var i = 0; i < data.length; i++) {
       if (data[i].uid == data_id) {
         return data[i];
@@ -195,6 +235,8 @@ Licensed to hogventure.com under one
     currentDialog = new GameDialog('dial_'+data.length);
     data.push(currentDialog);
     getElement('text_box').innerHTML = '';
+    getElement('dialog_title').innerHTML = '';
+    getElement('dialog_title').appendChild(document.createTextNode('dialog.uid: ' + currentDialog.uid));    
     addText(getElement('text_general_method').value);
   }
   /**

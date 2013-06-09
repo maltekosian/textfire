@@ -31,6 +31,7 @@
     function init() {
       newDialog();
       //drawCanvas();
+      getElement('dialogs_inner_right').style.height = window.innerHeight + 'px';
     }
     if (window.ondeviceready) {
       document.addEventListener("deviceready", init, false);
@@ -50,44 +51,101 @@
       min-height: 100%;
       height: 100%;
     }
-    body, div, button, input, select, option, textarea, br {
+    body, div, button, input, select, option, textarea, span, h1, h2, h3, h4, hr, br, p {
       font-family: Roberto, sans-serif;
       font-size: 14px;
-    /*  border: 0;
+      border: 0;
       margin: 0;
-      padding: 0;*/
+      padding: 0;
     }
-/*    
+    
     button, input, select, option, textarea {
       background: #03c0a2;
       color: #fffef8;
       text-shadow: 1px 1px 0px #243;
-      border-right: 1px solid #fff;
       border-radius: 0;
+      border: 0;
+      border-right: 1px solid #fff;
+      border-bottom: 1px solid #fff;
+      margin: 0;
+      padding: 2px;
     }
     
-    input[type="checkbox"] {
-      -webkit-appearance: button;
-      box-sizing: inherrit;
-      width: 18px;
-      height: 18px;
-      background: #fff;
-      color: #000;
-      margin-bottom: -4px;
-      border: 4px solid #03c0a2;
-      font: -webkit-small-control;       
-    }*/
+    hr { 
+      background: #ddd;
+      color: #333;
+      text-shadow: 1px 1px 0px #fff;
+      border-radius: 3px;
+      border: 0;      
+      margin: 0;
+      padding: 3px;
+    }
+
+    #help { 
+      background: #ddd;
+      color: #333;
+      text-shadow: 1px 1px 0px #fff;
+      border-radius: 6px;
+      border: 0;      
+      margin: 0;
+      padding: 6px;
+    }
+    
+    input[type="all"] {
+      background: #03c0a2;
+      color: #fffef8;
+      text-shadow: 1px 1px 0px #243;
+      border-radius: 0; 
+      border: 0;
+      border-right: 1px solid #fff;
+      margin: 0;
+      padding: 2px;
+    }
+    input[type="text"] {
+      background: #03c0a2;
+      color: #fffef8;
+      text-shadow: 1px 1px 0px #243;
+      border-radius: 0;   
+      margin: 0;
+      border: 0;
+      border-right: 1px solid #fff;
+      margin: 0;
+      padding: 2px;
+    }
+    #dialogs_inner_right {
+      background: #03c0a2;
+      margin: 0;
+    }
+    li {
+      color: #fffef8;
+      text-shadow: 1px 1px 0px #243;
+      border-radius: 0;   
+      margin: 0;
+      /*border: 0;*/
+      border: 1px solid #fff;
+      margin-left: 0;
+      padding: 2px;
+    }
+    li:hover {
+      background: #3399ff;
+      border: 1px solid #111;
+    }
+    li:focus {
+      background: #3399ff;
+      border: 1px solid #111;
+    }
   </style>
 </head>
 <body>
 <div style="float: left; max-width: 50%; min-height: 100%; height: 100%;">
-  <div style="float: left; max-width: 79%; ">
+  <div style="float: left; max-width: 77%; padding: 1%; ">
+    <span id="dialog_title" style="font-weight: bold;"></span><br />
     <button id="add_text_btn" onclick="addText();">add text</button><!-- will only be visible if the dialog is a select-->
     <div id="text_box"> 
      <!--input type="text" id="text_0" onchange="" /><select id="text_0_next" onchange="" ></select><input type="checkbox" id="wrong_text_0" data-tooltip="wrong" onchange="" /><select id="text_0_method" onchange="" ></select><br /-->
      <!--you may append more childs-->
     </div>
-    <br />
+    <hr />
     <button id="add_dialog_btn" onclick="addDialog();">add dialog</button><select id="text_general_method" onchange="doNothing(this.id);" >
       <option>---</option>
       <option value="showText">showText</option>
@@ -96,14 +154,16 @@
       <option value="showTimer">showTimer</option>
       <option value="clearScreen">clearScreen</option>
     </select><br /><!-- read this selection when a dialog is created -->
+    <select id="select_dialog" onchange="selectDialog();" ></select><br />
     <hr />
     <button id="save_btn" onclick="save();">save</button>
-    <hr />
-
+    
+<div id="help">
     <h1>Help</h1>
     the dialog game is a simple text adventure with text-inputs and selections of answers or questions.<br />
     Each dialog can have a background image or it will use the previous displayed background. Dialogs give audio support for background music, a single text or selection can play sound as a click reaction.<br />
     The data model contains dialogs and texts. A dialog is a single collection of one or more texts. A dialog will be visual presented in a bubble like you see on the left or a multi bubble like on the right.<br />
+</div>
   </div><!--left ends-->
   <div id="right" style="float: right; min-height: 100%; min-width: 20%; max-width: 20%; overflow: scroll; border-left: 1px solid #333;">
     <ul id="dialogs_inner_right">
