@@ -53,9 +53,13 @@ Licensed to hogventure.com under one
   @method addText
 
   an editor function
+  addText adds a text and calls showText afterwards 
+  called by the button or newDialog
 
-  @param _method the method to be used or -default- which is a synonym for showText
+  @param _method the method to be used or --- that is default 
   @since 20130606
+  @see showText  
+  @see newDialog
   */
   function addText(_method) {
     console.log('addText '+_method);    
@@ -67,6 +71,9 @@ Licensed to hogventure.com under one
   /**
   @method showText
 
+  hides or shows the add text button
+  showing all texts of the currentDialog
+
   @since 20130609
   */
   function showText(_method) {
@@ -74,8 +81,12 @@ Licensed to hogventure.com under one
       getElement('add_text_btn').setAttribute('onclick', 'addText(\''+_method+'\');');
       getElement('add_text_btn').style.visibility = 'visible';
     } else {
+      if (_method == '---') {
+        _method = 'showText';
+      }
       getElement('add_text_btn').style.visibility = 'hidden';
     }
+    
     var currentTexts = currentDialog.texts;
     var ele = getElement('text_box');
     ele.innerHTML = '';
@@ -83,6 +94,7 @@ Licensed to hogventure.com under one
       var _ele = createElement('input');
       _ele.setAttribute('type','text');
       _ele.setAttribute('id','text_'+i);
+      _ele.value = currentTexts[i].text;
       _ele.setAttribute('onchange','setText(\'text_'+i+'\');');
       ele.appendChild(_ele);
       _ele = createElement('select');
@@ -128,6 +140,9 @@ Licensed to hogventure.com under one
         _ele = createElement('option');
         _ele.value = data[i].uid;
         _ele.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length > 0 ? data[i].texts[0].text : '') ));
+        if (data[i].uid == currentDialog.texts[j].next) {
+          _ele.setAttribute('selected', 'selected');
+        }
         ele.appendChild(_ele);
         _select = createElement('option');
         _select.value = data[i].uid;
