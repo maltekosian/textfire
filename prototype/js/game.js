@@ -125,20 +125,12 @@ Licensed to hogventure.com under one
     in the case of input it's posible
     image
     points - default is null
+    [{"uid":"dial_0","texts":[{"uid":"text_0","next":null,"text":null,"points":0,"method":"---","audio":null,"logo":null}],"image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null}]
     */
     this.data = [
-      {uid: 'step1', texts: ['Hello, my name is Hans. Who are you?'], next: 'step2'},
-      {uid: 'step2', key: 'name', method: 'showKeyInput', next: 'step3'},
-      {uid: 'step3', texts: ['Welcome to Bizcademy, #name#. Do you have an idea?'], next: 'step4'},
-      {uid: 'step4', method: 'showSelect', texts: ['Yes, a rockstart idea!','No, but i want develope one.'], wrong:[''], right: 'step6', next: 'step5'},
-      {uid: 'step5', texts: ['#name#, choose product.'], method: 'goto', key: 'step4'},
-      {uid: 'step6', texts: ['Tell us! What is it?'], next: 'step7'},
-      {uid: 'step7', method: 'showSelect', texts:  ['IT/Tech','ECommerce'], next: 'step7', wrong:[''], right: 'step8'},
-      {uid: 'step8', texts: ['Status Quo?'], next: 'step9'},
-      {uid: 'step9', method: 'showSelect', texts:  ['Just starting','in the middle of the storm.'], todo: 'todo2', wrong:[''], right: 'step10'},
-      {uid: 'step10', texts: ['Okay, #name#. You should choose one of these lectures:']},
-      {uid: 'step11', method: 'showFinalSelect', texts:  ['How to build a LEAN STARTUP','Disruptive Innovation or Copy Cat?','The 8 Basic Principles of eCommerce'], todo: 'todo3', logo: ['images/badge-hour.png','images/badge-guitar.png','images/badge-four.png'], wrong:[''], right: 'step12'},
-      {uid: 'step12', texts: [''], method: 'launchRocket', end: true},
+      {"uid":"step1","texts":[{"uid":"text_0","next":"step4","text":"Hello, my name is Hans. Who are you?","points":0,"method":"showText","audio":null,"logo":null}],"method":"showText","image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null},
+      {"uid":"step2","texts":[{"uid":"text_0","next":"step4","text":"Welcome to Bizcademy, #name#. Do you have an idea?","points":0,"method":"showText","audio":null,"logo":null}],"method":"showText","image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null},
+      {"uid":"step4","texts":[{"uid":"text_0","next":"step2","text":"Yes, a rockstart idea!","points":0,"method":"showSelect","audio":null,"logo":null},{"uid":"text_1","next":"step1","text":"No, but i want develope one.","points":0,"method":"showSelect","audio":null,"logo":null}],"method":"showSelect","image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null},
       {}
     ];
     /**
@@ -255,43 +247,44 @@ Licensed to hogventure.com under one
 
     */
     this.nextData = function(_id) {
-      console.log('currentData '+_id);
-      var currentData = this.getData(_id);
-      console.log(currentData);
+      console.log('currentDialog '+_id);
+      var currentDialog = this.getData(_id);
+      console.log(currentDialog);
       this.historyOfIds.push(_id);
+      console.log('this.historyOfIds.length = '+this.historyOfIds.length+', '+game.historyOfIds.length);
       //currentId = id;
       if (null) { 
         alert('no data with "'+_id+'".');
         return;
       }
-      if (currentData.method == null) {
-        currentData.method = '';
+      if (currentDialog.method == null) {
+        currentDialog.method = '';
       }
-      switch (currentData.method) {
+      switch (currentDialog.method) {
         case 'showKeyInput':
-          this.showKeyInput(currentData);
+          this.showKeyInput(currentDialog);
         break;
         case 'showInput':
-          this.showInput(currentData);
+          this.showInput(currentDialog);
         break;
         case 'goto':
-          this.nextData(currentData.next);
+          this.nextData(currentDialog.next);
         break;
         case 'showSelect':
-          this.showSelect(currentData);
+          this.showSelect(currentDialog);
         break;
         case 'showFinalSelect':
-          this.showFinalSelect(currentData);
+          this.showFinalSelect(currentDialog);
         break;
         case 'showTimer':
-          this.showTimer(currentData);
+          this.showTimer(currentDialog);
         break;
         case 'clearScreen':
-          this.clearScreen(currentData);
+          this.clearScreen(currentDialog);
         break;
         case 'showText':
         default:
-          this.showText(currentData);
+          this.showText(currentDialog);
         break;
       } 
     }
@@ -314,7 +307,7 @@ Licensed to hogventure.com under one
     /**
     
     */
-    this.showText = function(currentData) {
+    this.showText = function(currentDialog) {
       var _ele = document.createElement('div');
       var ele = document.createElement('div');
       ele.className = 'tooltip-arrow';
@@ -322,21 +315,21 @@ Licensed to hogventure.com under one
       _ele.appendChild(ele);
       ele = document.createElement('div');
       ele.className = 'hans_bubble';
-      ele.innerHTML = currentData.texts[0].replace(/#name#/g, this.getValueForKey('name'));
+      ele.innerHTML = currentDialog.texts[0].text.replace(/#name#/g, this.getValueForKey('name'));
       _ele.appendChild(ele);
       _ele.style.position = 'relative';
       _ele.style.width = '50%';
       $('#game-inner').append(_ele);      
       $('#game-inner').append(document.createElement('br'));
       this.scrollToBottom();
-      if (currentData.next != null) {
-        this.nextData(currentData.next);
+      if (currentDialog.texts[0].next != null) {
+        this.nextData(currentDialog.texts[0].next);
       }
     }
     /**
 
     */
-    this.showKeyInput = function(currentData) {
+    this.showKeyInput = function(currentDialog) {
       var _ele = document.createElement('div');
       var ele = document.createElement('div');
       ele.className = 'tooltip-arrow';
@@ -346,7 +339,7 @@ Licensed to hogventure.com under one
       _ele.appendChild(ele);
       ele = document.createElement('input');
       ele.addEventListener('keyup', function(eve) {
-        game.setKeyInput(eve, this, currentData.next, currentData.key);
+        game.setKeyInput(eve, this, currentDialog.next, currentDialog.key);
       }, true);
       ele.setAttribute('autofocus', 'autofocus');
       ele.type = 'text';
@@ -361,6 +354,7 @@ Licensed to hogventure.com under one
       
       $('#game-inner').append(_ele);
       $('#game-inner').append(document.createElement('br'));
+
     }
     /**
 
@@ -375,7 +369,7 @@ Licensed to hogventure.com under one
     /**
 
     */
-    this.showInput = function(currentData) {
+    this.showInput = function(currentDialog) {
     
     }
     /**
@@ -387,7 +381,7 @@ Licensed to hogventure.com under one
     /**
 
     */
-    this.showSelect = function(currentData) {
+    this.showSelect = function(currentDialog) {
       var ele = document.createElement('div');
       ele.className = 'tooltip fade top in';
       ele.style.position = 'relative';
@@ -399,11 +393,12 @@ Licensed to hogventure.com under one
         _ele.style.bottom = '0'; 
         _ele.style.marginLeft = '0';
         ele.appendChild(_ele);
-      for (var i = 0; i < currentData.texts.length; i++) {        
+      for (var i = 0; i < currentDialog.texts.length; i++) {        
         _ele = document.createElement('div');
         _ele.className = 'you_button';
-        $(_ele).click( function() { game.validateSelection(currentData.uid, currentData.texts[i]); } );
-        _ele.innerHTML = currentData.texts[i];
+        _ele.setAttribute('onclick','game.nextData(\''+currentDialog.texts[i].next+'\');');
+        //$(_ele).click( function() { game.validateSelection(currentDialog.uid, currentDialog.texts[i]); } );
+        _ele.innerHTML = currentDialog.texts[i].text;
         ele.appendChild(_ele);
       }
       $('#game-inner').append(ele);
@@ -426,7 +421,7 @@ Licensed to hogventure.com under one
         ele = document.createElement('div');
         ele.className = 'hans_bubble';
         ele.style.background = '#e00';
-        ele.innerHTML = n_text.texts[0].replace(/#name#/g, this.getValueForKey('name'))
+        ele.innerHTML = n_text.texts[0].text.replace(/#name#/g, this.getValueForKey('name'))
         _ele.appendChild(ele);
         _ele.style.position = 'relative';
         _ele.style.width = '50%';
@@ -455,14 +450,14 @@ Licensed to hogventure.com under one
     /**
 
     */
-    this.showTimer = function(currentData) {
+    this.showTimer = function(currentDialog) {
     
     }
     /**
 
     */
-    this.clearScreen = function(currentData) {
-      if (currentData != null) {  
+    this.clearScreen = function(currentDialog) {
+      if (currentDialog != null) {  
         //show the last textbox?
 
       }
@@ -516,50 +511,145 @@ Licensed to hogventure.com under one
         game.backbuffer.height = game.bufferHeight;
         game.btx = game.backbuffer.getContext('2d');
       }
-      console.log('drawBackBuffer -> '+tdif);
+      //console.log('drawBackBuffer -> '+tdif);
       //if (!game.drawUpdate) return;
-      game.btx.fillStyle = 'rgba(224,220,99,0.75)'; //#ddd863
-      game.btx.strokeStyle = 'rgba(224,254,250,0.75)';
+      game.btx.fillStyle = 'rgba(169,221,185,0.9)';//#a9d1b9
+      game.btx.strokeStyle = 'rgba(224,254,250,0.9)';
 
       var img = new Image();
       img.src = "http://hogventure.com/image/3piggies.jpg";
       game.btx.drawImage(img, 0, 0, game.bufferWidth, game.bufferHeight);//
       
+      var cdialog = null;
+      var _h = 0.005;
+      var hz = 0;
+      //console.log('draw game.historyOfIds.length = '+game.historyOfIds.length);
       game.btx.beginPath();
-      game.btx.moveTo(50,50);
-      game.btx.lineTo(150, 50);
-      game.btx.bezierCurveTo(150, 50, 175, 50, 175, 75);
-      game.btx.lineTo(175, 100);
-      game.btx.bezierCurveTo(175, 100, 175, 125, 150, 125);
-      game.btx.lineTo(75, 125);
-      game.btx.lineTo(50, 150);
-      game.btx.lineTo(50, 125);
-      game.btx.bezierCurveTo(50, 125, 25, 125, 25, 100);
-      game.btx.lineTo(25, 75);
-      game.btx.bezierCurveTo(25, 75, 25, 50, 50, 50);
+      for (var i = 0; i < game.historyOfIds.length; i++) {
+        cdialog = game.getData(game.historyOfIds[i]);
+        if (i % 2 == 0) {
+          for (var j = 0; j < cdialog.texts.length; j++) {
+            h = _h + hz * (0.025 + 20/game.bufferHeight);
+            if (j == cdialog.texts.length - 1) {
+              game.canvasLeftBubble(game.btx, 0.05, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+            } else {
+              game.canvasSimpleBubble(game.btx, 0.05, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+            }
+            hz ++;
+          }
+        } else {
+          hz += cdialog.texts.length;
+          //game.canvasRightBubble(game.btx, 0.55, h, game.bufferWidth, game.bufferHeight, 0.40, 0.25, cdialog.texts[0].text);
+        }
+        
+      }      
+      game.btx.closePath();
+      game.btx.stroke();
+      game.btx.fill();
       
-      
-      for (var i = 0; i < 3; i++) {
-        game.btx.moveTo(250, 50 + i * 75);
-        game.btx.lineTo(350, 50 + i * 75);
-        game.btx.bezierCurveTo(350, 50 + i * 75, 375, 50 + i * 75, 375, 75 + i * 75);
-        game.btx.lineTo(375, 100 + i * 75);
-        game.btx.bezierCurveTo(375, 100 + i * 75, 375, 125 + i * 75, 350, 125 + i * 75);
-        if (i==2) {
-          //game.btx.lineTo(350, 125 + i * 75);
-          game.btx.lineTo(350, 150 + i * 75);
-          game.btx.lineTo(325, 125 + i * 75);
-        } 
-        game.btx.lineTo(250, 125 + i * 75);
-        game.btx.bezierCurveTo(250, 125 + i * 75, 225, 125 + i * 75, 225, 100 + i * 75);
-        game.btx.lineTo(225, 75 + i * 75);
-        game.btx.bezierCurveTo(225, 75 + i * 75, 225, 50 + i * 75, 250, 50 + i * 75);
-      }
+      game.btx.fillStyle = 'rgba(224,220,99,0.9)';//#ddd863
+      game.btx.strokeStyle = 'rgba(224,254,250,0.9)';
+      _h = 0.045;
+      hz = 0;
+      game.btx.beginPath();
+      for (var i = 1; i < game.historyOfIds.length; i++) {
+        cdialog = game.getData(game.historyOfIds[i]);
+        
+        if (i % 2 == 0) {
+          //game.canvasLeftBubble(game.btx, 0.05, h, game.bufferWidth, game.bufferHeight, 0.40, 0.25, cdialog.texts[0].text);
+          //console.log(i+' '+h);
+          hz += cdialog.texts.length;
+        } else {
+          for (var j = 0; j < cdialog.texts.length; j++) {
+            h = _h + hz * (0.025 + 20/game.bufferHeight);
+            if (j == cdialog.texts.length - 1) {
+              game.canvasRightBubble(game.btx, 0.55, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+            } else {
+              game.canvasSimpleBubble(game.btx, 0.55, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+            }
+            hz++;
+          }
+        }
+        
+      }      
       game.btx.closePath();
       game.btx.stroke();
       game.btx.fill();
       //requestAnimationFrame(game.drawBackBuffer);
     }
+     /*########################################
+      canvas functions
+    #########################################*/
+
+    this.canvasLeftBubble = function(btx, x, y, cw, ch, w, h, text) {
+      //w = btx.font.textWidth(text);
+      //h = btx.font.textHeight(text);
+      
+      btx.moveTo(x * cw, y * ch);
+      btx.lineTo(x * cw + w * cw, y * ch);
+      btx.bezierCurveTo(x * cw + w * cw, y * ch, x * cw + w * cw + 10, y * ch, x * cw + w * cw + 10, y * ch + 10);
+      btx.lineTo(x * cw + w * cw + 10, y * ch + h * ch + 10 );
+      btx.bezierCurveTo(x * cw + w * cw + 10, y * ch + h * ch + 10, x * cw  + w * cw +10, y * ch + h * ch + 20, x * cw  + w * cw, y * ch + h * ch + 20);
+      btx.lineTo(x * cw + 20, y * ch + h * ch + 20);
+      btx.lineTo(x * cw, y * ch + h * ch + 40);
+      btx.lineTo(x * cw, y * ch + h * ch + 20);
+      btx.bezierCurveTo(x * cw, y * ch + h * ch + 20, x * cw - 10, y * ch + h * ch + 20, x * cw - 10, y * ch + h * ch + 10);
+      btx.lineTo(x * cw - 10, y * ch + 10);
+      btx.bezierCurveTo(x * cw - 10, y * ch + 10, x * cw - 10, y * ch, x * cw, y * ch);
+      
+    }
+    
+    this.canvasRightBubble = function(btx, x, y, cw, ch, w, h, text) {
+      //w = btx.font.textWidth(text);
+      //h = btx.font.textHeight(text);//fsz * text.length
+      
+      btx.moveTo(x * cw, y * ch);
+      btx.lineTo(x * cw + w * cw, y * ch);
+      btx.bezierCurveTo(x * cw + w * cw, y * ch, x * cw + w * cw + 10, y * ch, x * cw + w * cw + 10, y * ch + 10);
+      btx.lineTo(x * cw + w * cw + 10, y * ch + h * ch + 10 );
+      btx.bezierCurveTo(x * cw + w * cw + 10, y * ch + h * ch + 10, x * cw  + w * cw +10, y * ch + h * ch + 20, x * cw  + w * cw, y * ch + h * ch + 20);
+      btx.lineTo(x * cw + w * cw, y * ch + h * ch + 20);
+      btx.lineTo(x * cw + w * cw, y * ch + h * ch + 40);
+      btx.lineTo(x * cw + w * cw - 20, y * ch + h * ch + 20);
+      btx.lineTo(x * cw, y * ch + h * ch + 20);
+      btx.bezierCurveTo(x * cw, y * ch + h * ch + 20, x * cw - 10, y * ch + h * ch + 20, x * cw - 10, y * ch + h * ch + 10);
+      btx.lineTo(x * cw - 10, y * ch + 10);
+      btx.bezierCurveTo(x * cw - 10, y * ch + 10, x * cw - 10, y * ch, x * cw, y * ch);
+    }
+
+    this.canvasSimpleBubble = function(btx, x, y, cw, ch, w, h, text) {
+      //w = btx.font.textWidth(text);
+      //h = btx.font.textHeight(text);
+      
+      btx.moveTo(x * cw, y * ch);
+      btx.lineTo(x * cw + w * cw, y * ch);
+      btx.bezierCurveTo(x * cw + w * cw, y * ch, x * cw + w * cw + 10, y * ch, x * cw + w * cw + 10, y * ch + 10);
+      btx.lineTo(x * cw + w * cw + 10, y * ch + h * ch + 10 );
+      btx.bezierCurveTo(x * cw + w * cw + 10, y * ch + h * ch + 10, x * cw  + w * cw +10, y * ch + h * ch + 20, x * cw  + w * cw, y * ch + h * ch + 20);
+      btx.lineTo(x * cw, y * ch + h * ch + 20);
+      btx.bezierCurveTo(x * cw, y * ch + h * ch + 20, x * cw - 10, y * ch + h * ch + 20, x * cw - 10, y * ch + h * ch + 10);
+      btx.lineTo(x * cw - 10, y * ch + 10);
+      btx.bezierCurveTo(x * cw - 10, y * ch + 10, x * cw - 10, y * ch, x * cw, y * ch);
+      btx.closePath();
+    }
+    /*
+    var overview = [];
+
+    function OverviewBubble(_x, _y, _w, _h) {
+      this.x = _x;
+      this.y = _y;
+      this.w = _w;
+      this.h = _h;
+
+      this.moveTo = function(_dx, _dy) {
+        this.x = this.x + _dx;
+        this.y = this.y + _dy;
+      }
+
+      this.isHit = function(_x, _y) {
+        return (this.x < _x && this.x + this.w > _x && this.y < _y && this.y + this.h > _y);
+      }
+    }*/
     /**
 
     */
