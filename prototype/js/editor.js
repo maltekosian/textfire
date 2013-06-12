@@ -360,10 +360,12 @@ Licensed to hogventure.com under one
         _ele.setAttribute('value',persons[i].uid);
         ele.appendChild(_ele);
       }  
-
+      getElement('set_persons_name').value = '';
+      getElement('set_persons_name').placeholder = 'a name of a person';
     } else {
       currentPerson = getPerson(person_id);
       currentDialog.personRef = currentPerson.uid;
+      getElement('set_persons_name').value = currentPerson.name;
     }
   }
   /**
@@ -377,7 +379,7 @@ Licensed to hogventure.com under one
       persons.push(new GamePerson(person_id));
       currentPerson = getPerson(person_id);
     }
-    currentPerson = getElement('set_persons_name').value;
+    currentPerson.name = getElement('set_persons_name').value;
     var ele = getElement('select_person');
     ele.innerHTML = '';
     var _ele = createElement('option');
