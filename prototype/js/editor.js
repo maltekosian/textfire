@@ -29,7 +29,7 @@ Licensed to hogventure.com under one
   /**
 
   */
-  var version = '20130607';
+  var version = '20130612';
   /**
   the actual dialog, we work on
   @since 20130606
@@ -42,6 +42,16 @@ Licensed to hogventure.com under one
   @since 20130606
   */
   var data = [];
+  /**
+
+  @since 20130612
+  */
+  var persons = [];
+  /**
+
+  @since 20130612
+  */
+  var currentPerson = null;
   /**
   static array of possible methods to be called
   unsupported are 'showInput','showFinalSelect'
@@ -325,11 +335,85 @@ Licensed to hogventure.com under one
     }
     return null;
   }
+  /**
+  @method selectPerson
 
+  @param person_id
+  @since 20130612
+  */
+  function selectPerson(person_id) {
+    if (person_id == null) {
+      person_id = getElement('select_person').value;
+    }
+    if (person_id == 'new person') {
+      person_id = 'person_'+persons.length;
+      persons.push(new GamePerson(person_id));
+      var ele = getElement('select_person');
+      ele.innerHTML = '';
+      var _ele = createElement('option');
+      _ele.appendChild(document.createTextNode('new person'));
+      _ele.setAttribute('value','new person');
+      ele.appendChild(_ele);
+      for (var i = 0; i < persons.length; i++) {
+        _ele = createElement('option');
+        _ele.appendChild(document.createTextNode(persons[i].name));
+        _ele.setAttribute('value',persons[i].uid);
+        ele.appendChild(_ele);
+      }  
+
+    } else {
+      currentPerson = getPerson(person_id);
+      currentDialog.personRef = currentPerson.uid;
+    }
+  }
+  /**
+  @method setPersonsName
+
+  @since 20130612
+  */
+  function setPersonsName() {
+    if (currentPerson == null) {
+      person_id = 'person_'+persons.length;
+      persons.push(new GamePerson(person_id));
+      currentPerson = getPerson(person_id);
+    }
+    currentPerson = getElement('set_persons_name').value;
+    var ele = getElement('select_person');
+    ele.innerHTML = '';
+    var _ele = createElement('option');
+    _ele.appendChild(document.createTextNode('new person'));
+    _ele.setAttribute('value','new person');
+    ele.appendChild(_ele);
+    for (var i = 0; i < persons.length; i++) {
+      _ele = createElement('option');
+      _ele.appendChild(document.createTextNode(persons[i].name));
+      _ele.setAttribute('value',persons[i].uid);
+      ele.appendChild(_ele);
+    }  
+  }
+  /**
+  @method getPerson
+
+  @param person_id
+  @since 20130612
+  */
+  function getPerson(person_id) {
+    for (var i = 0; i < persons.length; i++) {
+      if (persons[i].uid == person_id) {
+        return persons[i];
+      }
+    }
+    return null;
+  }
   /*########################################
     canvas functions
   #########################################*/
 
+  /**
+  @method canvasLeftBubble
+
+  @since 20130608
+  */
   function canvasLeftBubble(btx, x, y, cw, ch, w, h, text) {
     //w = btx.font.textWidth(text);
     //h = btx.font.textHeight(text);
@@ -346,7 +430,11 @@ Licensed to hogventure.com under one
     btx.lineTo(x * cw - 10, y * cw + 10);
     btx.bezierCurveTo(x * cw - 10, y * cw + 10, x * cw - 10, y * cw, x * cw, y * cw);
   }
-  
+  /**
+  @method canvasRightBubble
+
+  @since 20130608
+  */
   function canvasRightBubble(btx, x, y, cw, ch, w, h, text) {
     //w = btx.font.textWidth(text);
     //h = btx.font.textHeight(text);//fsz * text.length
@@ -364,8 +452,13 @@ Licensed to hogventure.com under one
     btx.lineTo(x * cw - 10, y * cw + 10);
     btx.bezierCurveTo(x * cw - 10, y * cw + 10, x * cw - 10, y * cw, x * cw, y * cw);
   }
+  /**
+  @method canvasSimpleBubble
 
+  @since 20130608
+  */
   function canvasSimpleBubble(btx, x, y, cw, ch, w, h, text) {
+    
     //w = btx.font.textWidth(text);
     //h = btx.font.textHeight(text);
     btx.beginPath();

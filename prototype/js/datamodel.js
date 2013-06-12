@@ -32,6 +32,8 @@ Licensed to hogventure.com under one
   
   /**
   @GameText
+
+  @since 20130606
   */
   function GameText(_id) {
     this.uid = _id;
@@ -45,6 +47,8 @@ Licensed to hogventure.com under one
   }
   /**
   @class GameDialog
+
+  @since 20130606
   */
   function GameDialog(_id) {
     this.uid = _id;
@@ -56,7 +60,31 @@ Licensed to hogventure.com under one
     this.y = null;
     this.w = null;
     this.h = null;
-    this.color = null;
+    this.personRef = null;
+  }
+  /**
+  @class GamePerson
+
+  @since 20130612
+  */
+  function GamePerson(_id) {
+    this.uid = _id;
+    this.name = null;
+    this.color = 'rgba(204,204,204,0.9)';
+  }
+  /**
+  @class 
+
+  @since 20130612
+  */
+  function AdventureGame() {
+    this.uid = null;
+    this.title = null;
+    this.dialogs = [];
+    this.persons = [];
+    this.startDialog = null;
+    this.textmanager = null;
+    this.mediamanager = null;
   }
   /**
   @class UidCounter
