@@ -29,8 +29,7 @@
   <script type="text/javascript" src="js/editor.js" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
     function init() {
-      newDialog();
-      //drawCanvas();
+      newGame();
       getElement('dialogs_inner_right').style.height = window.innerHeight + 'px';
     }
     if (window.ondeviceready) {
@@ -96,8 +95,9 @@
       border-radius: 6px;
       border: 0;      
       margin: 0;
-      padding: 6px;
+      padding: 5px;
       box-shadow: 1px 1px 1px #333;
+      width: 99%;
     }
     
     input[type="all"] {
@@ -151,7 +151,6 @@
     <span id="dialog_title" style="font-weight: bold;"></span><br />
     <button id="add_text_btn" onclick="addText();">add text</button><!-- will only be visible if the dialog is a select-->
     <div id="text_box"> 
-     <!--input type="text" id="text_0" onchange="" /><select id="text_0_next" onchange="" ></select><input type="checkbox" id="wrong_text_0" data-tooltip="wrong" onchange="" /><select id="text_0_method" onchange="" ></select><br /-->
      <!--you may append more childs-->
     </div>
     <div class="hrdiv"> DIALOG</div>
@@ -166,10 +165,10 @@
     <select id="select_dialog" onchange="selectDialog();" ></select><br />
     <div class="hrdiv"> PERSON</div>
     <button id="person_btn" onclick="selectPerson('new person');">new person</button><br />
-    <input type="text" id="set_persons_name" onkeyup="setPersonsName();" placeholder="a name of a person" />
-    <select id="select_person" onchange="selectPerson();"><option value="new person">new person</option></select>
+    <input type="text" id="set_persons_name" onkeyup="setPersonsName();" placeholder="a name of a person" /><select id="select_person" onchange="selectPerson();">
+    <option value="new person">new person</option></select>
     <div class="hrdiv"> SAVE'N'LOAD</div>
-    <button id="save_btn" onclick="save();">save</button><button id="load_btn" onclick="load();">load</button><button id="new_btn" onclick="new();">new</button>
+    <button id="save_btn" onclick="saveGame();">save</button><button id="load_btn" onclick="loadGame();">load</button><button id="new_btn" onclick="newGame();">new</button>
 <div id="help">
     <h1>Help</h1>
     the dialog game is a simple text adventure with text-inputs and selections of answers or questions.<br />

@@ -44,6 +44,16 @@ Licensed to hogventure.com under one
     this.method = null;
     this.audio = null;
     this.logo = null;
+
+    this.load = function(json) {
+      this.uid = json['uid'];
+      this.next = json['next'];
+      this.text = json['text'];
+      this.points = json['points'];
+      this.method = json['method'];
+      this.audio = json['audio'];
+      this.logo = json['logo'];
+    }
   }
   /**
   @class GameDialog
@@ -61,6 +71,19 @@ Licensed to hogventure.com under one
     this.w = null;
     this.h = null;
     this.personRef = null;
+
+    this.load = function(json) {
+      this.uid = json['uid'];
+      this.texts = [];
+      this.method = json['method'];
+      this.image = json['image'];
+      this.audio = json['audio'];
+      this.x = json['x'];
+      this.y = json['y'];
+      this.w = json['w'];
+      this.h = json['h'];
+      this.personRef = json['personRef'];
+    }
   }
   /**
   @class GamePerson
@@ -71,6 +94,12 @@ Licensed to hogventure.com under one
     this.uid = _id;
     this.name = null;
     this.color = 'rgba(204,204,204,0.9)';
+
+    this.load = function(json) {
+      this.uid = json['uid'];
+      this.name = json['name'];
+      this.color = json['color'];
+    }
   }
   /**
   @class 

@@ -117,8 +117,8 @@ Licensed to hogventure.com under one
     */
     this.animationTime = null;
     /**
-    the array of dialog-text data
-    each data-set has an unique id a text, a method, a speaker, a next
+    the array of dialog-text dialogs
+    each dialogs-set has an unique id a text, a method, a speaker, a next
     posible values are 
     wrongCase and wrongGoto 
     in the case of a select this is necessary
@@ -127,12 +127,16 @@ Licensed to hogventure.com under one
     points - default is null
     [{"uid":"dial_0","texts":[{"uid":"text_0","next":null,"text":null,"points":0,"method":"---","audio":null,"logo":null}],"image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null}]
     */
-    this.data = [
+    this.dialogs = [
       {"uid":"step1","texts":[{"uid":"text_0","next":"step4","text":"Hello, my name is Hans. Who are you?","points":0,"method":"showText","audio":null,"logo":null}],"method":"showText","image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null},
       {"uid":"step2","texts":[{"uid":"text_0","next":"step4","text":"Welcome to Bizcademy, #name#. Do you have an idea?","points":0,"method":"showText","audio":null,"logo":null}],"method":"showText","image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null},
       {"uid":"step4","texts":[{"uid":"text_0","next":"step2","text":"Yes, a rockstart idea!","points":0,"method":"showSelect","audio":null,"logo":null},{"uid":"text_1","next":"step1","text":"No, but i want develope one.","points":0,"method":"showSelect","audio":null,"logo":null}],"method":"showSelect","image":null,"audio":null,"x":null,"y":null,"w":null,"h":null,"color":null},
       {}
     ];
+    /**
+    @since 20130613
+    */
+    this.game = null;
     /**
     an array of key-value storages
     {key: [..], value: [..]}
@@ -151,7 +155,7 @@ Licensed to hogventure.com under one
     */
     this.setData = function(_data) {
       if (!hasData(_data.uid)) {
-        this.data.push(_data);
+        this.dialogs.push(_data);
       } else {
         this.getData(_data.uid) = _data;
       }      
@@ -160,9 +164,9 @@ Licensed to hogventure.com under one
     running in backwards order through the array is lock save.
     */
     this.getData = function(_id) {
-      for (var i = this.data.length - 1; i >= 0; i--) {
-        if (this.data[i].uid == _id) {
-          return this.data[i];
+      for (var i = this.dialogs.length - 1; i >= 0; i--) {
+        if (this.dialogs[i].uid == _id) {
+          return this.dialogs[i];
         }
       }
       return null;
@@ -172,9 +176,9 @@ Licensed to hogventure.com under one
     running in backwards order through the array is lock save.
     */
     this.removeData = function(_id) {
-      for (var i = this.data.length - 1; i >= 0; i--) {
-        if (this.data[i].uid == _id) {
-          this.data[i].splice(i, 1);
+      for (var i = this.dialogs.length - 1; i >= 0; i--) {
+        if (this.dialogs[i].uid == _id) {
+          this.dialogs[i].splice(i, 1);
         }
       }
     }
@@ -182,8 +186,8 @@ Licensed to hogventure.com under one
     running in backwards order through the array is lock save.
     */
     this.hasData = function(_id) {
-      for (var i = this.data.length - 1; i >= 0; i--) {
-        if (this.data[i].uid == _id) {
+      for (var i = this.dialogs.length - 1; i >= 0; i--) {
+        if (this.dialogs[i].uid == _id) {
           return true;
         }
       }
@@ -254,7 +258,7 @@ Licensed to hogventure.com under one
       console.log('this.historyOfIds.length = '+this.historyOfIds.length+', '+game.historyOfIds.length);
       //currentId = id;
       if (null) { 
-        alert('no data with "'+_id+'".');
+        alert('no dialogs with "'+_id+'".');
         return;
       }
       if (currentDialog.method == null) {
@@ -408,10 +412,10 @@ Licensed to hogventure.com under one
 
     */
     this.validateSelection = function(_dataId, _key) {
-      var data = this.getData(_dataId);
-      console.log(_key+', '+_dataId+', '+data.right);
-      if (this.isWrongSelection(data, _key)) {  
-        var next_data = this.getData(data.next);
+      var dialogs = this.getData(_dataId);
+      console.log(_key+', '+_dataId+', '+dialogs.right);
+      if (this.isWrongSelection(dialogs, _key)) {  
+        var next_data = this.getData(dialogs.next);
         var _ele = document.createElement('div');
         var ele = document.createElement('div');
         ele.className = 'tooltip-arrow';
@@ -432,16 +436,16 @@ Licensed to hogventure.com under one
       } else {
         console.log('->text.right ');    
         //setTodoDone(text.todo);
-        this.setPoints(data.points);
-        this.nextData(data.right); 
+        this.setPoints(dialogs.points);
+        this.nextData(dialogs.right); 
       }
     }
     /**
 
     */
-    this.isWrongSelection = function(data, _key) {
-      for (var i = 0; i < data.wrong.length; i++) {
-        if (data.wrong[i] == _key) {
+    this.isWrongSelection = function(dialogs, _key) {
+      for (var i = 0; i < dialogs.wrong.length; i++) {
+        if (dialogs.wrong[i] == _key) {
           return true; 
         }
       }
@@ -540,8 +544,7 @@ Licensed to hogventure.com under one
         } else {
           hz += cdialog.texts.length;
           //game.canvasRightBubble(game.btx, 0.55, h, game.bufferWidth, game.bufferHeight, 0.40, 0.25, cdialog.texts[0].text);
-        }
-        
+        }        
       }      
       game.btx.closePath();
       game.btx.stroke();
@@ -688,8 +691,27 @@ Licensed to hogventure.com under one
     /**
     
     */
-    this.load = function() {
-    
+    this.load = function(json) {
+      var game = new GameAdventure();
+      game.dialogs = [];
+      for (var i = 0; i < json['dialogs'].length; i++) {
+        game.dialogs = new GameDialog();
+        game.dialogs.load(json['dialogs'][i]);
+      }
+      game.persons = [];
+      for (var i = 0; i < json['persons'].length; i++) {
+        game.persons = new GamePerson();
+        game.persons.load(json['persons'][i]);
+      }
+      game.uid = json['uid'];
+      game.title = json['title'];
+   
+      game.startDialog = json['startDialog'];
+      game.textmanager = null;
+      game.mediamanager = null;
+      //this.game = game;
+      this.dialogs = game.dialogs;
+      //this.persons = game.persons;
     }
     /**
     

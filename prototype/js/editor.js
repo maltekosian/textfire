@@ -36,12 +36,18 @@ Licensed to hogventure.com under one
   */
   var currentDialog = null;
   /**
+  the real format!
+  @type AdventureGame
+  @since 20120613
+  */
+  var game = null;
+  /**
   a pseudo format
   {uid : 'uid auto generated', texts: [{uid: 'uid auto generated', text:'reference on base64 in textmanager', next: 'a uid reference', wrong: false, points : 0, method: '?here?or'}], image: 'null or a image src or reference', x:null, y:null, w:null, h: null, color:null}
   we will see how this going to be formated in real
   @since 20130606
   */
-  var data = [];
+  var dialogs = [];
   /**
 
   @since 20130612
@@ -150,24 +156,24 @@ Licensed to hogventure.com under one
       ele.innerHTML = '';
       right.innerHTML = '';
       select.innerHTML = '';
-      for (var i = 0; i < data.length; i++) {         
+      for (var i = 0; i < game.dialogs.length; i++) {         
         _ele = createElement('option');
-        _ele.value = data[i].uid;
-        _ele.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length > 0 ? data[i].texts[0].text : '') ));
-        if (data[i].uid == currentDialog.texts[j].next) {
+        _ele.value = game.dialogs[i].uid;
+        _ele.appendChild(document.createTextNode(game.dialogs[i].uid + ' ' + (game.dialogs[i].texts.length > 0 ? game.dialogs[i].texts[0].text : '') ));
+        if (game.dialogs[i].uid == currentDialog.texts[j].next) {
           _ele.setAttribute('selected', 'selected');
         }
         ele.appendChild(_ele);
         _select = createElement('option');
-        _select.value = data[i].uid;
-        _select.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length > 0 ? data[i].texts[0].text : '') ));
-        if (data[i].uid == currentDialog.uid) {
+        _select.value = game.dialogs[i].uid;
+        _select.appendChild(document.createTextNode(game.dialogs[i].uid + ' ' + (game.dialogs[i].texts.length > 0 ? game.dialogs[i].texts[0].text : '') ));
+        if (game.dialogs[i].uid == currentDialog.uid) {
           _select.setAttribute('selected', 'selected');
         }
         select.appendChild(_select);
         _right = createElement('li');
-        _right.appendChild(document.createTextNode(data[i].uid + ' ' + (data[i].texts.length > 0 ? data[i].texts[0].text : '') ));
-        _right.setAttribute('onclick','selectDialog(\''+data[i].uid+'\');');
+        _right.appendChild(document.createTextNode(game.dialogs[i].uid + ' ' + (game.dialogs[i].texts.length > 0 ? game.dialogs[i].texts[0].text : '') ));
+        _right.setAttribute('onclick','selectDialog(\''+game.dialogs[i].uid+'\');');
         right.appendChild(_right);
       }
     }
@@ -177,7 +183,7 @@ Licensed to hogventure.com under one
 
   an editor function
 
-  adds and creates a new GameDialog to data
+  adds and creates a new GameDialog to game.dialogs
   @see saveDialog
   @see currentDialog
   @see newDialog
@@ -198,7 +204,7 @@ Licensed to hogventure.com under one
   */
   function saveDialog(_dialog, callback) {
     //...?
-    data.push(_dialog);   
+    game.dialogs.push(_dialog);   
     if (callback != null) {
       callback();
     }
@@ -217,19 +223,19 @@ Licensed to hogventure.com under one
 
   @since 20130609
   */
-  function selectDialog(data_id) {
+  function selectDialog(dialogs_id) {
     var _d = null;
-    if (data_id == null) {
-      data_id = getElement('select_dialog').value;
-      _d = getDialog(data_id);
+    if (dialogs_id == null) {
+      dialogs_id = getElement('select_dialog').value;
+      _d = getDialog(dialogs_id);
       if (_d == null) {
         console.log('no Dialog selected');
         return;
       }
     } else {
-      _d = getDialog(data_id);
+      _d = getDialog(dialogs_id);
       if (_d == null) {
-        console.log('no Dialog for '+data_id);
+        console.log('no Dialog for '+dialogs_id);
         return;
       }
     }
@@ -238,15 +244,15 @@ Licensed to hogventure.com under one
     getElement('dialog_title').appendChild(document.createTextNode('dialog.uid: ' + currentDialog.uid));
     showText(currentDialog.method);//currentDialog.texts[0].method);
   }
-   /**
+  /**
   @method getDialog
 
   @since 20130609
   */
-  function getDialog(data_id) {
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].uid == data_id) {
-        return data[i];
+  function getDialog(dialogs_id) {
+    for (var i = 0; i < game.dialogs.length; i++) {
+      if (game.dialogs[i].uid == dialogs_id) {
+        return game.dialogs[i];
       }
     }
     return null;
@@ -261,8 +267,8 @@ Licensed to hogventure.com under one
   @since 20130606
   */
   function newDialog() {
-    currentDialog = new GameDialog('dial_'+data.length);
-    data.push(currentDialog);
+    currentDialog = new GameDialog('dial_'+game.dialogs.length);
+    game.dialogs.push(currentDialog);
     getElement('text_box').innerHTML = '';
     getElement('dialog_title').innerHTML = '';
     getElement('dialog_title').appendChild(document.createTextNode('dialog.uid: ' + currentDialog.uid));    
@@ -311,6 +317,8 @@ Licensed to hogventure.com under one
   gets the text by id form the currentdialog - only from there!
   sets the value form the corresponding input element 
   to  [..].wrong r= true|false
+
+  obsolete!?!
 
   @param text_id the id of the text not neccessary the element
   @since 20130607
@@ -474,9 +482,13 @@ Licensed to hogventure.com under one
     btx.lineTo(x * cw - 10, y * cw + 10);
     btx.bezierCurveTo(x * cw - 10, y * cw + 10, x * cw - 10, y * cw, x * cw, y * cw);
   }
-
+  /**
+  @since 20130609
+  */
   var overview = [];
-
+  /**
+  @since 20130609
+  */
   function OverviewBubble(_x, _y, _w, _h) {
     this.x = _x;
     this.y = _y;
@@ -492,17 +504,35 @@ Licensed to hogventure.com under one
       return (this.x < _x && this.x + this.w > _x && this.y < _y && this.y + this.h > _y);
     }
   }
+  /**
+  draws the overview
+  @since 20130613
+  */
+  function drawCanvas() {
+  
+  }
 
   /*########################################
     store and load functions
   #########################################*/
 
-  function save() {
-    getElement('data_put').value = JSON.stringify(data);
+  function saveGame() {
+    getElement('data_put').value = JSON.stringify(game);
+  }
+
+  function loadGame() {
+    //game 
+    drawCanvas();
+  }
+
+  function newGame() {
+    game = new AdventureGame();
+    newDialog();
+    drawCanvas();
   }
 
   function copyToClipboard() {
-    var text = getElement('data_put').value;
+    var text = getElement('dialogs_put').value;
     if (window.clipboardData) // Internet Explorer
     {  
         window.clipboardData.setData("Text", text);
