@@ -19,8 +19,7 @@ Licensed to hogventure.com under one
 */
 /*
 @author Malte Kosian
-@since 2012-06-01
-@version 2013-06-07
+@version 2013-06-18
 
 @namespace Editor
 @namespace window
@@ -29,7 +28,11 @@ Licensed to hogventure.com under one
   /**
 
   */
-  var version = '20130612';
+  var version = '20130618';
+
+  var ctx = null;
+
+  var canvas = null;
   /**
   the actual dialog, we work on
   @since 20130606
@@ -275,6 +278,10 @@ Licensed to hogventure.com under one
     currentDialog.method = getElement('text_general_method').value;
     currentDialog.method = currentDialog.method == '---' ? 'showText' : currentDialog.method;
     addText(currentDialog.method);
+    var y = overview.length % 4;
+    var x = (overview.length - y) / 4;
+    overview.push(new OverviewBubble(0.015 + x * 0.25, 0.015 + 0.25 * y, 0.22, 0.2, currentDialog.uid));
+    drawCanvas();
   }
   /**
   @method setText
@@ -523,11 +530,12 @@ Licensed to hogventure.com under one
   /**
   @since 20130609
   */
-  function OverviewBubble(_x, _y, _w, _h) {
+  function OverviewBubble(_x, _y, _w, _h, _id) {
     this.x = _x;
     this.y = _y;
     this.w = _w;
     this.h = _h;
+    this.dialogRef = _id;
 
     this.moveTo = function(_dx, _dy) {
       this.x = this.x + _dx;
@@ -543,7 +551,19 @@ Licensed to hogventure.com under one
   @since 20130613
   */
   function drawCanvas() {
-  
+    if (ctx == null) {
+      canvas = getElement('canvas');
+      canvas.width = 480;
+      canvas.height = 320;
+      ctx = canvas.getContext('2d');
+    }
+    
+    ctx.strokeStyle = 'rgba(205,205,205,0.9)';
+    ctx.fillStyle = 'rgba(205,205,205,0.9)';
+    for (var i = 0; i < overview.length; i++) {
+      ctx.fillRect(overview[i].x * 480, overview[i].y * 320, overview[i].w * 480, overview[i].h * 320);
+      ctx.strokeRect(overview[i].x * 480, overview[i].y * 320, overview[i].w * 480, overview[i].h * 320);
+    }
   }
 
   /*########################################

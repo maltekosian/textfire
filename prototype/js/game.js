@@ -19,8 +19,7 @@ Licensed to hogventure.com under one
 */
 /*
 @author Malte Kosian
-@since 2012-06-01
-@version 2013-06-07
+@version 2013-06-18
 
 @namespace Game
 @namespace window
@@ -29,7 +28,7 @@ Licensed to hogventure.com under one
   /**
 
   */
-  var version = '20130607';
+  var version = '20130618';
   
   /**
   usally only with the use of an Media and Textmanager
