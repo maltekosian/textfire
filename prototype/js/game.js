@@ -517,8 +517,13 @@ Licensed to hogventure.com under one
       }
       //console.log('drawBackBuffer -> '+tdif);
       //if (!game.drawUpdate) return;
-      game.btx.fillStyle = 'rgba(169,221,185,0.9)';//#a9d1b9
+      game.btx.fillStyle = 'rgba(169,221,185,0.95)';//#a9d1b9
       game.btx.strokeStyle = 'rgba(224,254,250,0.9)';
+      var fontSize = 20;
+      var textWidth = canvas.width;
+      game.btx.font = 'normal '+fontSize+'px sans-serif';
+      game.btx.textAlign = 'center';//'left','right'
+      var leftMargin = game.btx.measureText(' ').width;
 
       var img = new Image();
       img.src = "http://hogventure.com/image/3piggies.jpg";
@@ -533,12 +538,13 @@ Licensed to hogventure.com under one
         cdialog = game.getData(game.historyOfIds[i]);
         if (i % 2 == 0) {
           for (var j = 0; j < cdialog.texts.length; j++) {
-            h = _h + hz * (0.025 + 20/game.bufferHeight);
+            h = _h + hz * (21 / game.bufferHeight + 20/game.bufferHeight);
             if (j == cdialog.texts.length - 1) {
-              game.canvasLeftBubble(game.btx, 0.05, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+              game.canvasLeftBubble(game.btx, 0.025, h, game.bufferWidth, game.bufferHeight, 0.45, 21 / game.bufferHeight, cdialog.texts[j].text);
             } else {
-              game.canvasSimpleBubble(game.btx, 0.05, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+              game.canvasSimpleBubble(game.btx, 0.025, h, game.bufferWidth, game.bufferHeight, 0.45, 21 / game.bufferHeight, cdialog.texts[j].text);
             }
+            game.btx.strokeText(cdialog.texts[j].text, (0.025 + 0.225) * game.bufferWidth, fontSize + 1 + (h + 5 / game.bufferHeight) * game.bufferHeight);
             hz ++;
           }
         } else {
@@ -547,12 +553,12 @@ Licensed to hogventure.com under one
         }        
       }      
       game.btx.closePath();
-      game.btx.stroke();
       game.btx.fill();
+      game.btx.stroke();      
       
-      game.btx.fillStyle = 'rgba(224,220,99,0.9)';//#ddd863
+      game.btx.fillStyle = 'rgba(224,220,99,0.95)';//#ddd863
       game.btx.strokeStyle = 'rgba(224,254,250,0.9)';
-      _h = 0.045;
+      _h = 0.085;
       hz = 0;
       game.btx.beginPath();
       for (var i = 1; i < game.historyOfIds.length; i++) {
@@ -563,22 +569,45 @@ Licensed to hogventure.com under one
           hz += cdialog.texts.length;
         } else {
           for (var j = 0; j < cdialog.texts.length; j++) {
-            h = _h + hz * (0.025 + 20/game.bufferHeight);
+            h = _h + hz * (21 / game.bufferHeight + 20 / game.bufferHeight);
             if (j == cdialog.texts.length - 1) {
-              game.canvasRightBubble(game.btx, 0.55, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+              game.canvasRightBubble(game.btx, 0.525, h, game.bufferWidth, game.bufferHeight, 0.45, 21 / game.bufferHeight, cdialog.texts[j].text);
             } else {
-              game.canvasSimpleBubble(game.btx, 0.55, h, game.bufferWidth, game.bufferHeight, 0.40, 0.025, cdialog.texts[j].text);
+              game.canvasSimpleBubble(game.btx, 0.525, h, game.bufferWidth, game.bufferHeight, 0.45, 21 / game.bufferHeight, cdialog.texts[j].text);
             }
+            game.btx.strokeText(cdialog.texts[j].text, (0.525 + 0.225) * game.bufferWidth, fontSize + 1 + (h + 5 / game.bufferHeight) * game.bufferHeight);
             hz++;
           }
         }
       }      
       game.btx.closePath();
-      game.btx.stroke();
       game.btx.fill();
+      game.btx.stroke();   
+      
+      _h = 0.005;
+      hz = 0;
+      game.btx.fillStyle = '#000';
+      for (var i = 0; i < game.historyOfIds.length; i++) {
+        cdialog = game.getData(game.historyOfIds[i]);                
+        for (var j = 0; j < cdialog.texts.length; j++) {   
+          if (i % 2 == 0) {
+          _h = 0.005;
+          h = _h + hz * (21 / game.bufferHeight + 20 / game.bufferHeight);
+          game.btx.fillText(cdialog.texts[j].text, (0.025 + 0.225) * game.bufferWidth, fontSize + 1 + (h + 5 / game.bufferHeight) * game.bufferHeight);          
+          } else {
+          _h = 0.085;
+          h = _h + (hz - 1) * (21 / game.bufferHeight + 20 / game.bufferHeight);
+          game.btx.fillText(cdialog.texts[j].text, (0.525 + 0.225) * game.bufferWidth, fontSize + 1 + (h + 5 / game.bufferHeight) * game.bufferHeight);
+          }
+          hz++;
+          //console.log(cdialog.texts[j].text);
+        }
+      }
+      //game.btx.fill();
+      
       //requestAnimationFrame(game.drawBackBuffer);
       /*
-      var fontSize = 15;
+      var fontSize = 20;
       var textWidth = canvas.width;
       btx.font = 'normal '+fontSize+'px serif';
       btx.textAlign = 'center';//'left','right'
