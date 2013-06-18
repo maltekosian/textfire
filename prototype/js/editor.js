@@ -483,6 +483,40 @@ Licensed to hogventure.com under one
     btx.bezierCurveTo(x * cw - 10, y * cw + 10, x * cw - 10, y * cw, x * cw, y * cw);
   }
   /**
+  @method formatText
+
+  @since 20130616
+
+  @param btx {context2d} the buffered context
+  @param text {String} a one line string
+  @param textWidth {int} the maximum width
+
+  @return {String[]} the new lines of formated text
+  */
+  function formatText(btx, text, textWidth) {
+    var lines = text.split(/\r\n|\r|\n/g);
+    console.log('lines -> '+lines.length);
+    var newLines = [];
+    var metrics = null;
+    var nextLine = '';
+    var words = null;    
+    for (var j = 0; j < lines.length; j++) {
+      words = lines[j].split(' ');
+      for (var i = 0; i < words.length; i++) {
+        metrics = btx.measureText(nextLine + words[i] + ' ');
+        if (metrics.width < textWidth) {
+          nextLine = nextLine + words[i] + ' ';
+        } else {
+          newLines.push(nextLine);
+          nextLine = words[i] + ' ';
+        } 
+      }
+      newLines.push(nextLine);
+      nextLine = '';
+    }
+    return newLines;
+  }
+  /**
   @since 20130609
   */
   var overview = [];

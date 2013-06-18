@@ -556,8 +556,7 @@ Licensed to hogventure.com under one
       hz = 0;
       game.btx.beginPath();
       for (var i = 1; i < game.historyOfIds.length; i++) {
-        cdialog = game.getData(game.historyOfIds[i]);
-        
+        cdialog = game.getData(game.historyOfIds[i]);        
         if (i % 2 == 0) {
           //game.canvasLeftBubble(game.btx, 0.05, h, game.bufferWidth, game.bufferHeight, 0.40, 0.25, cdialog.texts[0].text);
           //console.log(i+' '+h);
@@ -573,17 +572,82 @@ Licensed to hogventure.com under one
             hz++;
           }
         }
-        
       }      
       game.btx.closePath();
       game.btx.stroke();
       game.btx.fill();
       //requestAnimationFrame(game.drawBackBuffer);
+      /*
+      var fontSize = 15;
+      var textWidth = canvas.width;
+      btx.font = 'normal '+fontSize+'px serif';
+      btx.textAlign = 'center';//'left','right'
+      btx.fillStyle = '#000';
+      btx.strokeStyle = 'rgba(51,51,51,0.75)';
+      var leftMargin = ctx.measureText(' ').width;
+      var texts = formatText(text, textWidth - 10);
+      for (var i = 0; i < texts.length; i++) {
+        switch (ctx.textAlign) {
+          case 'center':
+            btx.strokeText(texts[i], textWidth / 2, fontSize + 1 + fontSize * i);
+            btx.fillText(texts[i], textWidth / 2, fontSize + 1 + fontSize * i);
+          break;
+          case 'right':
+            //the right margin is zero, because each word ends with one space.
+            btx.strokeText(texts[i], textWidth, fontSize + 1 + fontSize * i);
+            btx.fillText(texts[i], textWidth , fontSize + 1 + fontSize * i);
+          break;
+          case 'left':
+          default:
+            //the left margin is 5 or one space in font-size.
+            btx.strokeText(texts[i], leftMargin, fontSize + 1 + fontSize * i);
+            btx.fillText(texts[i], leftMargin, fontSize + 1 + fontSize * i);
+          break;
+        }
+      }
+      */
     }
      /*########################################
       canvas functions
     #########################################*/
+    
+    /**
+    @method formatText
 
+    @since 20130616
+
+    @param btx {context2d} the buffered context
+    @param text {String} a one line string
+    @param textWidth {int} the maximum width
+
+    @return {String[]} the new lines of formated text
+    */
+    this.formatText = function(btx, text, textWidth) {
+      var lines = text.split(/\r\n|\r|\n/g);
+      console.log('lines -> '+lines.length);
+      var newLines = [];
+      var metrics = null;
+      var nextLine = '';
+      var words = null;    
+      for (var j = 0; j < lines.length; j++) {
+        words = lines[j].split(' ');
+        for (var i = 0; i < words.length; i++) {
+          metrics = btx.measureText(nextLine + words[i] + ' ');
+          if (metrics.width < textWidth) {
+            nextLine = nextLine + words[i] + ' ';
+          } else {
+            newLines.push(nextLine);
+            nextLine = words[i] + ' ';
+          } 
+        }
+        newLines.push(nextLine);
+        nextLine = '';
+      }
+      return newLines;
+    }
+    /**
+    @method canvasLeftBubble
+    */
     this.canvasLeftBubble = function(btx, x, y, cw, ch, w, h, text) {
       //w = btx.font.textWidth(text);
       //h = btx.font.textHeight(text);
