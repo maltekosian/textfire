@@ -1,0 +1,4 @@
+get the text
+format the text
+store format text in a helperArray of formated texts (?in the history object?)
+now you can run through the lines and make the bubbles high enough!
