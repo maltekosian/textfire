@@ -1,0 +1,39 @@
+<html>
+<head>
+<title> New Document </title>
+  <meta name="Generator" content="">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <script>
+    function imageUpload(eve) {
+      var file = eve.target.files[0];
+      document.getElementById('output').innerHTML = file.name;
+      if (!file.type.match('image.*')) {
+        return;
+      }
+      var reader = new FileReader();
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        return function(e) {
+          document.getElementById('output').innerHTML = document.getElementById('output').innerHTML + 
+                      '<br /><div style="width:100px; height:100px;background-image:url('+ e.target.result+ ');background-size: contain; background-repeat: no-repeat; background-position: center center;"></div>';
+        };
+      })(file);
+      // Read in the image file as a data URL.
+      reader.readAsDataURL(file);
+    }
+
+    function init() {
+      document.getElementById('file_upload').addEventListener('change', imageUpload, false);
+    }
+
+    window.onload = setTimeout(init, 100);
+  </script>
+ </head>
+
+ <body>
+  <input id="file_upload" type="file" accept=".png, .jpg, .jpeg" />
+  <div id="output"></div>
+ </body>
+</html>
