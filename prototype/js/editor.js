@@ -126,15 +126,30 @@ Licensed to hogventure.com under one
       var __ele = null;
       
       ele.appendChild(_ele);
-      _ele = createElement('input');
-      _ele.setAttribute('type','checkbox');
-      _ele.setAttribute('onchange','doNothing(this.id);');
-      
-      _ele.setAttribute('id','wrong_text_'+i);
-      _ele.setAttribute('onchange','this.style.background!=\'rgb(0, 51, 51)\'|\'#003333\'?this.style.background=\'rgb(0, 51, 51)\':this.style.background=\'#fff\'');
       
       _ele = createElement('br');
       ele.appendChild(_ele);
+      _ele = createElement('div');
+      _ele.className = 'uploader';
+      ele.appendChild(_ele);
+      
+      __ele = createElement('span');
+      __ele.setAttribute('id','upload_output'+i);
+      __ele.className = 'upload_output';
+      _ele.appendChild(__ele);
+      __ele = createElement('input');
+      __ele.setAttribute('type','file');
+      __ele.className = 'upload_input';
+      __ele.setAttribute('onchange','doNothing(this.id);');
+      _ele.appendChild(__ele);         
+      _ele = createElement('br');
+      ele.appendChild(_ele);
+      /*
+      <div class="uploader" >
+    <span id="output" style="width: 240px; margin-left: 5px; height: 20px; font-family: sans-serif;">upload...</span>
+    <input type="file" id="image_upload'+i+' accept=".png, .jpg, .jpeg" style="position: relative; height: 20px; top: -20px; left: 0px; opacity: 0.005; width: 250px;" />  
+  </div>
+      */
     }
     
     updateNextDialogSelects();
@@ -282,6 +297,30 @@ Licensed to hogventure.com under one
     var x = (overview.length - y) / 4;
     overview.push(new OverviewBubble(0.015 + x * 0.25, 0.015 + 0.25 * y, 0.22, 0.2, currentDialog.uid));
     drawCanvas();
+  }
+  /**
+  @method imageUpload
+
+  @since 20130619
+  @param eve {event} the onchange event registered on the element image_upload
+  @see newDialog
+  */
+  function imageUpload(eve) {
+      var file = eve.target.files[0];
+      document.getElementById('output').innerHTML = file.name;
+      if (!file.type.match('image.*')) {
+        return;
+      }
+      var reader = new FileReader();
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        return function(e) {
+          document.getElementById('output').innerHTML = document.getElementById('output').innerHTML + 
+                      '<br /><div style="width:100px; height:100px;background-image:url('+ e.target.result+ ');background-size: contain; background-repeat: no-repeat; background-position: center center;"></div>';
+        };
+      })(file);
+      // Read in the image file as a data URL.
+      reader.readAsDataURL(file);
   }
   /**
   @method setText

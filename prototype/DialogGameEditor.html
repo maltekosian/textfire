@@ -22,8 +22,8 @@
   </script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript" src="js/bootstrap.min.js" charset="utf-8"></script>
-  <script type="text/javascript" src="js/application.js" charset="utf-8"></script>
+  <!--s cript type="text/javascript" src="js/bootstrap.min.js" charset="utf-8"></script-->
+  <!-- sc ript type="text/javascript" src="js/application.js" charset="utf-8"></script-->
   <script type="text/javascript" src="js/base64.js" charset="utf-8"></script>
   <script type="text/javascript" src="js/datamodel.js" charset="utf-8"></script>
   <script type="text/javascript" src="js/editor.js" charset="utf-8"></script>
@@ -143,6 +143,40 @@
       background: #3399ff;
       border: 1px solid #111;
     }
+  .uploader {
+    border: 1px solid #999;
+    width: 50%; 
+    height: 27.5px;
+    border-radius: 3px; 
+    background: #03c0a2;
+  }
+
+  .uploader:hover {
+    border: 1px solid #7ca;
+    background: #afd;
+    color: #060;
+  }
+
+  .uploader:active {
+    border: 1px solid #ca7;
+    background: #fda;
+    color: #600;
+  }
+  .upload_output {
+    width: 90%;
+    margin-left: 5px; 
+    height: 100%;
+    font-family: sans-serif;
+    color: #fffefa;
+  }
+  .upload_input {
+    position: relative; 
+    height: 100%; 
+    top: -27.5px; 
+    left: 0px; 
+    opacity: 0.005;
+    width: 100%;
+  }
   </style>
 </head>
 <body>
