@@ -1,7 +1,8 @@
+<!DOCTYPE html>
 <html>
-<head>
-<title> New Document </title>
-  <meta name="Generator" content="">
+ <head>
+  <title> New Document </title>
+  <meta name="Generator" content="EditPlus">
   <meta name="Author" content="">
   <meta name="Keywords" content="">
   <meta name="Description" content="">
@@ -30,10 +31,32 @@
 
     window.onload = setTimeout(init, 100);
   </script>
- </head>
+  <style>
+  .uploader {
+    border: 1px solid #999;
+    width: 250px; 
+    height: 20px;
+    border-radius: 3px; 
+    background: #ddd;
+  }
 
+  .uploader:hover {
+    border: 1px solid #7ca;
+    background: #afd;
+    color: #060;
+  }
+
+  .uploader:active {
+    border: 1px solid #ca7;
+    background: #fda;
+    color: #600;
+  }
+  </style>
+ </head>
  <body>
-  <input id="file_upload" type="file" accept=".png, .jpg, .jpeg" />
-  <div id="output"></div>
+  <div class="uploader" >
+    <span id="output" style="width: 240px; margin-left: 5px; height: 20px; font-family: sans-serif;">upload...</span>
+    <input type="file" id="file_upload" accept=".png, .jpg, .jpeg" style="position: relative; height: 20px; top: -20px; left: 0px; opacity: 0.005; width: 250px;" />  
+  </div>
  </body>
 </html>
