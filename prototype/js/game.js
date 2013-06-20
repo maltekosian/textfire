@@ -856,4 +856,11 @@ Licensed to hogventure.com under one
     console.log('method "'+id+'" not implemented');
   }
   
+  /*###########################################
+    HTML page functions
+  ############################################*/
 
+  function importToGame() {
+    var data = getElement('data_put').value;
+    game.load(JSON.parse(data));
+  }
