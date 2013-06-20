@@ -144,22 +144,21 @@
       border: 1px solid #111;
     }
   .uploader {
-    border: 1px solid #999;
+    border: 0;
     width: 50%; 
     height: 27.5px;
-    border-radius: 3px; 
+    border-radius: 0; 
     background: #03c0a2;
   }
 
   .uploader:hover {
-    border: 1px solid #7ca;
     background: #afd;
     color: #060;
+    border: 0;
   }
 
   .uploader:active {
-    border: 1px solid #ca7;
-    background: #fda;
+    background: #ca7;
     color: #600;
   }
   .upload_output {
@@ -167,12 +166,14 @@
     margin-left: 5px; 
     height: 100%;
     font-family: sans-serif;
-    color: #fffefa;
+    color: #fffef8;
+    text-shadow: 1px 1px 0px #243;
+    
   }
   .upload_input {
     position: relative; 
     height: 100%; 
-    top: -27.5px; 
+    top: -27px; 
     left: 0px; 
     opacity: 0.005;
     width: 100%;

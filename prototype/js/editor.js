@@ -136,11 +136,25 @@ Licensed to hogventure.com under one
       __ele = createElement('span');
       __ele.setAttribute('id','upload_output'+i);
       __ele.className = 'upload_output';
+      if (currentTexts[i].image == null) {
+        __ele.appendChild(document.createTextNode('upload...'));
+      } else {
+        __ele.appendChild(document.createTextNode(currentTexts[i].image.name));
+        ___ele = createElement('div');
+        ___ele.style.width = '100px';
+        ___ele.style.height = '100px';
+        ___ele.style.backgroundImage = 'url('+ currentTexts[i].image.data +')';
+        ___ele.style.backgroundSize = 'contain';
+        ___ele.style.backgroundRepeat = 'no-repeat';
+        ___ele.style.backgroundPosition = 'center center';
+        __ele.appendChild(___ele);   
+      }
       _ele.appendChild(__ele);
       __ele = createElement('input');
       __ele.setAttribute('type','file');
+      __ele.setAttribute('id','upload_input'+i);
       __ele.className = 'upload_input';
-      __ele.setAttribute('onchange','doNothing(this.id);');
+      __ele.addEventListener('change', function(eve) { imageUpload(eve); }, true);//setAttribute('onchange','doNothing(this.id);');
       _ele.appendChild(__ele);         
       _ele = createElement('br');
       ele.appendChild(_ele);
@@ -306,21 +320,32 @@ Licensed to hogventure.com under one
   @see newDialog
   */
   function imageUpload(eve) {
-      var file = eve.target.files[0];
-      document.getElementById('output').innerHTML = file.name;
-      if (!file.type.match('image.*')) {
-        return;
-      }
-      var reader = new FileReader();
-      // Closure to capture the file information.
-      reader.onload = (function(theFile) {
-        return function(e) {
-          document.getElementById('output').innerHTML = document.getElementById('output').innerHTML + 
-                      '<br /><div style="width:100px; height:100px;background-image:url('+ e.target.result+ ');background-size: contain; background-repeat: no-repeat; background-position: center center;"></div>';
-        };
-      })(file);
-      // Read in the image file as a data URL.
-      reader.readAsDataURL(file);
+    var elem = eve.target;
+    var id = elem.id.replace(/_in/g,'_out');
+    var index = parseInt(elem.id.replace(/upload_input/g,''));
+    console.log('imageUpload '+ elem.id + ' - ' + id +' . '+index);    
+    var file = eve.target.files[0];
+    getElement(id).innerHTML = file.name;
+    if (!file.type.match('image.*')) {
+      return;
+    }
+    var reader = new FileReader();
+    // Closure to capture the file information.
+    reader.onload = (function(theFile) {
+      return function(e) {
+        var ele = createElement('div');
+        ele.style.width = '100px';
+        ele.style.height = '100px';
+        ele.style.backgroundImage = 'url('+ e.target.result +')';
+        ele.style.backgroundSize = 'contain';
+        ele.style.backgroundRepeat = 'no-repeat';
+        ele.style.backgroundPosition = 'center center';
+        getElement(id).appendChild(ele);
+        currentDialog.texts[index].image = {name : theFile.name, data : e.target.result};
+      };
+    })(file);
+    // Read in the image file as a data URL.
+    reader.readAsDataURL(file);
   }
   /**
   @method setText
@@ -625,14 +650,16 @@ Licensed to hogventure.com under one
   }
 
   function copyToClipboard() {
-    var text = getElement('dialogs_put').value;
+    var text = getElement('data_put').value;
     if (window.clipboardData) // Internet Explorer
     {  
-        window.clipboardData.setData("Text", text);
+       window.clipboardData.setData("Text", text);
     } else {  
-        unsafeWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");  
+        /*unsafeWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");  
         var clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);  
-        clipboardHelper.copyString(text);
+        clipboardHelper.copyString(text);*/
+      getElement('data_put').focus();
+      getElement('data_put').select();
     }
   }
 
