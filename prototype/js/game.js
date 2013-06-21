@@ -303,8 +303,8 @@ Licensed to hogventure.com under one
     this.scrollToBottom = function() {
       var height = document.getElementById('game-inner').offsetHeight;
       console.log('scrollToBottom '+height);
-      if (height > 499) {
-         document.getElementById('game-inner').style.top = -(height - 500)+'px';
+      if (height > window.innerHeight * 0.5) {
+         document.getElementById('game-inner').style.top = -(height - window.innerHeight * 0.5)+'px';
       }
     }
     /**
@@ -318,6 +318,7 @@ Licensed to hogventure.com under one
       _ele.appendChild(ele);
       ele = document.createElement('div');
       ele.className = 'hans_bubble';
+      //console.log(currentDialog.texts);
       ele.innerHTML = currentDialog.texts[0].text.replace(/#name#/g, this.getValueForKey('name'));
       _ele.appendChild(ele);
       _ele.style.position = 'relative';
@@ -517,7 +518,7 @@ Licensed to hogventure.com under one
       //console.log('drawBackBuffer -> '+tdif);
       //if (!game.drawUpdate) return;
       game.btx.fillStyle = 'rgba(169,221,185,0.95)';//#a9d1b9
-      game.btx.strokeStyle = 'rgba(224,254,250,0.9)';
+      game.btx.strokeStyle = 'rgba(175,223,189,0.9)';
       var fontSize = 20;
       var textWidth = canvas.width;
       game.btx.font = 'normal '+fontSize+'px sans-serif';
@@ -527,7 +528,7 @@ Licensed to hogventure.com under one
       var img = new Image();
       img.src = "http://hogventure.com/image/3piggies.jpg";
       game.btx.drawImage(img, 0, 0, game.bufferWidth, game.bufferHeight);//
-      
+      //console.log(img+game.bufferWidth+', '+game.bufferHeight);
       var cdialog = null;
       var _h = 0.005;
       var hz = 0;
@@ -556,7 +557,7 @@ Licensed to hogventure.com under one
       game.btx.stroke();      
       
       game.btx.fillStyle = 'rgba(224,220,99,0.95)';//#ddd863
-      game.btx.strokeStyle = 'rgba(224,254,250,0.9)';
+      game.btx.strokeStyle = 'rgba(226,224,110,0.9)';
       _h = 0.085;
       hz = 0;
       game.btx.beginPath();
@@ -779,21 +780,22 @@ Licensed to hogventure.com under one
       }    
       this.intervalId = setInterval(this.updateInterval, 10);
       //to abbond an interval call clearInterval!
+      console.log('game.start');
     }
     /**
     
     */
     this.load = function(json) {
-      var game = new GameAdventure();
+      var game = new AdventureGame();
       game.dialogs = [];
       for (var i = 0; i < json['dialogs'].length; i++) {
-        game.dialogs = new GameDialog();
-        game.dialogs.load(json['dialogs'][i]);
+        game.dialogs[i] = new GameDialog();
+        game.dialogs[i].load(json['dialogs'][i]);
       }
       game.persons = [];
       for (var i = 0; i < json['persons'].length; i++) {
-        game.persons = new GamePerson();
-        game.persons.load(json['persons'][i]);
+        game.persons[i] = new GamePerson();
+        game.persons[i].load(json['persons'][i]);
       }
       game.uid = json['uid'];
       game.title = json['title'];
@@ -804,6 +806,8 @@ Licensed to hogventure.com under one
       //this.game = game;
       this.dialogs = game.dialogs;
       //this.persons = game.persons;
+      this.historyOfIds = [];
+      this.nextData(this.dialogs[0].uid);
     }
     /**
     

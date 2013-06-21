@@ -75,6 +75,10 @@ Licensed to hogventure.com under one
     this.load = function(json) {
       this.uid = json['uid'];
       this.texts = [];
+      for (var i = 0; i < json['texts'].length; i++) {
+        this.texts[i] = new GameText();
+        this.texts[i].load(json['texts'][i]);
+      }
       this.method = json['method'];
       this.image = json['image'];
       this.audio = json['audio'];
