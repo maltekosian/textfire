@@ -90,6 +90,48 @@ Licensed to hogventure.com under one
     }
   }
   /**
+  @class ObjectBox
+  is there a difference between an ObjectBox and a GameObject?
+  if there is one, explain it here once you introduce GameObject
+  #issue2
+  #issue3
+  object boxes store the data of the where any type of object is
+  it might be a generic location by default, 
+  but also editable by an author
+  will be used by the editor and the game
+  !temporary character!
+
+  @since20130622
+  */
+  function ObjectBox(_refId) {
+    this.refId = _refId;
+    this.x = 0;
+    this.y = 0; 
+    this.z = 0;//a 3d variable
+    this.w = 0;
+    this.h = 0;
+    this.d = 0;//a 3d variable
+
+    this.load = function(json) {
+      this.refId = json['refId'];
+      this.d = json['d'];
+      this.x = json['x'];
+      this.y = json['y'];
+      this.w = json['w'];
+      this.h = json['h'];
+      this.z = json['z'];
+    }
+
+    this.isHit = function(_x, _y) {
+      return this.x > _x && this.x + this.w < _x && this.y > _y && this.y + this.h > _y;  
+    }
+
+    this.setPosition = function(_x, _y) {
+      this.x = _x;
+      this.y = _y;
+    }
+  }
+  /**
   @class GamePerson
 
   @since 20130612
