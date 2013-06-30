@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title> New Document </title>
+  <meta name="Generator" content="Malte Kosian">
+  <meta name="Author" content="Malte Kosian">
+  <meta name="Keywords" content="text, story, games, editor, html5, interactive, fiction, storytelling">
+  <meta name="Description" content="Tthe text is on fire! A storytelling interactive fiction and games tool written in HTML5.">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta itemprop="name" content="textfire HTML5 storytelling games editor">
+<meta itemprop="description" content="Text on fire! A storytelling interactive fiction and games tool written in HTML5.">
+<meta itemprop="image" 
+content="http://textfire.co/img/logo.jpg">
+<link rel="shortcut icon" type="image/x-icon" href="http://textfire.co/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Chelsea+Market" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="main.css" type="text/css"/>
+<script type="text/javascript" src="js/base64.js" charset="utf-8"></script>
+<script>var pageEditor = {};</script>
+<script type="text/javascript" src="js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-12182652-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<script>
+  if (window.ondeviceready) {
+    document.addEventListener("deviceready", pageEditor.init, false);
+  } else {
+    window.onload = function() {
+      //intervalId =
+      setTimeout(pageEditor.init, 100);
+    }
+  }
+</script>
+</head>
+<body>
+  <div style="font-weight: bold;" class="div">
+  Less Is More!<i style="font-weight: normal; font-size: 65%; vertical-align: sub; color: #999;"> Josef Albers</i>
+  </div>
+  <div id="dialog_0">
+    <div id="text_0" onclick="pageEditor.editText(this.id);" class="div">
+    Each text is editable - even this help text.
+    </div>
+  </div>
+  <div id="dialog_1">
+    <div id="text_1" onclick="pageEditor.editText(this.id);" class="div">
+    The browser uses the own localStorage to store the changed texts.
+    </div>
+  </div>
+  <div id="dialog_2">
+    <div id="text_2" onclick="pageEditor.editText(this.id);" class="div">
+    The UI (User Interface) should be as simple as possible. So the UIX (User Interactivity Experience) is straight forward and clear.
+    </div>
+  </div>
+  <div id="dialog_3">
+    <div id="text_3" onclick="pageEditor.editText(this.id);" class="div">
+    Clear flat text creates a concentrated reading flow. It is highly readable. A way much more than typical lay-outed baroque HTML.
+    </div>
+  </div>
+  <div id="new_text" onclick="pageEditor.editText(this.id);" class="div_25">
+  new text
+  </div>
+  <button id="menu_button" onmouseover="pageEditor.showMenu();" >
+    <span class="menu-bar"></span>
+    <span class="menu-bar"></span>
+    <span class="menu-bar"></span>
+  </button>
+    <div id="menu_div" onmouseout="pageEditor.hideMenu();" class="div_25">
+      <ul onmouseover="pageEditor.showMenu();">
+        <a id="lec0" href="#lecture1"><li onmouseover="pageEditor.showMenu();">Lecture One</li></a>
+        <!--How to use the editor for linear writing?-->
+        <a id="lec1" href="#lecture2"><li onmouseover="pageEditor.showMenu();">Lecture Two</li></a>
+        <!--Learn to navigate with keys and text formating-->
+        <a id="lec2" href="#lecture3"><li onmouseover="pageEditor.showMenu();">Lecture Three</li></a>
+        <!--How to split a text to enable choices with links-->
+        <!--You and other persons with history-->
+        <!--Everything will be beautiful with fonts, pictures and sound, won't it be so?-->
+        <!--login, membership, publish-->
+        <!--self-publish the playable experience-->
+        <li onmouseover="pageEditor.showMenu();" style="margin-left: -40px;"><hr /></li>
+        <a href="#login"><li onmouseover="pageEditor.showMenu();">Login</li></a>
+        <a href="#member"><li onmouseover="pageEditor.showMenu();">Membership</li></a>
+        <a href="#about"><li onmouseover="pageEditor.showMenu();">About</li></a>
+    </ul>
+  </div>
+ </body>
+</html>
