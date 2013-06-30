@@ -74,17 +74,21 @@ _gaq.push(['_trackPageview', '/use/about']);
       console.log(_eve);
       var url = _eve.newURL;
       var hash = url.split('#')[1];
-      /*switch (hash) {
-        case 'login':
+      switch (hash) {
+        case 'github':
+          _gaq.push(['_trackPageview', '/use/'+hash]);
+          location.href = 'https://github.com/maltekosian/textfire/wiki';
+        break;
+        /*case 'login':
         break;
         case 'about':
         break;
         case 'membership':
-        break;
-        default:
+        break;*/
+        default:          
           //callChapter(hash);
         break;
-      }*/
+      }
       _gaq.push(['_trackPageview', '/use/'+hash]);
     }
     /**
