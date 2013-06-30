@@ -28,26 +28,17 @@ Licensed to hogventure.com under one
 /*
 Available 'pages' to track with google 
 analytics to visualize the user flow
-
 editText
-
 newText
 
 lectureOne
-
 lectureTwo
-
 login
-
 membership
-
 about
 
 we track pages even it is just a function
-
 _gaq.push(['_trackPageview', '/use/about']);
-instead of
-_gaq.push(['_trackEvent', 'use', 'about', 'about']);
 */
  
   (
@@ -242,7 +233,7 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         var j_ele = createElement('div');
         j_ele.setAttribute('id', _id+'_'+_index);
         //onclick
-        j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+_index+');');        
+        //j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+_index+');');        
         ele.appendChild(j_ele);        
         textarea.setAttribute('name', _id);
         textarea.setAttribute('id', 'area_'+_id+'_'+_index);
