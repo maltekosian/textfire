@@ -1,3 +1,30 @@
+/**
+@license
+Licensed to hogventure.com under one
+<br>or more contributor license agreements.  See the NOTICE file
+<br>distributed with this work for additional information
+<br>regarding copyright ownership.  The hogventure.com licenses this file
+<br>to you under the hogventure.com License, Version 1.0 (the
+<br>"License"); you may not use this file except in compliance
+<br>with the License. You may obtain a copy of the License at
+<br>
+<br>         http://www.hogventure.com/purchase.html
+<br>
+<br>Unless required by applicable law or agreed to in writing,
+<br>software distributed under the License is distributed on an
+<br>"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<br>KIND, either express or implied.  See the License for the
+<br>specific language governing permissions and limitations
+<br>under the License.<br>
+*/
+/*
+@author Malte Kosian
+@version 2013-06-30
+
+@namespace Main
+@namespace window
+@since 2013-06-24
+*/ 
 /*
 Available 'pages' to track with google 
 analytics to visualize the user flow
