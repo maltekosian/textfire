@@ -1,26 +1,44 @@
+/**
+@license
+Licensed to hogventure.com under one
+<br>or more contributor license agreements.  See the NOTICE file
+<br>distributed with this work for additional information
+<br>regarding copyright ownership.  The hogventure.com licenses this file
+<br>to you under the hogventure.com License, Version 1.0 (the
+<br>"License"); you may not use this file except in compliance
+<br>with the License. You may obtain a copy of the License at
+<br>
+<br>         http://www.hogventure.com/purchase.html
+<br>
+<br>Unless required by applicable law or agreed to in writing,
+<br>software distributed under the License is distributed on an
+<br>"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<br>KIND, either express or implied.  See the License for the
+<br>specific language governing permissions and limitations
+<br>under the License.<br>
+*/
+/*
+@author Malte Kosian
+@version 2013-06-30
+
+@namespace Main
+@namespace window
+@since 2013-06-24
+*/ 
 /*
 Available 'pages' to track with google 
 analytics to visualize the user flow
-
 editText
-
 newText
 
 lectureOne
-
 lectureTwo
-
 login
-
 membership
-
 about
 
 we track pages even it is just a function
-
 _gaq.push(['_trackPageview', '/use/about']);
-instead of
-_gaq.push(['_trackEvent', 'use', 'about', 'about']);
 */
  
   (
@@ -33,6 +51,95 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
     @field pageEditor.dialogPage
     */
     _pe.userId = null;
+    /**
+    @field pageEditor.keyModifier 
+    */
+    _pe.keyModifier = false;
+    /**
+    @method pageEditor.navigateModifier
+    
+    @param eve
+    */
+    _pe.navigateModifier = function(eve) {
+      console.log(eve.keyCode);
+      _pe.keyModifier = (eve.keyCode == 17);
+    }
+    /**
+    @method pageEditor.navigateTo
+
+    @param eve
+    */
+    _pe.navigateTo = function(eve) {
+      var kc = eve.keyCode;
+      console.log('kc = '+kc);
+      if (!_pe.keyModifier) {
+        if (kc == 13) {
+          //close or select textarea | or select option of menu, list, etc.
+          var elem = eve.target;
+          _pe.editText(elem.id, elem.getAttribute('data-index'));
+        }
+        if (kc == 37 || kc == 38 || kc == 39 || kc == 40) {
+          //on key up|right|left|down
+          var elem = eve.target;
+          elem.blur();
+          var index = elem.tabIndex;
+          console.log('tabindex = '+index);
+          if (kc == 39 || kc == 40 ) {
+            elem = _pe.getTabIndex(index+1);//up|right
+          } else {
+            elem = _pe.getTabIndex(index-1);//down|left
+          }
+          if (elem == null) {
+            elem = eve.target;
+          }
+          elem.focus();     
+        }
+      } else {
+        //keyboard shortcuts on 'ctrl' - 'Strg'
+
+        //p - person
+
+        //c - copy
+
+        //v - paste
+
+        //l - link
+
+        //m - open/close menu
+
+        //e - edit if editable element
+
+        //t - title
+
+        //alt e | alt p - switch between edit and play mode
+      }
+      if (kc == 17) {
+        _pe.keyModifier = false;
+      }
+    }
+    /**
+
+    */
+    _pe.getTabIndex = function(_index) {
+      var eles = document.getElementsByName('tab');
+      //console.log('eles.length '+eles.length);
+      for (var i = 0; i < eles.length; i++) {
+        if (eles[i].tabIndex == _index) {
+          return eles[i];
+        }
+      }
+      return null;
+    }
+    /**
+
+    */
+    _pe.setTabIndeces = function() {
+      var eles = document.getElementsByName('tab');
+      for (var i = 0; i < eles.length; i++) {
+        eles[i].tabIndex = i;
+      }
+      return null;
+    }
     /**
     @method pageEditor.showMenu
     */
@@ -56,17 +163,21 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
       console.log(_eve);
       var url = _eve.newURL;
       var hash = url.split('#')[1];
-      /*switch (hash) {
-        case 'login':
+      switch (hash) {
+        case 'github':
+          _gaq.push(['_trackPageview', '/use/'+hash]);
+          location.href = 'https://github.com/maltekosian/textfire/wiki';
+        break;
+        /*case 'login':
         break;
         case 'about':
         break;
         case 'membership':
-        break;
-        default:
+        break;*/
+        default:          
           //callChapter(hash);
         break;
-      }*/
+      }
       _gaq.push(['_trackPageview', '/use/'+hash]);
     }
     /**
@@ -212,10 +323,13 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         //remove 'new text' textNode
         ele.removeChild(ele.childNodes[0]);
         ele.removeAttribute('onclick');
-        var j_ele = createElement('div');
+        var j_ele = createElement('li');
         j_ele.setAttribute('id', _id+'_'+_index);
+        j_ele.setAttribute('tabindex', _index);
+        j_ele.setAttribute('data-index', _index);
+        j_ele.setAttribute('name', 'tab');
         //onclick
-        j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+_index+');');        
+        //j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+_index+');');        
         ele.appendChild(j_ele);        
         textarea.setAttribute('name', _id);
         textarea.setAttribute('id', 'area_'+_id+'_'+_index);
@@ -224,7 +338,7 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         textarea.style.height = ele_height + 'px';          
         textarea.addEventListener('keyup', function(eve) { pageEditor.setEditText(eve); }, true);
         j_ele.appendChild(textarea);
-        var _ele = createElement('div');
+        var _ele = createElement('li');
         _ele.setAttribute('id', 'new_text');
         _ele.className = 'div_25';
         _ele.setAttribute('onclick','pageEditor.editText(this.id, 0);');
@@ -232,12 +346,17 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         document.body.appendChild(_ele);
         _gaq.push(['_trackPageview', '/use/newText']);
       } else {
-        text = ele.innerHTML;      
+        var parent_id = ele.parentNode.id.split('_');
+        parent_id = parent_id[0]+'_'+parent_id[1];
+        console.log('parent_id -> '+parent_id+', '+_index);
+        text = JSON.parse(localStorage.getItem(parent_id))[_index];//ele.innerHTML;      
         var ele_height = ele.offsetHeight;
         console.log('ele_height -> '+ele_height);      
         ele.removeAttribute('onclick');
+        ele.removeAttribute('onkeydown');
+        ele.removeAttribute('onkeyup');
         textarea.value = this.reformatText(text.trim());
-        textarea.setAttribute('name', ele.parentNode.id);
+        textarea.setAttribute('name', parent_id);
         textarea.setAttribute('id', 'area_'+_id);
         textarea.setAttribute('data-index', _index);
         textarea.className = 'text-area';
@@ -254,6 +373,7 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         ele.appendChild(textarea);
         _gaq.push(['_trackPageview', '/use/editText']);
       }      
+      this.setTabIndeces();
       textarea.focus();
     } 
     /**
@@ -310,10 +430,15 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
             } 
           }
           for (var j = 0; j < texts.length; j++) {
-            var j_ele = createElement('div');
+            var j_ele = createElement('li');
             this.formatText(j_ele, texts[j]);             
             j_ele.setAttribute('id', parent_id+'_'+j);
+            j_ele.setAttribute('tabindex', j);
+            j_ele.setAttribute('data-index', j);
+            j_ele.setAttribute('name','tab');
             j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
+            j_ele.addEventListener('keydown', this.navigateModifier, true);
+            j_ele.addEventListener('keyup', this.navigateTo, true);
             ele.appendChild(j_ele);
           }
           localStorage.setItem(parent_id, JSON.stringify(texts) );
@@ -323,9 +448,9 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
             localStorage.setItem('dialogPage', JSON.stringify(this.dialogPage));
           }
         } else {
-          //a splited text delete
+          
           var texts = JSON.parse(localStorage.getItem(parent_id) );
-          if (texts.length == 1) {          
+          if (texts == null || texts.length == 1) {          
             //full delete
             document.body.removeChild(ele);
             localStorage.removeItem(parent_id);
@@ -333,6 +458,7 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
             localStorage.setItem('dialogPage', JSON.stringify(this.dialogPage));
             _gaq.push(['_trackPageview', '/use/deleteFullText']);
           } else {
+            //a splited text delete
             texts.splice(index, 1);
             var nodes = ele.childNodes;
             console.log(nodes);
@@ -342,17 +468,28 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
               } 
             }
             for (var j = 0; j < texts.length; j++) {
-              var j_ele = createElement('div');
+              var j_ele = createElement('li');
               this.formatText(j_ele, texts[j]);             
               j_ele.setAttribute('id', parent_id+'_'+j);
+              j_ele.setAttribute('tabindex', j);
+              j_ele.setAttribute('data-index', j);
+              j_ele.setAttribute('name','tab');
               j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
+              j_ele.addEventListener('keydown', this.navigateModifier, true);
+              j_ele.addEventListener('keyup', this.navigateTo, true);
               ele.appendChild(j_ele);
             }
             localStorage.setItem(parent_id, JSON.stringify(texts) );
             _gaq.push(['_trackPageview', '/use/deleteSelectText']);
           }
-        }       
+        }   
+        this.setTabIndeces();
+        
+        ele = getElement(_eve.target.id.replace(/area_/, ''));
+        console.log(ele);
+        ele.focus();
       }
+      //keycode != 13
     }
     /**
     @method pageEditor.deleteTextFromPage
@@ -438,6 +575,7 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         localStorage.setItem('dialogPage', JSON.stringify(_pe.dialogPage));
       }       
       var ele = null;
+      var tabindex;
       for (var i = 0; i < _pe.dialogPage.uids.length; i++) {
         ele = createElement('div');
         ele.setAttribute('id', _pe.dialogPage.uids[i]);
@@ -445,14 +583,18 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         var texts = JSON.parse(localStorage.getItem(_pe.dialogPage.uids[i]) );
         if (texts != null) //a intermediate fix - remove after you fixed the text editing
         for (var j = 0; j < texts.length; j++) {
-          var j_ele = createElement('div');
+          var j_ele = createElement('li');
           _pe.formatText(j_ele, texts[j]); 
-          //if () {
+          
           j_ele.setAttribute('id', _pe.dialogPage.uids[i]+'_'+j);
-          //} else {
-          //}
+          j_ele.setAttribute('name', 'tab');
+          j_ele.setAttribute('tabindex', tabindex);
+          j_ele.setAttribute('data-index', j);
           j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
+          j_ele.addEventListener('keydown', _pe.navigateModifier, true);
+          j_ele.addEventListener('keyup', _pe.navigateTo, true);
           ele.appendChild(j_ele);
+          tabindex++;
         }
         ele.className = 'div';
        
@@ -460,6 +602,8 @@ _gaq.push(['_trackEvent', 'use', 'about', 'about']);
         ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
         document.body.appendChild(ele);
       }
+      new_text.addEventListener('keydown', _pe.navigateModifier, true);
+      new_text.addEventListener('keyup', _pe.navigateTo, true);
       document.body.appendChild(new_text);
     }
     //return the instance of pageEditor
