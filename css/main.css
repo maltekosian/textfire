@@ -8,13 +8,30 @@ body, div, a, span, ul, li, input, textarea, button {
     min-width: 50%;
     width: 50%;
     max-width: 50%;
-    /*border-bottom: 1px dashed #999;*/
+    list-style: none;
+    margin-bottom: 2px;
+  }
+  .div > li {
+    list-style: none;
+    outline: 0;
+    border: 1px solid #fff;
+    margin-bottom: 1px;
+  }
+  .div > li:focus {
+    border-bottom: 1px dotted #ccc;
+    outline: 0;
+  }
+  .div > li:active {
+    border-bottom: 1px dotted #ccc;
+    outline: 0;
   }
   .text-area {
     width: 100%;
     margin: 0;
     border: 0;
     padding: 0;
+    outline: 1px dotted #ccc;
+    resize: none; 
   }
 
   #new_text {
@@ -25,6 +42,7 @@ body, div, a, span, ul, li, input, textarea, button {
     padding: 1%;
     padding-left: 10px;
     border-radius: 10px;
+    list-style: none;
   }
   #new_text:hover {
     color: #fff;
@@ -32,6 +50,22 @@ body, div, a, span, ul, li, input, textarea, button {
     box-shadow: -1px -1px 1px rgba(51,51,51,0.5),-1px 1px 1px rgba(51,51,51,0.5),
                 1px -1px 1px rgba(51,51,51,0.5),2px 2px 2px rgba(51,51,51,0.5);
     text-shadow: -1px -1px #000, -1px 1px 1px #666, 1px -1px 1px #666, 1px 1px 2px #fff;
+  }
+  #new_text:focus {
+    color: #fff;
+    background: rgba(224,224,224, 0.7);
+    box-shadow: -1px -1px 1px rgba(51,51,51,0.5),-1px 1px 1px rgba(51,51,51,0.5),
+                1px -1px 1px rgba(51,51,51,0.5),2px 2px 2px rgba(51,51,51,0.5);
+    text-shadow: -1px -1px #000, -1px 1px 1px #666, 1px -1px 1px #666, 1px 1px 2px #fff;
+    outline: none;
+  }
+  #new_text:active {
+    color: #fff;
+    background: rgba(224,224,224, 0.7);
+    box-shadow: -1px -1px 1px rgba(51,51,51,0.5),-1px 1px 1px rgba(51,51,51,0.5),
+                1px -1px 1px rgba(51,51,51,0.5),2px 2px 2px rgba(51,51,51,0.5);
+    text-shadow: -1px -1px #000, -1px 1px 1px #666, 1px -1px 1px #666, 1px 1px 2px #fff;
+    outline: none;
   }
   #menu_button {
     position: fixed;
