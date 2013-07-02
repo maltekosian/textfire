@@ -92,7 +92,8 @@ _gaq.push(['_trackPageview', '/use/about']);
           if (elem == null) {
             elem = eve.target;
           }
-          elem.focus();     
+          elem.focus();  
+          _gaq.push(['_trackPageview', '/use/navigateTo/'+kc]);
         }
       } else {
         //keyboard shortcuts on 'ctrl' - 'Strg'
