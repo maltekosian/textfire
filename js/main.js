@@ -74,7 +74,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       console.log('kc = '+kc);
       if (!_pe.keyModifier) {
         var elem = eve.target;
-        console.log(elem);
+        //console.log(elem);
         if (kc == 13) {
           //close or select textarea | or select option of menu, list, etc.
           
@@ -95,7 +95,7 @@ _gaq.push(['_trackPageview', '/use/about']);
           if (elem == null) {
             elem = (eve.target == document.body ? _pe.getTabIndex(0) : eve.target);
           }
-          console.log(elem);
+          //console.log(elem);
           elem.focus();  
           _gaq.push(['_trackPageview', '/use/navigateTo/'+kc]);
         }
@@ -611,7 +611,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       new_text.addEventListener('keyup', _pe.navigateTo, true);
       document.body.appendChild(new_text);
       document.addEventListener('keyup', _pe.navigateTo, true);
-      //document.body.addEventListener('keydown', _pe.navigateModifier, true);
+      document.body.addEventListener('keydown', _pe.navigateModifier, true);
     }
     //return the instance of pageEditor
     return _pe;
