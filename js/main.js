@@ -115,13 +115,14 @@ _gaq.push(['_trackPageview', '/use/about']);
 
         //m - open/close menu
         if (kc == 77) {
-          elem = getElement('menu_div');
-          console.log(elem);
+          elem = getElement('menu_div');          
           if (elem.style.display == 'block') {
-            _pe.hideMenu();
+            elem.style.display = 'none';
           } else {
-            _pe.showMenu();
-          }
+            elem.style.display = 'block'; console.log(elem.style.display); 
+                    
+          }        
+          _pe.keyModifier = false; 
         }
         //e - edit if editable element
 
