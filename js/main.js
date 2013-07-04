@@ -61,8 +61,10 @@ _gaq.push(['_trackPageview', '/use/about']);
     @param eve
     */
     _pe.navigateModifier = function(eve) {
-      console.log(eve.keyCode);
-      _pe.keyModifier = (eve.keyCode == 17);
+      //console.log('navigateModifier -> '+eve.keyCode);
+      if (eve.keyCode == 17 && !_pe.keyModifier) { 
+        _pe.keyModifier = true; 
+      }
     }
     /**
     @method pageEditor.navigateTo
@@ -71,7 +73,7 @@ _gaq.push(['_trackPageview', '/use/about']);
     */
     _pe.navigateTo = function(eve) {
       var kc = eve.keyCode;
-      console.log('kc = '+kc);
+      console.log('kc = '+kc+' '+_pe.keyModifier);
       if (!_pe.keyModifier) {
         var elem = eve.target;
         //console.log(elem);
@@ -81,6 +83,7 @@ _gaq.push(['_trackPageview', '/use/about']);
           if (!elem.hasFocus()) {
             _pe.editText(elem.id, elem.getAttribute('data-index'));
           }
+          _gaq.push(['_trackPageview', '/use/navigateTo/'+kc]);
         }
         if (kc == 37 || kc == 38 || kc == 39 || kc == 40) {
           //on key up|right|left|down        
@@ -111,12 +114,20 @@ _gaq.push(['_trackPageview', '/use/about']);
         //l - link
 
         //m - open/close menu
-
+        if (kc == 77) {
+          elem = getElement('menu_div');
+          if (elem.style.display == 'block') {
+            _pe.hideMenu();
+          } else {
+            _pe.showMenu();
+          }
+        }
         //e - edit if editable element
 
         //t - title
 
         //alt e | alt p - switch between edit and play mode
+
       }
       if (kc == 17) {
         _pe.keyModifier = false;
@@ -149,13 +160,13 @@ _gaq.push(['_trackPageview', '/use/about']);
     @method pageEditor.showMenu
     */
     _pe.showMenu = function() {    
-      document.getElementById('menu_div').style.display = 'block';
+      getElement('menu_div').style.display = 'block';
     }
     /**
     @method pageEditor.hashChanged
     */
     _pe.hideMenu = function() {
-      document.getElementById('menu_div').style.display = 'none';
+      getElement('menu_div').style.display = 'none';
     }
     /**
     @method pageEditor.
@@ -611,7 +622,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       new_text.addEventListener('keyup', _pe.navigateTo, true);
       document.body.appendChild(new_text);
       document.addEventListener('keyup', _pe.navigateTo, true);
-      document.body.addEventListener('keydown', _pe.navigateModifier, true);
+      document.addEventListener('keydown', _pe.navigateModifier, false);
     }
     //return the instance of pageEditor
     return _pe;
