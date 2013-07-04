@@ -80,7 +80,7 @@ _gaq.push(['_trackPageview', '/use/about']);
         if (kc == 13) {
           //close or select textarea | or select option of menu, list, etc.
           
-          if (!elem.hasFocus()) {
+          if (elem == document.activeElement) {
             _pe.editText(elem.id, elem.getAttribute('data-index'));
           }
           _gaq.push(['_trackPageview', '/use/navigateTo/'+kc]);
@@ -116,6 +116,7 @@ _gaq.push(['_trackPageview', '/use/about']);
         //m - open/close menu
         if (kc == 77) {
           elem = getElement('menu_div');
+          console.log(elem);
           if (elem.style.display == 'block') {
             _pe.hideMenu();
           } else {
