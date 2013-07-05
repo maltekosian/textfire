@@ -127,6 +127,7 @@ _gaq.push(['_trackPageview', '/use/about']);
           }        
           //_pe.keyModifier = false;
           if (eve.target != document.body) _pe.keyModifier = false; 
+          _gaq.push(['_trackPageview', '/use/navigateTo/m_'+kc]);
         }
         //e - edit if editable element
 
