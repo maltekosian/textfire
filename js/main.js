@@ -56,13 +56,21 @@ _gaq.push(['_trackPageview', '/use/about']);
     */
     _pe.keyModifier = false;
     /**
+    @field pageEditor.copyPaste
+    */
+    _pe.copyPaste = '';
+    /**
     @method pageEditor.navigateModifier
     
     @param eve
     */
-    _pe.navigateModifier = function(eve) {
+    _pe.navigateModifier = function(eve) {      
+      if (eve.keyCode == 67  || eve.keyCode == 77 || eve.keyCode == 86) {
+        eve.preventDefault();
+      }
       //console.log('navigateModifier -> '+eve.keyCode);
-      if ((eve.keyCode == 17 || eve.keyCode == 77) && !_pe.keyModifier) { 
+      if ((eve.keyCode == 17 || eve.keyCode == 67  || eve.keyCode == 77 || eve.keyCode == 86) && !_pe.keyModifier) { 
+        eve.preventDefault();
         _pe.keyModifier = true; 
       }
     }
@@ -71,7 +79,8 @@ _gaq.push(['_trackPageview', '/use/about']);
 
     @param eve
     */
-    _pe.navigateTo = function(eve) {
+    _pe.navigateTo = function(eve) {      
+      eve.preventDefault();
       var kc = eve.keyCode;
       console.log('kc = '+kc+' '+_pe.keyModifier);
       var elem = eve.target;
@@ -111,23 +120,38 @@ _gaq.push(['_trackPageview', '/use/about']);
         //p - person
 
         //c - copy
-
+        if (elem == document.activeElement && kc == 67) {
+          _pe.keyModifier = false;
+          console.log(elem);
+          _gaq.push(['_trackPageview', '/use/navigateTo/copyText']);
+          _pe.copyPaste = elem.value; 
+          console.log('cp = '+ _pe.copyPaste);
+        }
         //v - paste
-
+        if (elem == document.activeElement && kc == 86) { //
+          _pe.keyModifier = false; 
+          console.log(elem);
+          _gaq.push(['_trackPageview', '/use/navigateTo/pasteText']);
+          console.log('cpaste = '+ _pe.copyPaste);
+          elem.value = elem.value + _pe.copyPaste; 
+          //get the caret position of the text and paste there
+        }
         //l - link
 
         //m - open/close menu
         if (kc == 77) {
           console.log(elem); 
-          elem = getElement('menu_div');          
+          elem = getElement('menu_div'); 
+          var _elp = 'Show';
           if (elem.style.display == 'block') {
             elem.style.display = 'none';            
           } else {
-            elem.style.display = 'block'; console.log(elem.style.display);                   
+            elem.style.display = 'block'; //console.log(elem.style.display); 
+            var _elp = 'Hide';
           }        
           //_pe.keyModifier = false;
-          if (eve.target != document.body) _pe.keyModifier = false; 
-          _gaq.push(['_trackPageview', '/use/navigateTo/m_'+kc]);
+          if (eve.target != document.body) 
+          _gaq.push(['_trackPageview', '/use/navigateTo/menu'+_elp]);
         }
         //e - edit if editable element
 
@@ -398,13 +422,16 @@ _gaq.push(['_trackPageview', '/use/about']);
       }      
       this.setTabIndeces();
       textarea.focus();
-    } 
+    }; 
     /**
     @method pageEditor.setEditText
 
     @param _eve
     */
     _pe.setEditText = function(_eve) {
+      if (_pe.keyModifier || _eve.keyCode == 17) {
+        return;
+      }
       console.log('setEditText -> '+ _eve.target.id);
       console.log('setEditText -> '+ _eve.keyCode);
       var keycode = _eve.keyCode;
