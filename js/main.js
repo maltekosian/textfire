@@ -60,16 +60,20 @@ _gaq.push(['_trackPageview', '/use/about']);
     */
     _pe.copyPaste = '';
     /**
+    @field pageEditor.kopylink
+    */
+    _pe.kopyLink = '';
+    /**
     @method pageEditor.navigateModifier
     
     @param eve
     */
     _pe.navigateModifier = function(eve) {      
-      if (eve.keyCode == 67  || eve.keyCode == 77 || eve.keyCode == 86) {
+      if (eve.keyCode == 67 || eve.keyCode == 75 || eve.keyCode == 76 || eve.keyCode == 77 || eve.keyCode == 80 || eve.keyCode == 86) {
         eve.preventDefault();
       }
       //console.log('navigateModifier -> '+eve.keyCode);
-      if ((eve.keyCode == 17 || eve.keyCode == 67  || eve.keyCode == 77 || eve.keyCode == 86) && !_pe.keyModifier) { 
+      if ((eve.keyCode == 17 || eve.keyCode == 67 || eve.keyCode == 75 || eve.keyCode == 76 || eve.keyCode == 77 || eve.keyCode == 80 || eve.keyCode == 86) && !_pe.keyModifier) { 
         eve.preventDefault();
         _pe.keyModifier = true; 
       }
@@ -118,7 +122,14 @@ _gaq.push(['_trackPageview', '/use/about']);
         //keyboard shortcuts on 'ctrl' - 'Strg'
 
         //p - person
-
+        if (kc == 80) { 
+          _pe.keyModifier = false;
+          if (elem.style.display == 'block') {
+            //_pe.hidePersons();
+          } else {          
+            //_pe.showPersons();
+          }         
+        }
         //c - copy
         if (elem == document.activeElement && kc == 67) {
           _pe.keyModifier = false;
@@ -136,12 +147,20 @@ _gaq.push(['_trackPageview', '/use/about']);
           elem.value = elem.value + _pe.copyPaste; 
           //get the caret position of the text and paste there
         }
+        //k - copy id for link
+        if (kc == 75) {          
+          _pe.keyModifier = false;
+          _pe.kopyForLink(elem, 'key');
+        }
         //l - link
-
+        if (kc == 76) {
+          _pe.linkTo(eve);
+          _pe.keyModifier = false;
+        }
         //m - open/close menu
-        if (kc == 77) {
-          console.log(elem); 
+        if (kc == 77) {           
           elem = getElement('menu_div'); 
+          console.log(elem);
           var _elp = 'Show';
           if (elem.style.display == 'block') {
             elem.style.display = 'none';            
@@ -149,12 +168,10 @@ _gaq.push(['_trackPageview', '/use/about']);
             elem.style.display = 'block'; //console.log(elem.style.display); 
             var _elp = 'Hide';
           }        
-          //_pe.keyModifier = false;
+          _pe.keyModifier = false;
           if (eve.target != document.body) 
           _gaq.push(['_trackPageview', '/use/navigateTo/menu'+_elp]);
         }
-        //e - edit if editable element
-
         //t - title
 
         //alt e | alt p - switch between edit and play mode
@@ -165,7 +182,24 @@ _gaq.push(['_trackPageview', '/use/about']);
       }
     }
     /**
-
+    @method pageEditor.linkTo
+    */
+    _pe.linkTo = function(eve) {
+      var elem = eve.target;
+      var type = eve.type;
+      console.log('linkTo -> '+type+' '+elem);
+      _gaq.push(['_trackPageview', '/use/linkTo/'+type]);
+    }
+    /**
+    @method pageEditor.kopyForLink
+    */
+    _pe.kopyForLink = function(elem, type) {
+      _pe.kopyLink = elem.id.replace(/area_/, '');
+      console.log('_pe.kopyLink -> '+_pe.kopyLink);
+      _gaq.push(['_trackPageview', '/use/kopyForLink/'+type]);
+    }
+    /**
+    @method pageEditor.getTabIndex
     */
     _pe.getTabIndex = function(_index) {
       var eles = document.getElementsByName('tab');
@@ -178,7 +212,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       return null;
     }
     /**
-
+    @method pageEditor.setTabIndeces
     */
     _pe.setTabIndeces = function() {
       var eles = document.getElementsByName('tab');
@@ -194,13 +228,13 @@ _gaq.push(['_trackPageview', '/use/about']);
       getElement('menu_div').style.display = 'block';
     }
     /**
-    @method pageEditor.hashChanged
+    @method pageEditor.hideMenu
     */
     _pe.hideMenu = function() {
       getElement('menu_div').style.display = 'none';
     }
     /**
-    @method pageEditor.
+    @method pageEditor.hasChanged
 
     @param _eve
     */
@@ -325,7 +359,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       n_ele.setAttribute('id', 'tt_'+_id);
       n_ele.appendChild(createTextNode(_text));
       n_ele.style.position = 'absolute';
-      n_ele.style.top = (ele.offsetTop-25)+'px';
+      n_ele.style.top = (ele.offsetTop-33)+'px';
       n_ele.style.left = (ele.offsetLeft)+'px';
       n_ele.style.background = 'rgba(254,254,255,0.95)';
       n_ele.style.zIndex = 10;
@@ -360,6 +394,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       var ele = getElement(_id);
       var text = '';
       var textarea = createElement('textarea');
+      document.activeElement.blur();
       if (_id == 'new_text') {
         _index = 0;
         _id = 'text_'+Date.now();
@@ -375,6 +410,8 @@ _gaq.push(['_trackPageview', '/use/about']);
         j_ele.setAttribute('tabindex', _index);
         j_ele.setAttribute('data-index', _index);
         j_ele.setAttribute('name', 'tab');
+        j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+        j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
         //onclick
         //j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+_index+');');        
         ele.appendChild(j_ele);        
@@ -418,6 +455,15 @@ _gaq.push(['_trackPageview', '/use/about']);
         }
         //add the textarea
         ele.appendChild(textarea);
+        var _ele = createElement('div');
+        _ele.appendChild(createTextNode('new link'));        
+        _ele.style.position = 'absolute';
+        _ele.style.left = '75%';
+        _ele.style.top = ele.offsetTop + 'px';
+        _ele.className = 'div_25';
+        _ele.addEventListener('click', pageEditor.linkTo, false);
+        //_ele.addEventListener('keyup', pageEditor.navigateTo, false);
+        ele.appendChild(_ele);
         _gaq.push(['_trackPageview', '/use/editText']);
       }      
       this.setTabIndeces();
@@ -489,6 +535,8 @@ _gaq.push(['_trackPageview', '/use/about']);
             j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
             j_ele.addEventListener('keydown', this.navigateModifier, true);
             j_ele.addEventListener('keyup', this.navigateTo, true);
+            j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+            j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
             ele.appendChild(j_ele);
           }
           localStorage.setItem(parent_id, JSON.stringify(texts) );
@@ -527,6 +575,8 @@ _gaq.push(['_trackPageview', '/use/about']);
               j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
               j_ele.addEventListener('keydown', this.navigateModifier, true);
               j_ele.addEventListener('keyup', this.navigateTo, true);
+              j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+              j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
               ele.appendChild(j_ele);
             }
             localStorage.setItem(parent_id, JSON.stringify(texts) );
@@ -643,17 +693,21 @@ _gaq.push(['_trackPageview', '/use/about']);
           j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
           j_ele.addEventListener('keydown', _pe.navigateModifier, true);
           j_ele.addEventListener('keyup', _pe.navigateTo, true);
+          j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+          j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
           ele.appendChild(j_ele);
           tabindex++;
         }
         ele.className = 'div';
        
-        ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
-        ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
+        //ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+        //ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
         document.body.appendChild(ele);
       }
       new_text.addEventListener('keydown', _pe.navigateModifier, true);
       new_text.addEventListener('keyup', _pe.navigateTo, true);
+      new_text.setAttribute('name', 'tab');
+      new_text.setAttribute('tabindex', tabindex);
       document.body.appendChild(new_text);
       document.addEventListener('keyup', _pe.navigateTo, true);
       document.addEventListener('keydown', _pe.navigateModifier, true);
