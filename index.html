@@ -74,7 +74,7 @@ content="http://textfire.co/img/logo.jpg">
   <li id="new_text" onclick="pageEditor.editText(this.id);" name="tab" tabindex="4" class="div_25">
   new text
   </li>
-  <button id="menu_button" onmouseover="pageEditor.showMenu();" >
+  <button id="menu_button" onmouseover="pageEditor.showMenu();" onclick="pageEditor.showMenu();">
     <span class="menu-bar"></span>
     <span class="menu-bar"></span>
     <span class="menu-bar"></span>
@@ -94,10 +94,17 @@ content="http://textfire.co/img/logo.jpg">
         <li onmouseover="pageEditor.showMenu();" style="margin-left: -40px;"><hr /></li>
         <a href="#github"><li onmouseover="pageEditor.showMenu();">Github Textfire</li></a>
         <li onmouseover="pageEditor.showMenu();" style="margin-left: -40px;"><hr /></li>
+        <a href="#persons"><li onmouseover="pageEditor.showMenu();" onclick="pageEditor.showHidePersons('click')">Persons</li></a>
+        <li onmouseover="pageEditor.showMenu();" style="margin-left: -40px;"><hr /></li>
         <a href="#login"><li onmouseover="pageEditor.showMenu();">Login</li></a>
         <a href="#member"><li onmouseover="pageEditor.showMenu();">Membership</li></a>
         <a href="#about"><li onmouseover="pageEditor.showMenu();">About</li></a>
-    </ul>
-  </div>
+      </ul>
+    </div>
+    <div id="menu_persons">
+      <ul>
+      <li>persons</li>
+      </ul>
+    </div>
  </body>
 </html>

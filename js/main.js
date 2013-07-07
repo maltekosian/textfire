@@ -19,7 +19,7 @@ Licensed to hogventure.com under one
 */
 /*
 @author Malte Kosian
-@version 2013-06-30
+@version 2013-07-07
 
 @namespace Main
 @namespace window
@@ -39,8 +39,7 @@ about
 
 we track pages even it is just a function
 _gaq.push(['_trackPageview', '/use/about']);
-*/
- 
+*/ 
   (
   function(_pe) {
     /**
@@ -63,6 +62,10 @@ _gaq.push(['_trackPageview', '/use/about']);
     @field pageEditor.kopylink
     */
     _pe.kopyLink = '';
+    /**
+    @field pageEditor.toolElem
+    */
+    _pe.toolElem = null;
     /**
     @method pageEditor.navigateModifier
     
@@ -123,12 +126,8 @@ _gaq.push(['_trackPageview', '/use/about']);
 
         //p - person
         if (kc == 80) { 
-          _pe.keyModifier = false;
-          if (elem.style.display == 'block') {
-            //_pe.hidePersons();
-          } else {          
-            //_pe.showPersons();
-          }         
+          _pe.keyModifier = false;          
+          _pe.showHidePersons('key');                 
         }
         //c - copy
         if (elem == document.activeElement && kc == 67) {
@@ -187,7 +186,7 @@ _gaq.push(['_trackPageview', '/use/about']);
     _pe.linkTo = function(eve) {
       var elem = eve.target;
       var type = eve.type;
-      console.log('linkTo -> '+type+' '+elem);
+      console.log('linkTo -> '+type+' '+elem+'\n -> '+elem.id);
       _gaq.push(['_trackPageview', '/use/linkTo/'+type]);
     }
     /**
@@ -197,6 +196,21 @@ _gaq.push(['_trackPageview', '/use/about']);
       _pe.kopyLink = elem.id.replace(/area_/, '');
       console.log('_pe.kopyLink -> '+_pe.kopyLink);
       _gaq.push(['_trackPageview', '/use/kopyForLink/'+type]);
+    }
+    /**
+    @method pageEditor.showPersons
+    */
+    _pe.showHidePersons = function(type) {
+      var elem = getElement('menu_persons');
+      var t = 'show';
+      if (elem.style.display == 'block') {
+        elem.style.display = 'none';
+        t = 'hide';
+      } else {          
+        elem.style.display = 'block';
+      }  
+      console.log('/use/showHidePersons/'+t+'/'+type);
+      _gaq.push(['_trackPageview', '/use/showHidePersons/'+t+'/'+type]);
     }
     /**
     @method pageEditor.getTabIndex
@@ -244,6 +258,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       console.log(_eve);
       var url = _eve.newURL;
       var hash = url.split('#')[1];
+      console.log('hash # '+hash);
       switch (hash) {
         case 'github':
           _gaq.push(['_trackPageview', '/use/'+hash]);
@@ -333,7 +348,7 @@ _gaq.push(['_trackPageview', '/use/about']);
 
     */
     _pe.reformatText = function(_text) {
-      _text = _text.replace(/<br>/g, '\\n');      
+      _text = _text.replace(/<!-- <br> -->/g, '\\n');      
       _text = _text.replace(/&nbsp;&nbsp;/g, '\\t');
       return _text;
     }
@@ -351,25 +366,23 @@ _gaq.push(['_trackPageview', '/use/about']);
 
     @param _id
     */
-    _pe.showToolTip = function (_id, _text) {
+    _pe.showToolTip = function (_id, _text) {      
+      _id = _id.replace(/area_/, '');
+      _text = _text.replace(/area_/, '');
       var ele = getElement(_id);
+
       //console.log(ele.offsetTop + '-' +ele.offsetLeft);
       var body = document.body;
-      var n_ele = createElement('span');
-      n_ele.setAttribute('id', 'tt_'+_id);
-      n_ele.appendChild(createTextNode(_text));
-      n_ele.style.position = 'absolute';
-      n_ele.style.top = (ele.offsetTop-33)+'px';
-      n_ele.style.left = (ele.offsetLeft)+'px';
-      n_ele.style.background = 'rgba(254,254,255,0.95)';
-      n_ele.style.zIndex = 10;
-      n_ele.style.borderRadius = '10px';
-      n_ele.style.padding = '5px';
-      n_ele.style.boxShadow = '-1px -1px 1px rgba(51,51,51,0.5),' + 
-                              '-1px 1px 1px rgba(51,51,51,0.5),' +
-                              '1px -1px 1px rgba(51,51,51,0.5),' +
-                              '2px 2px 2px rgba(51,51,51,0.5)';
-      body.appendChild(n_ele);
+      if (_pe.toolElem) {
+        body.removeChild(_pe.toolElem);
+      }
+      _pe.toolElem = createElement('vdi');
+      _pe.toolElem.setAttribute('id', 'tt_'+_id);
+      _pe.toolElem.appendChild(createTextNode(_text+' '));
+      _pe.toolElem.className = 'tooltipElem';
+      _pe.toolElem.style.top = (ele.offsetTop)+'px';
+      _pe.toolElem.setAttribute('onclick','pageEditor.hideToolTip(this.id);');
+      body.appendChild(_pe.toolElem);
     }
     /**
     @method pageEditor.hideToolTip
@@ -378,11 +391,12 @@ _gaq.push(['_trackPageview', '/use/about']);
     */
     _pe.hideToolTip = function(_id) {
       try {
-        //console.log('tt_'+_id);
-        var ele = getElement('tt_'+_id);
+        console.log('-> '+_id);
+        var ele = getElement(''+_id);
         ele.parentNode.removeChild(ele);
+        _pe.toolElem = null;
       } catch (e) {
-      }
+      } 
     }
     /**
     @method pageEditor.editText
@@ -411,7 +425,7 @@ _gaq.push(['_trackPageview', '/use/about']);
         j_ele.setAttribute('data-index', _index);
         j_ele.setAttribute('name', 'tab');
         j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
-        j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
+        //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
         //onclick
         //j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+_index+');');        
         ele.appendChild(j_ele);        
@@ -462,8 +476,9 @@ _gaq.push(['_trackPageview', '/use/about']);
         _ele.style.top = ele.offsetTop + 'px';
         _ele.className = 'div_25';
         _ele.addEventListener('click', pageEditor.linkTo, false);
-        //_ele.addEventListener('keyup', pageEditor.navigateTo, false);
         ele.appendChild(_ele);
+        //
+        _pe.showToolTip(ele.id, ele.id);
         _gaq.push(['_trackPageview', '/use/editText']);
       }      
       this.setTabIndeces();
@@ -478,8 +493,8 @@ _gaq.push(['_trackPageview', '/use/about']);
       if (_pe.keyModifier || _eve.keyCode == 17) {
         return;
       }
-      console.log('setEditText -> '+ _eve.target.id);
-      console.log('setEditText -> '+ _eve.keyCode);
+      //console.log('setEditText -> '+ _eve.target.id);
+      console.log('setEditText -> '+_eve.target.id+', '+_eve.keyCode);
       var keycode = _eve.keyCode;
       if (keycode != 13) {
         ele = getElement(_eve.target.id);
@@ -487,15 +502,17 @@ _gaq.push(['_trackPageview', '/use/about']);
         console.log('setEditText -> '+ text);
       } else {
         ele = getElement(_eve.target.id);
-        var text = ele.value.replace(/\n/g,'');       
+        var text = ele.value.replace(/\n/g,'');  
+        //console.log('text -> '+text);
         var index = ele.getAttribute('data-index');
         var parent_id = _eve.target.name;
-        console.log(parent_id + '->' + index +' '+_eve.target.id);
+        //console.log(parent_id + '->' + index +' '+_eve.target.id);
         ele = getElement(parent_id);
         //console.log(ele);
         ele.removeChild(getElement(_eve.target.id.replace(/area_/,'')));
         try {
-          this.hideToolTip(parent_id);
+          //this.hideToolTip(parent_id);
+          this.hideToolTip(_eve.target.id.replace(/area_/,''));
         } catch(e) {
           console.log(e);
         }
@@ -536,7 +553,7 @@ _gaq.push(['_trackPageview', '/use/about']);
             j_ele.addEventListener('keydown', this.navigateModifier, true);
             j_ele.addEventListener('keyup', this.navigateTo, true);
             j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
-            j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
+            //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
             ele.appendChild(j_ele);
           }
           localStorage.setItem(parent_id, JSON.stringify(texts) );
@@ -576,7 +593,7 @@ _gaq.push(['_trackPageview', '/use/about']);
               j_ele.addEventListener('keydown', this.navigateModifier, true);
               j_ele.addEventListener('keyup', this.navigateTo, true);
               j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
-              j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
+              //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
               ele.appendChild(j_ele);
             }
             localStorage.setItem(parent_id, JSON.stringify(texts) );
@@ -586,8 +603,10 @@ _gaq.push(['_trackPageview', '/use/about']);
         this.setTabIndeces();
         
         ele = getElement(_eve.target.id.replace(/area_/, ''));
-        console.log(ele);
-        ele.focus();
+        console.log(ele+'\n'+_eve.target.id.replace(/area_/, ''));
+        if (ele != null) {
+          ele.focus();
+        }
       }
       //keycode != 13
     }
@@ -647,7 +666,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       for (var i = bodies.length - 1; i >= 0; i--) {
         var _id = bodies[i].id;
         if (typeof(_id) != 'undefined' && _id != 'new_text' &&
-            _id != 'menu_div' && _id != 'menu_button' && 
+            _id != 'menu_div' && _id != 'menu_button' && _id != 'menu_persons' &&
             _id != null && _id != '') //if _id
         {        
           if (!_pe.hasTextInPage(_id)) {
@@ -694,7 +713,7 @@ _gaq.push(['_trackPageview', '/use/about']);
           j_ele.addEventListener('keydown', _pe.navigateModifier, true);
           j_ele.addEventListener('keyup', _pe.navigateTo, true);
           j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
-          j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
+          //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
           ele.appendChild(j_ele);
           tabindex++;
         }
