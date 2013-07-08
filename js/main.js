@@ -19,7 +19,7 @@ Licensed to hogventure.com under one
 */
 /*
 @author Malte Kosian
-@version 2013-07-07
+@version 2013-07-08
 
 @namespace Main
 @namespace window
@@ -186,7 +186,10 @@ _gaq.push(['_trackPageview', '/use/about']);
     _pe.linkTo = function(eve) {
       var elem = eve.target;
       var type = eve.type;
-      console.log('linkTo -> '+type+' '+elem+'\n -> '+elem.id);
+      console.log('linkTo -> '+type+' '+elem+'\n -> '+elem.id+' kl='+_pe.kopyLink);
+      //var item = localStorage.getItem(elem.id);
+      //item.link = _pe.kopyLink;
+      //redraw the dialog.text.item-button value = item.link
       _gaq.push(['_trackPageview', '/use/linkTo/'+type]);
     }
     /**
@@ -444,10 +447,10 @@ _gaq.push(['_trackPageview', '/use/about']);
         document.body.appendChild(_ele);
         _gaq.push(['_trackPageview', '/use/newText']);
       } else {
-        var parent_id = ele.parentNode.id.split('_');
-        parent_id = parent_id[0]+'_'+parent_id[1];
-        console.log('parent_id -> '+parent_id+', '+_index);
-        text = JSON.parse(localStorage.getItem(parent_id))[_index];//ele.innerHTML;      
+        var parent_id = ele.parentNode.id;//.split('_');
+        //parent_id = parent_id[0]+'_'+parent_id[1];
+        console.log('parent_id -> '+parent_id+', '+_index+' ele.id='+ele.id);
+        text = localStorage.getItem(ele.id.replace(/area_/,''));//ele.innerHTML;      
         var ele_height = ele.offsetHeight;
         console.log('ele_height -> '+ele_height);      
         ele.removeAttribute('onclick');
@@ -501,12 +504,13 @@ _gaq.push(['_trackPageview', '/use/about']);
         var text = ele.value;
         console.log('setEditText -> '+ text);
       } else {
-        ele = getElement(_eve.target.id);
+        var text_id = _eve.target.id;
+        ele = getElement(text_id);
         var text = ele.value.replace(/\n/g,'');  
-        //console.log('text -> '+text);
+        console.log('text -> '+text);
         var index = ele.getAttribute('data-index');
         var parent_id = _eve.target.name;
-        //console.log(parent_id + '->' + index +' '+_eve.target.id);
+        console.log(parent_id + '->' + index +' '+text_id);
         ele = getElement(parent_id);
         //console.log(ele);
         ele.removeChild(getElement(_eve.target.id.replace(/area_/,'')));
@@ -518,23 +522,26 @@ _gaq.push(['_trackPageview', '/use/about']);
         }
         if (text.trim() != '') {
           var _texts = this.splitText(text);//do this only since lecture 3
-          var texts = JSON.parse(localStorage.getItem(parent_id) );
-          if (texts == null) {
+          var text_uids = JSON.parse(localStorage.getItem(parent_id) );
+          if (text_uids == null) {
             //case new text
-            texts = _texts;
+            text_uids = [];//_texts;
             //index = -1;
             _gaq.push(['_trackPageview', '/use/createNewText']);
           } 
-          if (_texts.length > 1 && texts != null) {
+          if (_texts.length > 1 && text_uids != null) {
             //do this only since lecture 3
+            var cur_id = '';
             for (var i = 0; i < _texts.length; i++) {
-              texts.splice(index, 1, _texts[i]);
+              cur_id = 'text_'+Date.now();
+              text_uids.splice(index, 1, cur_id);//_texts[i]);
+              localStorage.setItem(cur_id,_texts[i]);
               index++;
             }
             //selection text insert
             _gaq.push(['_trackPageview', '/use/insertSelectText']);
           } else {
-            texts[index] = _texts[0];
+            text_uids[index] = text_id.replace(/area_/,'');//_texts[0];
           } 
           var nodes = ele.childNodes;
           for (var j = nodes.length - 1; j >= 0; j--) {
@@ -542,10 +549,11 @@ _gaq.push(['_trackPageview', '/use/about']);
               ele.removeChild(nodes[j]);
             } 
           }
-          for (var j = 0; j < texts.length; j++) {
-            var j_ele = createElement('li');
-            this.formatText(j_ele, texts[j]);             
-            j_ele.setAttribute('id', parent_id+'_'+j);
+          console.log(text_uids);
+          for (var j = 0; j < text_uids.length; j++) {
+            var j_ele = createElement('li');            
+            this.formatText(j_ele, localStorage.getItem(text_uids[j]));             
+            j_ele.setAttribute('id', text_uids[j]);//parent_id+'_'+j);
             j_ele.setAttribute('tabindex', j);
             j_ele.setAttribute('data-index', j);
             j_ele.setAttribute('name','tab');
@@ -556,7 +564,7 @@ _gaq.push(['_trackPageview', '/use/about']);
             //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
             ele.appendChild(j_ele);
           }
-          localStorage.setItem(parent_id, JSON.stringify(texts) );
+          localStorage.setItem(parent_id, JSON.stringify(text_uids) );
           
           if (!this.hasTextInPage(parent_id)) {
             this.dialogPage.uids.push(parent_id);
@@ -584,8 +592,8 @@ _gaq.push(['_trackPageview', '/use/about']);
             }
             for (var j = 0; j < texts.length; j++) {
               var j_ele = createElement('li');
-              this.formatText(j_ele, texts[j]);             
-              j_ele.setAttribute('id', parent_id+'_'+j);
+              this.formatText(j_ele, localStorage.getItem(texts[j]));             
+              j_ele.setAttribute('id', texts[j]);//parent_id+'_'+j);
               j_ele.setAttribute('tabindex', j);
               j_ele.setAttribute('data-index', j);
               j_ele.setAttribute('name','tab');
@@ -648,51 +656,67 @@ _gaq.push(['_trackPageview', '/use/about']);
           _pe.userId = 'user_'+Date.now();
         }
         _pe.dialogPage = JSON.parse(localStorage.getItem('dialogPage'));
-        if (_pe.dialogPage.userId == null) {
-          //_pe.dialogPage.userId = 'user_'+Date.now();?
-        }
         console.log(_pe.dialogPage);
       } catch (e) {
         console.log(e); 
       }   
-      
-      if (_pe.dialogPage == null) {
-        //_pe.dialogPage = {userId: 'user_'+Date.now(), uids: [], timestamp: Date.now(), lan: 'en-us'};
-        _pe.dialogPage = {uids: [], timestamp: Date.now(), lan: 'en-us'};
-      }
-      var bodies = document.body.childNodes;
-      var new_text = null
       var save = false;
-      for (var i = bodies.length - 1; i >= 0; i--) {
-        var _id = bodies[i].id;
-        if (typeof(_id) != 'undefined' && _id != 'new_text' &&
-            _id != 'menu_div' && _id != 'menu_button' && _id != 'menu_persons' &&
-            _id != null && _id != '') //if _id
-        {        
-          if (!_pe.hasTextInPage(_id)) {
-            var eles = bodies[i].childNodes;
-            var texts = [];
-            var eles_id = null;
-            for (var j = 0; j < eles.length; j++) {
-              eles_id = eles[j].id;
-              if (typeof(eles_id) != 'undefined' && eles_id != null && eles_id != '') {      
-                texts.push(eles[j].innerHTML.trim());
+      if (_pe.dialogPage == null || typeof(dialogPageRelease) == 'undefined' || _pe.dialogPage.timestamp < dialogPageRelease.timestamp) {       
+        localStorage.removeItem('dialogPage');
+        if (typeof(dialogPageRelease) == 'undefined' ) {
+          _pe.dialogPage = null;
+        } else {
+          _pe.dialogPage = dialogPageRelease;
+          //_pe.userId = 'user_' + Date.now();
+          //_pe.dialogPage.userId = _pe.userId;
+          save = true;
+        }
+      }
+
+      if (_pe.dialogPage == null) {
+        _pe.userId = 'user_'+Date.now();
+        _pe.dialogPage = {userId: _pe.userId, uids: [], timestamp: Date.now(), lan: 'en-us'};
+        //if there is no dialogPageRelease create a new dialogPage     
+      
+        var bodies = document.body.childNodes;
+        var new_text = null
+        save = false;
+       
+        
+        for (var i = bodies.length - 1; i >= 0; i--) {
+          var _id = bodies[i].id;
+          if (typeof(_id) != 'undefined' && _id != 'new_text' &&
+              _id != 'menu_div' && _id != 'menu_button' && _id != 'menu_persons' &&
+              _id != null && _id != '') //if _id
+          {        
+            if (!_pe.hasTextInPage(_id)) {
+              var eles = bodies[i].childNodes;
+              var texts = [];
+              var eles_id = null;
+              for (var j = 0; j < eles.length; j++) {
+                eles_id = eles[j].id;
+                if (typeof(eles_id) != 'undefined' && eles_id != null && eles_id != '') {      
+                  //texts.push(eles[j].innerHTML.trim());
+                  texts.push(eles_id);
+                  localStorage.setItem(eles_id, eles[j].innerHTML.trim());
+                }
               }
+              localStorage.setItem(_id, JSON.stringify(texts));
+              _pe.dialogPage.uids.push(_id);
+              save = true;
             }
-            localStorage.setItem(_id, JSON.stringify(texts));
-            _pe.dialogPage.uids.push(_id);
-            save = true;
+            document.body.removeChild(bodies[i]);
           }
-          document.body.removeChild(bodies[i]);
-        }
-        if (_id == 'new_text') {
-          new_text = bodies[i];
-        }
-      } //if _id end
+          if (_id == 'new_text') {
+            new_text = bodies[i];
+          }
+        } //if _id end
+      } 
       if (save) {
         _pe.dialogPage.uids.reverse();
         localStorage.setItem('dialogPage', JSON.stringify(_pe.dialogPage));
-      }       
+      }
+      
       var ele = null;
       var tabindex = 0;
       for (var i = 0; i < _pe.dialogPage.uids.length; i++) {
@@ -703,9 +727,9 @@ _gaq.push(['_trackPageview', '/use/about']);
         if (texts != null) //a intermediate fix - remove after you fixed the text editing
         for (var j = 0; j < texts.length; j++) {
           var j_ele = createElement('li');
-          _pe.formatText(j_ele, texts[j]); 
+          _pe.formatText(j_ele, localStorage.getItem(texts[j])); 
           
-          j_ele.setAttribute('id', _pe.dialogPage.uids[i]+'_'+j);
+          j_ele.setAttribute('id', texts[j]);//_pe.dialogPage.uids[i]+'_'+j);
           j_ele.setAttribute('name', 'tab');
           j_ele.setAttribute('tabindex', tabindex);
           j_ele.setAttribute('data-index', j);
