@@ -16,7 +16,11 @@ content="http://textfire.co/img/logo.jpg">
   <link href="https://fonts.googleapis.com/css?family=Chelsea+Market" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="css/main.css" type="text/css"/>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 <script type="text/javascript" src="js/base64.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/sha512.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/datamodel.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/websocket.js" charset="utf-8"></script>
 <script type="text/javascript">var pageEditor = {};</script>
 <script type="text/javascript" src="js/main.js" charset="utf-8"></script>
 <script type="text/javascript">
@@ -67,15 +71,43 @@ content="http://textfire.co/img/logo.jpg">
     Clear flat text creates a concentrated reading flow. It is highly readable. A way much more than typical lay-outed baroque HTML.
     </div>
   </div>
+  <div id="dialog_4">
+    <div id="text_4" onclick="pageEditor.editText(this.id);" class="div">
+    You may use the return- aka enter-key to close and save an open text once you are finished to edit the text.
+    </div>
+  </div>
+  <div id="dialog_5">
+    <div id="text_5" onclick="pageEditor.editText(this.id);" class="div">
+    With \ + n you can insert a break into the text.\nUse \ + t to insert two visible spaces.
+    </div>
+  </div>
+  <div id="dialog_6">
+    <div id="text_6" onclick="pageEditor.editText(this.id);" class="div">
+    An empty text will be removed from the storage.
+    </div>
+  </div>
+  <div id="dialog_7">
+    <div id="text_7" onclick="pageEditor.editText(this.id);" class="div">
+    With \ + s you will be able to create a selection by splitting a text into two or more subtexts.
+    </div>
+  </div>
+  <div id="dialog_8">
+    <div id="text_8" onclick="pageEditor.editText(this.id);" class="div">
+    Here a some hot-keys: \n
+    \t\t'ctrl'+'m' opens and closes the menu. \n
+    \t\t'ctrl'+'p' opens and closes the persons-menu. \n
+    Later I will explain how to use more hot-keys.
+    </div>
+  </div>
   <li id="new_text" onclick="pageEditor.editText(this.id);" name="tab" tabindex="4" class="div_25">
   new text
   </li>
-  <button id="menu_button" onmouseover="pageEditor.showMenu();" >
+  <button id="menu_button" onmouseover="pageEditor.showMenu();" onclick="pageEditor.showMenu();">
     <span class="menu-bar"></span>
     <span class="menu-bar"></span>
     <span class="menu-bar"></span>
   </button>
-    <div id="menu_div" onmouseout="pageEditor.hideMenu();" class="div_25">
+    <div id="menu_div" onmouseout="pageEditor.hideMenu();">
       <ul onmouseover="pageEditor.showMenu();">
         <a id="lec0" href="#lecture1"><li onmouseover="pageEditor.showMenu();">Lecture One</li></a>
         <!--How to use the editor for linear writing?-->
@@ -90,10 +122,17 @@ content="http://textfire.co/img/logo.jpg">
         <li onmouseover="pageEditor.showMenu();" style="margin-left: -40px;"><hr /></li>
         <a href="#github"><li onmouseover="pageEditor.showMenu();">Github Textfire</li></a>
         <li onmouseover="pageEditor.showMenu();" style="margin-left: -40px;"><hr /></li>
+        <a href="#persons"><li onmouseover="pageEditor.showMenu();" onclick="pageEditor.showHidePersons('click')">Persons</li></a>
+        <li onmouseover="pageEditor.showMenu();" style="margin-left: -40px;"><hr /></li>
         <a href="#login"><li onmouseover="pageEditor.showMenu();">Login</li></a>
         <a href="#member"><li onmouseover="pageEditor.showMenu();">Membership</li></a>
         <a href="#about"><li onmouseover="pageEditor.showMenu();">About</li></a>
-    </ul>
-  </div>
+      </ul>
+    </div>
+    <div id="menu_persons">
+      <ul>
+      <li>persons</li>
+      </ul>
+    </div>
  </body>
 </html>

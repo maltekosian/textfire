@@ -19,7 +19,7 @@ Licensed to hogventure.com under one
 */
 /*
 @author Malte Kosian
-@version 2013-06-30
+@version 2013-07-08
 
 @namespace Main
 @namespace window
@@ -39,8 +39,7 @@ about
 
 we track pages even it is just a function
 _gaq.push(['_trackPageview', '/use/about']);
-*/
- 
+*/ 
   (
   function(_pe) {
     /**
@@ -56,32 +55,57 @@ _gaq.push(['_trackPageview', '/use/about']);
     */
     _pe.keyModifier = false;
     /**
+    @field pageEditor.copyPaste
+    */
+    _pe.copyPaste = '';
+    /**
+    @field pageEditor.kopylink
+    */
+    _pe.kopyLink = '';
+    /**
+    @field pageEditor.toolElem
+    */
+    _pe.toolElem = null;
+    /**
     @method pageEditor.navigateModifier
     
     @param eve
     */
-    _pe.navigateModifier = function(eve) {
-      console.log(eve.keyCode);
-      _pe.keyModifier = (eve.keyCode == 17);
+    _pe.navigateModifier = function(eve) {      
+      if (eve.keyCode == 67 || eve.keyCode == 75 || eve.keyCode == 76 || eve.keyCode == 77 || eve.keyCode == 80 || eve.keyCode == 86) {
+        eve.preventDefault();
+      }
+      //console.log('navigateModifier -> '+eve.keyCode);
+      if ((eve.keyCode == 17 || eve.keyCode == 67 || eve.keyCode == 75 || eve.keyCode == 76 || eve.keyCode == 77 || eve.keyCode == 80 || eve.keyCode == 86) && !_pe.keyModifier) { 
+        eve.preventDefault();
+        _pe.keyModifier = true; 
+      }
     }
     /**
     @method pageEditor.navigateTo
 
     @param eve
     */
-    _pe.navigateTo = function(eve) {
+    _pe.navigateTo = function(eve) {      
+      eve.preventDefault();
       var kc = eve.keyCode;
-      console.log('kc = '+kc);
-      if (!_pe.keyModifier) {
+      console.log('kc = '+kc+' '+_pe.keyModifier);
+      var elem = eve.target;
+      if (!_pe.keyModifier) {        
+        //console.log(elem);
         if (kc == 13) {
           //close or select textarea | or select option of menu, list, etc.
-          var elem = eve.target;
-          _pe.editText(elem.id, elem.getAttribute('data-index'));
+          
+          if (elem == document.activeElement) {
+            _pe.editText(elem.id, elem.getAttribute('data-index'));
+          }
+          _gaq.push(['_trackPageview', '/use/navigateTo/'+kc]);
         }
         if (kc == 37 || kc == 38 || kc == 39 || kc == 40) {
-          //on key up|right|left|down
-          var elem = eve.target;
-          elem.blur();
+          //on key up|right|left|down        
+          if (elem != document.body) {
+            elem.blur();
+          } 
           var index = elem.tabIndex;
           console.log('tabindex = '+index);
           if (kc == 39 || kc == 40 ) {
@@ -90,35 +114,109 @@ _gaq.push(['_trackPageview', '/use/about']);
             elem = _pe.getTabIndex(index-1);//down|left
           }
           if (elem == null) {
-            elem = eve.target;
+            elem = (eve.target == document.body ? _pe.getTabIndex(0) : eve.target);
           }
-          elem.focus();     
+          //console.log(elem);
+          elem.focus();  
+          _gaq.push(['_trackPageview', '/use/navigateTo/'+kc]);
         }
       } else {
+        
         //keyboard shortcuts on 'ctrl' - 'Strg'
 
         //p - person
-
+        if (kc == 80) { 
+          _pe.keyModifier = false;          
+          _pe.showHidePersons('key');                 
+        }
         //c - copy
-
+        if (elem == document.activeElement && kc == 67) {
+          _pe.keyModifier = false;
+          console.log(elem);
+          _gaq.push(['_trackPageview', '/use/navigateTo/copyText']);
+          _pe.copyPaste = elem.value; 
+          console.log('cp = '+ _pe.copyPaste);
+        }
         //v - paste
-
+        if (elem == document.activeElement && kc == 86) { //
+          _pe.keyModifier = false; 
+          console.log(elem);
+          _gaq.push(['_trackPageview', '/use/navigateTo/pasteText']);
+          console.log('cpaste = '+ _pe.copyPaste);
+          elem.value = elem.value + _pe.copyPaste; 
+          //get the caret position of the text and paste there
+        }
+        //k - copy id for link
+        if (kc == 75) {          
+          _pe.keyModifier = false;
+          _pe.kopyForLink(elem, 'key');
+        }
         //l - link
-
+        if (kc == 76) {
+          _pe.linkTo(eve);
+          _pe.keyModifier = false;
+        }
         //m - open/close menu
-
-        //e - edit if editable element
-
+        if (kc == 77) {           
+          elem = getElement('menu_div'); 
+          console.log(elem);
+          var _elp = 'Show';
+          if (elem.style.display == 'block') {
+            elem.style.display = 'none';            
+          } else {
+            elem.style.display = 'block'; //console.log(elem.style.display); 
+            var _elp = 'Hide';
+          }        
+          _pe.keyModifier = false;
+          if (eve.target != document.body) 
+          _gaq.push(['_trackPageview', '/use/navigateTo/menu'+_elp]);
+        }
         //t - title
 
         //alt e | alt p - switch between edit and play mode
+        
       }
       if (kc == 17) {
         _pe.keyModifier = false;
       }
     }
     /**
-
+    @method pageEditor.linkTo
+    */
+    _pe.linkTo = function(eve) {
+      var elem = eve.target;
+      var type = eve.type;
+      console.log('linkTo -> '+type+' '+elem+'\n -> '+elem.id+' kl='+_pe.kopyLink);
+      //var item = localStorage.getItem(elem.id);
+      //item.link = _pe.kopyLink;
+      //redraw the dialog.text.item-button value = item.link
+      _gaq.push(['_trackPageview', '/use/linkTo/'+type]);
+    }
+    /**
+    @method pageEditor.kopyForLink
+    */
+    _pe.kopyForLink = function(elem, type) {
+      _pe.kopyLink = elem.id.replace(/area_/, '');
+      console.log('_pe.kopyLink -> '+_pe.kopyLink);
+      _gaq.push(['_trackPageview', '/use/kopyForLink/'+type]);
+    }
+    /**
+    @method pageEditor.showPersons
+    */
+    _pe.showHidePersons = function(type) {
+      var elem = getElement('menu_persons');
+      var t = 'show';
+      if (elem.style.display == 'block') {
+        elem.style.display = 'none';
+        t = 'hide';
+      } else {          
+        elem.style.display = 'block';
+      }  
+      console.log('/use/showHidePersons/'+t+'/'+type);
+      _gaq.push(['_trackPageview', '/use/showHidePersons/'+t+'/'+type]);
+    }
+    /**
+    @method pageEditor.getTabIndex
     */
     _pe.getTabIndex = function(_index) {
       var eles = document.getElementsByName('tab');
@@ -131,12 +229,12 @@ _gaq.push(['_trackPageview', '/use/about']);
       return null;
     }
     /**
-
+    @method pageEditor.setTabIndeces
     */
     _pe.setTabIndeces = function() {
       var eles = document.getElementsByName('tab');
       for (var i = 0; i < eles.length; i++) {
-        eles[i].tabIndex = i;
+        eles[i].setAttribute('tabindex', ''+i);
       }
       return null;
     }
@@ -144,16 +242,16 @@ _gaq.push(['_trackPageview', '/use/about']);
     @method pageEditor.showMenu
     */
     _pe.showMenu = function() {    
-      document.getElementById('menu_div').style.display = 'block';
+      getElement('menu_div').style.display = 'block';
     }
     /**
-    @method pageEditor.hashChanged
+    @method pageEditor.hideMenu
     */
     _pe.hideMenu = function() {
-      document.getElementById('menu_div').style.display = 'none';
+      getElement('menu_div').style.display = 'none';
     }
     /**
-    @method pageEditor.
+    @method pageEditor.hasChanged
 
     @param _eve
     */
@@ -163,6 +261,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       console.log(_eve);
       var url = _eve.newURL;
       var hash = url.split('#')[1];
+      console.log('hash # '+hash);
       switch (hash) {
         case 'github':
           _gaq.push(['_trackPageview', '/use/'+hash]);
@@ -252,7 +351,7 @@ _gaq.push(['_trackPageview', '/use/about']);
 
     */
     _pe.reformatText = function(_text) {
-      _text = _text.replace(/<br>/g, '\\n');      
+      _text = _text.replace(/<!-- <br> -->/g, '\\n');      
       _text = _text.replace(/&nbsp;&nbsp;/g, '\\t');
       return _text;
     }
@@ -270,25 +369,23 @@ _gaq.push(['_trackPageview', '/use/about']);
 
     @param _id
     */
-    _pe.showToolTip = function (_id, _text) {
+    _pe.showToolTip = function (_id, _text) {      
+      _id = _id.replace(/area_/, '');
+      _text = _text.replace(/area_/, '');
       var ele = getElement(_id);
+
       //console.log(ele.offsetTop + '-' +ele.offsetLeft);
       var body = document.body;
-      var n_ele = createElement('span');
-      n_ele.setAttribute('id', 'tt_'+_id);
-      n_ele.appendChild(createTextNode(_text));
-      n_ele.style.position = 'absolute';
-      n_ele.style.top = (ele.offsetTop-25)+'px';
-      n_ele.style.left = (ele.offsetLeft)+'px';
-      n_ele.style.background = 'rgba(254,254,255,0.95)';
-      n_ele.style.zIndex = 10;
-      n_ele.style.borderRadius = '10px';
-      n_ele.style.padding = '5px';
-      n_ele.style.boxShadow = '-1px -1px 1px rgba(51,51,51,0.5),' + 
-                              '-1px 1px 1px rgba(51,51,51,0.5),' +
-                              '1px -1px 1px rgba(51,51,51,0.5),' +
-                              '2px 2px 2px rgba(51,51,51,0.5)';
-      body.appendChild(n_ele);
+      if (_pe.toolElem) {
+        body.removeChild(_pe.toolElem);
+      }
+      _pe.toolElem = createElement('vdi');
+      _pe.toolElem.setAttribute('id', 'tt_'+_id);
+      _pe.toolElem.appendChild(createTextNode(_text+' '));
+      _pe.toolElem.className = 'tooltipElem';
+      _pe.toolElem.style.top = (ele.offsetTop)+'px';
+      _pe.toolElem.setAttribute('onclick','pageEditor.hideToolTip(this.id);');
+      body.appendChild(_pe.toolElem);
     }
     /**
     @method pageEditor.hideToolTip
@@ -297,11 +394,12 @@ _gaq.push(['_trackPageview', '/use/about']);
     */
     _pe.hideToolTip = function(_id) {
       try {
-        //console.log('tt_'+_id);
-        var ele = getElement('tt_'+_id);
+        console.log('-> '+_id);
+        var ele = getElement(''+_id);
         ele.parentNode.removeChild(ele);
+        _pe.toolElem = null;
       } catch (e) {
-      }
+      } 
     }
     /**
     @method pageEditor.editText
@@ -313,6 +411,7 @@ _gaq.push(['_trackPageview', '/use/about']);
       var ele = getElement(_id);
       var text = '';
       var textarea = createElement('textarea');
+      document.activeElement.blur();
       if (_id == 'new_text') {
         _index = 0;
         _id = 'text_'+Date.now();
@@ -328,6 +427,8 @@ _gaq.push(['_trackPageview', '/use/about']);
         j_ele.setAttribute('tabindex', _index);
         j_ele.setAttribute('data-index', _index);
         j_ele.setAttribute('name', 'tab');
+        j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+        //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
         //onclick
         //j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+_index+');');        
         ele.appendChild(j_ele);        
@@ -346,10 +447,10 @@ _gaq.push(['_trackPageview', '/use/about']);
         document.body.appendChild(_ele);
         _gaq.push(['_trackPageview', '/use/newText']);
       } else {
-        var parent_id = ele.parentNode.id.split('_');
-        parent_id = parent_id[0]+'_'+parent_id[1];
-        console.log('parent_id -> '+parent_id+', '+_index);
-        text = JSON.parse(localStorage.getItem(parent_id))[_index];//ele.innerHTML;      
+        var parent_id = ele.parentNode.id;//.split('_');
+        //parent_id = parent_id[0]+'_'+parent_id[1];
+        console.log('parent_id -> '+parent_id+', '+_index+' ele.id='+ele.id);
+        text = localStorage.getItem(ele.id.replace(/area_/,''));//ele.innerHTML;      
         var ele_height = ele.offsetHeight;
         console.log('ele_height -> '+ele_height);      
         ele.removeAttribute('onclick');
@@ -371,57 +472,76 @@ _gaq.push(['_trackPageview', '/use/about']);
         }
         //add the textarea
         ele.appendChild(textarea);
+        var _ele = createElement('div');
+        _ele.appendChild(createTextNode('new link'));        
+        _ele.style.position = 'absolute';
+        _ele.style.left = '75%';
+        _ele.style.top = ele.offsetTop + 'px';
+        _ele.className = 'div_25';
+        _ele.addEventListener('click', pageEditor.linkTo, false);
+        ele.appendChild(_ele);
+        //
+        _pe.showToolTip(ele.id, ele.id);
         _gaq.push(['_trackPageview', '/use/editText']);
       }      
       this.setTabIndeces();
       textarea.focus();
-    } 
+    }; 
     /**
     @method pageEditor.setEditText
 
     @param _eve
     */
     _pe.setEditText = function(_eve) {
-      console.log('setEditText -> '+ _eve.target.id);
-      console.log('setEditText -> '+ _eve.keyCode);
+      if (_pe.keyModifier || _eve.keyCode == 17) {
+        return;
+      }
+      //console.log('setEditText -> '+ _eve.target.id);
+      console.log('setEditText -> '+_eve.target.id+', '+_eve.keyCode);
       var keycode = _eve.keyCode;
       if (keycode != 13) {
         ele = getElement(_eve.target.id);
         var text = ele.value;
         console.log('setEditText -> '+ text);
       } else {
-        ele = getElement(_eve.target.id);
-        var text = ele.value.replace(/\n/g,'');       
+        var text_id = _eve.target.id;
+        ele = getElement(text_id);
+        var text = ele.value.replace(/\n/g,'');  
+        console.log('text -> '+text);
         var index = ele.getAttribute('data-index');
         var parent_id = _eve.target.name;
-        console.log(parent_id + '->' + index +' '+_eve.target.id);
+        console.log(parent_id + '->' + index +' '+text_id);
         ele = getElement(parent_id);
         //console.log(ele);
         ele.removeChild(getElement(_eve.target.id.replace(/area_/,'')));
         try {
-          this.hideToolTip(parent_id);
+          //this.hideToolTip(parent_id);
+          this.hideToolTip(_eve.target.id.replace(/area_/,''));
         } catch(e) {
           console.log(e);
         }
         if (text.trim() != '') {
           var _texts = this.splitText(text);//do this only since lecture 3
-          var texts = JSON.parse(localStorage.getItem(parent_id) );
-          if (texts == null) {
+          var text_uids = JSON.parse(localStorage.getItem(parent_id) );
+          if (text_uids == null) {
             //case new text
-            texts = _texts;
+            text_uids = [];//_texts;
             //index = -1;
             _gaq.push(['_trackPageview', '/use/createNewText']);
           } 
-          if (_texts.length > 1 && texts != null) {
+          if (_texts.length > 1 && text_uids != null) {
             //do this only since lecture 3
+            var cur_id = '';
             for (var i = 0; i < _texts.length; i++) {
-              texts.splice(index, 1, _texts[i]);
+              cur_id = 'text_'+Date.now();
+              text_uids.splice(index, 1, cur_id);//_texts[i]);
+              localStorage.setItem(cur_id,_texts[i]);
               index++;
             }
             //selection text insert
             _gaq.push(['_trackPageview', '/use/insertSelectText']);
           } else {
-            texts[index] = _texts[0];
+            text_uids[index] = text_id.replace(/area_/,'');//_texts[0];
           } 
           var nodes = ele.childNodes;
           for (var j = nodes.length - 1; j >= 0; j--) {
@@ -429,19 +549,25 @@ _gaq.push(['_trackPageview', '/use/about']);
               ele.removeChild(nodes[j]);
             } 
           }
-          for (var j = 0; j < texts.length; j++) {
+          console.log(text_uids);
+          var text = null;
+          for (var j = 0; j < text_uids.length; j++) {
             var j_ele = createElement('li');
-            this.formatText(j_ele, texts[j]);             
-            j_ele.setAttribute('id', parent_id+'_'+j);
+            text = localStorage.getItem(text_uids[j]);
+            this.formatText(j_ele, text);             
+            j_ele.setAttribute('id', text_uids[j]);//parent_id+'_'+j);
             j_ele.setAttribute('tabindex', j);
             j_ele.setAttribute('data-index', j);
+            //j_ele.setAttribute('data-link', );
             j_ele.setAttribute('name','tab');
             j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
             j_ele.addEventListener('keydown', this.navigateModifier, true);
             j_ele.addEventListener('keyup', this.navigateTo, true);
+            j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+            //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
             ele.appendChild(j_ele);
           }
-          localStorage.setItem(parent_id, JSON.stringify(texts) );
+          localStorage.setItem(parent_id, JSON.stringify(text_uids) );
           
           if (!this.hasTextInPage(parent_id)) {
             this.dialogPage.uids.push(parent_id);
@@ -469,14 +595,16 @@ _gaq.push(['_trackPageview', '/use/about']);
             }
             for (var j = 0; j < texts.length; j++) {
               var j_ele = createElement('li');
-              this.formatText(j_ele, texts[j]);             
-              j_ele.setAttribute('id', parent_id+'_'+j);
+              this.formatText(j_ele, localStorage.getItem(texts[j]));             
+              j_ele.setAttribute('id', texts[j]);//parent_id+'_'+j);
               j_ele.setAttribute('tabindex', j);
               j_ele.setAttribute('data-index', j);
               j_ele.setAttribute('name','tab');
               j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
               j_ele.addEventListener('keydown', this.navigateModifier, true);
               j_ele.addEventListener('keyup', this.navigateTo, true);
+              j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+              //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
               ele.appendChild(j_ele);
             }
             localStorage.setItem(parent_id, JSON.stringify(texts) );
@@ -486,8 +614,10 @@ _gaq.push(['_trackPageview', '/use/about']);
         this.setTabIndeces();
         
         ele = getElement(_eve.target.id.replace(/area_/, ''));
-        console.log(ele);
-        ele.focus();
+        console.log(ele+'\n'+_eve.target.id.replace(/area_/, ''));
+        if (ele != null) {
+          ele.focus();
+        }
       }
       //keycode != 13
     }
@@ -529,82 +659,107 @@ _gaq.push(['_trackPageview', '/use/about']);
           _pe.userId = 'user_'+Date.now();
         }
         _pe.dialogPage = JSON.parse(localStorage.getItem('dialogPage'));
-        if (_pe.dialogPage.userId == null) {
-          //_pe.dialogPage.userId = 'user_'+Date.now();?
-        }
         console.log(_pe.dialogPage);
       } catch (e) {
         console.log(e); 
       }   
-      
-      if (_pe.dialogPage == null) {
-        //_pe.dialogPage = {userId: 'user_'+Date.now(), uids: [], timestamp: Date.now(), lan: 'en-us'};
-        _pe.dialogPage = {uids: [], timestamp: Date.now(), lan: 'en-us'};
-      }
-      var bodies = document.body.childNodes;
-      var new_text = null
       var save = false;
-      for (var i = bodies.length - 1; i >= 0; i--) {
-        var _id = bodies[i].id;
-        if (typeof(_id) != 'undefined' && _id != 'new_text' &&
-            _id != 'menu_div' && _id != 'menu_button' && 
-            _id != null && _id != '') //if _id
-        {        
-          if (!_pe.hasTextInPage(_id)) {
-            var eles = bodies[i].childNodes;
-            var texts = [];
-            var eles_id = null;
-            for (var j = 0; j < eles.length; j++) {
-              eles_id = eles[j].id;
-              if (typeof(eles_id) != 'undefined' && eles_id != null && eles_id != '') {      
-                texts.push(eles[j].innerHTML.trim());
+      if (_pe.dialogPage == null || typeof(dialogPageRelease) == 'undefined' || _pe.dialogPage.timestamp < dialogPageRelease.timestamp) {       
+        localStorage.removeItem('dialogPage');
+        if (typeof(dialogPageRelease) == 'undefined' ) {
+          _pe.dialogPage = null;
+        } else {
+          _pe.dialogPage = dialogPageRelease;
+          //_pe.userId = 'user_' + Date.now();
+          //_pe.dialogPage.userId = _pe.userId;
+          save = true;
+        }
+      }
+
+      if (_pe.dialogPage == null) {
+        _pe.userId = 'user_'+Date.now();
+        _pe.dialogPage = {userId: _pe.userId, uids: [], timestamp: Date.now(), lan: 'en-us'};
+        //if there is no dialogPageRelease create a new dialogPage     
+      
+        var bodies = document.body.childNodes;
+        var new_text = null
+        save = false;
+       
+        
+        for (var i = bodies.length - 1; i >= 0; i--) {
+          var _id = bodies[i].id;
+          if (typeof(_id) != 'undefined' && _id != 'new_text' &&
+              _id != 'menu_div' && _id != 'menu_button' && _id != 'menu_persons' &&
+              _id != null && _id != '') //if _id
+          {        
+            if (!_pe.hasTextInPage(_id)) {
+              var eles = bodies[i].childNodes;
+              var texts = [];
+              var eles_id = null;
+              for (var j = 0; j < eles.length; j++) {
+                eles_id = eles[j].id;
+                if (typeof(eles_id) != 'undefined' && eles_id != null && eles_id != '') {      
+                  //texts.push(eles[j].innerHTML.trim());
+                  texts.push(eles_id);
+                  localStorage.setItem(eles_id, eles[j].innerHTML.trim());
+                  //localStorage.setItem(eles_id, {text:eles[j].innerHTML.trim(),link:null,uid:eles_id);
+                }
               }
+              localStorage.setItem(_id, JSON.stringify(texts));
+              _pe.dialogPage.uids.push(_id);
+              save = true;
             }
-            localStorage.setItem(_id, JSON.stringify(texts));
-            _pe.dialogPage.uids.push(_id);
-            save = true;
+            document.body.removeChild(bodies[i]);
           }
-          document.body.removeChild(bodies[i]);
-        }
-        if (_id == 'new_text') {
-          new_text = bodies[i];
-        }
-      } //if _id end
+          if (_id == 'new_text') {
+            new_text = bodies[i];
+          }
+        } //if _id end
+      } 
       if (save) {
         _pe.dialogPage.uids.reverse();
         localStorage.setItem('dialogPage', JSON.stringify(_pe.dialogPage));
-      }       
+      }
+      
       var ele = null;
-      var tabindex;
+      var tabindex = 0;
       for (var i = 0; i < _pe.dialogPage.uids.length; i++) {
         ele = createElement('div');
         ele.setAttribute('id', _pe.dialogPage.uids[i]);
         //ele.appendChild( createTextNode(localStorage.getItem(_pe.dialogPage.uids[i]) ) ); 
+        var text = null;
         var texts = JSON.parse(localStorage.getItem(_pe.dialogPage.uids[i]) );
         if (texts != null) //a intermediate fix - remove after you fixed the text editing
         for (var j = 0; j < texts.length; j++) {
           var j_ele = createElement('li');
-          _pe.formatText(j_ele, texts[j]); 
+          text = localStorage.getItem(texts[j]);
+          _pe.formatText(j_ele, text);    
           
-          j_ele.setAttribute('id', _pe.dialogPage.uids[i]+'_'+j);
+          j_ele.setAttribute('id', texts[j]);//_pe.dialogPage.uids[i]+'_'+j);
           j_ele.setAttribute('name', 'tab');
           j_ele.setAttribute('tabindex', tabindex);
           j_ele.setAttribute('data-index', j);
           j_ele.setAttribute('onclick', 'pageEditor.editText(this.id, '+j+');');
           j_ele.addEventListener('keydown', _pe.navigateModifier, true);
           j_ele.addEventListener('keyup', _pe.navigateTo, true);
+          j_ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+          //j_ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
           ele.appendChild(j_ele);
           tabindex++;
         }
         ele.className = 'div';
        
-        ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
-        ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
+        //ele.setAttribute('onmouseover', 'pageEditor.showToolTip(this.id, this.id);'); 
+        //ele.setAttribute('onmouseout', 'pageEditor.hideToolTip(this.id);');
         document.body.appendChild(ele);
       }
       new_text.addEventListener('keydown', _pe.navigateModifier, true);
       new_text.addEventListener('keyup', _pe.navigateTo, true);
+      new_text.setAttribute('name', 'tab');
+      new_text.setAttribute('tabindex', tabindex);
       document.body.appendChild(new_text);
+      document.addEventListener('keyup', _pe.navigateTo, true);
+      document.addEventListener('keydown', _pe.navigateModifier, true);
     }
     //return the instance of pageEditor
     return _pe;
