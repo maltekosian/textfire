@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title> Mobile Dialog Game Editor </title>
+  <meta name="generator" content="malte kosian">
+  <meta name="author" content="malte kosian">
+  <meta name="keywords" content="game, editor, mobile, dialog game, game editor">
+  <meta name="description" content="a simple mobilde dialog game editor">
+ <script type="text/javascript">
+ </script>
+ <style type="text/css">
+  body {margin: 0; background: #000;}
+  canvas {background: #fff; }
+ </style>
+ </head>
+ <body>
+  <script>
+  (function (_win) {
+    var editor = {
+      dialogs: [],
+      persons: [],
+      uidcounter: [],
+      currentDialog: null,
+      currentDialogLine: null,
+      canvas: null,
+      ctx: null,
+      bbcanvas: null,
+      btx: null,
+      mx: 0,
+      my: 0,
+      px: 0,
+      py: 0,
+      pressed: false,
+      mend: false,
+      screenwidth: 0,
+      screenheight: 0,
+      screendim: 0,
+      canvassize: 400,
+      update: false,
+      area: null,
+      text: '',
+      showSelectPerson: false,
+      showSelectLink: false,
+      showMenu: false,
+      uidMax: 4,
+      menu: ['new', 'load', 'save', 'import', 'export', 'publish'],
+      logo: null,
+
+      init: function() {
+        editor.screenwidth = _win.innerWidth;
+        editor.screenheight = _win.innerHeight;
+        editor.area = document.createElement('textarea');
+        editor.area.addEventListener('keydown', function(eve) {editor.keydown(eve);} ,false);
+        editor.area.addEventListener('keyup', function(eve) {editor.keyup(eve);} ,false);
+        document.body.appendChild(editor.area);
+        editor.area.focus();
+        editor.area.style.opacity = '0.01';
+        editor.area.style.position = 'absolute';
+        editor.area.style.top = '0';
+        editor.area.style.width = '1px';
+        editor.area.style.height = '1px';
+        editor.area.style.border = '0';
+        editor.area.style.color = 'rgba(0,0,0,0.01)';
+
+        editor.logo = new Image();
+        editor.logo.src = 'http://textfire.co/img/logoTextFire.png';
+
+        editor.canvas = document.querySelector('canvas');
+        if (editor.canvas == null)
+        {
+          editor.canvas = document.createElement('canvas');
+        }
+        editor.screendim = editor.screenwidth < editor.screenheight ? editor.screenwidth : editor.screenheight;
+        while (editor.canvassize < editor.screendim && editor.canvassize < 600)
+        {
+          editor.canvassize += 200;
+        }
+        console.log('canvassize >'+editor.canvassize+' by '+editor.screendim);
+        editor.canvas.width = editor.screendim;
+        editor.canvas.height = editor.screendim;
+        editor.canvas.style.width = editor.screendim+'px';
+        editor.canvas.style.height = editor.screendim+'px';
+        editor.canvas.style.position = 'absolute';
+        editor.canvas.style.top = '0';
+        editor.canvas.style.left = '0';
+
+        editor.ctx = editor.canvas.getContext('2d');
+        if (editor.bbcanvas == null)
+        {
+          editor.bbcanvas = document.createElement('canvas');
+        }
+        editor.bbcanvas.width = editor.canvassize;
+        editor.bbcanvas.height = editor.canvassize;
+        editor.btx = editor.bbcanvas.getContext('2d');
+        editor.btx.font = '16px Sans-Serif';
+        try {
+          document.body.removeChild(document.querySelector('canvas'));
+        } catch (e) { }
+        document.body.appendChild(editor.canvas);
+
+        if ('ontouchstart' in window)
+        {
+          console.log('using touch');
+          editor.canvas.addEventListener('touchstart',
+          function(eve) {
+            editor.mousePressed(eve.touches[0].pageX/editor.screendim*editor.canvassize,
+              eve.touches[0].pageY/editor.screendim*editor.canvassize);
+          },
+          false);
+          editor.canvas.addEventListener('touchmove',
+          function(eve) {
+            editor.mx = eve.touches[0].pageX/editor.screendim*editor.canvassize;
+            editor.my = eve.touches[0].pageY/editor.screendim*editor.canvassize;
+            editor.mouseMoved(editor.mx,editor.my);
+          },
+          false);
+          editor.canvas.addEventListener('touchend',
+          function(eve) {
+            if (!game.mend) {
+              editor.mend = true;
+              editor.mouseReleased(editor.mx, editor.my);
+            }
+          },
+          false);
+          editor.canvas.addEventListener('touchcancel',
+          function(eve) {
+            if (!editor.mend) {
+              editor.mend = true;
+              editor.mouseReleased(editor.mx, editor.my);
+            }
+          },
+          false);
+        } else {
+          editor.canvas.addEventListener('mousedown',
+          function(eve) {
+            editor.mousePressed(eve.pageX/editor.screendim*editor.canvassize,
+              eve.pageY/editor.screendim*editor.canvassize);
+          },
+          false);
+          editor.canvas.addEventListener('mousemove',
+          function(eve) {
+            editor.mx = eve.pageX/editor.screendim*editor.canvassize;
+            editor.my = eve.pageY/editor.screendim*editor.canvassize;
+            editor.mouseMoved(editor.mx,editor.my);
+          },
+          false);
+          editor.canvas.addEventListener('mouseup',
+          function(eve) {
+            editor.mouseReleased(eve.pageX/editor.screendim*editor.canvassize,
+              eve.pageY/editor.screendim*editor.canvassize);
+          },
+          false);
+        }
+        editor.area.focus();
+        editor.update = true;
+        requestAnimationFrame(function() { editor.updateGraphics(); });
+      },
+      keydown: function(eve) {
+
+      },
+      keyup: function(eve) {
+        //console.log(eve);
+        var keycode = (typeof eve.key == 'undefined' ? eve.which : eve.key.toLowerCase());
+        console.log('keycode -> '+keycode);
+        //alert('keycode -> '+keycode);
+        //ctx.fillText('keycode -> '+(keycode), 5, 20);
+        if (keycode == 'enter' || keycode == 13) {
+          if (this.showSelectPerson) {
+            this.addPerson(this.area.value);
+          } else {
+            /*if (this.currentDialog == null) {
+              this.createDialog();
+            }
+            if (this.currentDialogLine) {
+              this.addDialogLine(this.area.value, this.currentDialogLine);
+              this.currentDialogLine = null;
+              //alert('curry DialogLine');
+              this.text = this.area.value;
+              this.update = true;
+              return;
+            }*/
+
+            switch (this.area.value.replace(/\n/g,'')) {
+              case '/p':
+              case '\\p':
+                this.area.value = '';
+                if (this.currentDialog == null) {
+                  this.createDialog();
+                  this.addDialogLine('');
+                } else if (this.currentDialogLine == null) {
+                  this.addDialogLine('');
+                }
+                //add or select person for current dialog line
+                this.showSelectPerson = true;
+                this.area.value = '';
+              break;
+              case '/l':
+              case '\\l':
+                //add or change the link to dialog for the current dialog line
+                this.area.value = '';
+                this.showSelectLink = true;
+                this.area.value = '';
+              break;
+              case '/d':
+              case '\\d':
+                //new dialog
+                this.area.value = '';
+                this.createDialog();
+                this.area.value = '';
+              break;
+              case '/e':
+              case '\\e':
+                //edit current dialog line
+                //select a dialog line before
+                this.area.value = this.mediamanager.getMediaValue(this.currentDialogLine.uid);
+              break;
+              case '/r':
+              case '\\r':
+                //edit current dialog line
+                this.removeDialog(this.currentDialogLine.uid);
+                this.area.value = '';
+              break;
+              default:
+                //
+                alert('default: "'+this.area.value+'"');
+                if (this.currentDialog == null) {
+                  this.createDialog();
+                }
+                if (this.currentDialogLine) {
+                  this.addDialogLine(this.area.value, this.currentDialogLine);
+                  this.currentDialogLine = null;
+                  //alert('curry DialogLine');
+                  //this.text = this.area.value;
+                  //this.update = true;
+                  //return;
+                } else {
+                  //alert('addDialogLine');
+                  this.addDialogLine(this.area.value);
+                  this.area.value = '';
+                }
+              break;
+            }
+          }
+        } else {
+          console.log('keycode -> '+keycode);
+        }
+        this.text = this.area.value;
+        this.update = true;
+      },
+      createNew: function() {
+        var abc = 'abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var uid = '';
+        while (uid.length < this.uidMax || this.hasUid(uid)) {
+           uid = '';
+           for (var i = 0; i< this.uidMax; i++)
+           {
+             uid = uid + abc.substr(Math.floor(Math.random()*abc.length), 1);
+           }
+        }
+        this.addUid(uid);
+        return uid;
+      },
+      hasUid: function(_uid) {
+        for (var i = 0; i < this.uidcounter.length; i++) {
+          if (this.uidcounter[i] == _uid) {
+            return true;
+          }
+        }
+        return false;
+      },
+      removeUid: function(_uid) {
+        for (var i = 0; i < this.uidcounter.length; i++) {
+          if (this.uidcounter[i] == _uid) {
+            this.udcounter.splice(i,1);
+          }
+        }
+      },
+      addUid: function(_uid) {
+        if (!this.hasUid(_uid)) {
+          this.uidcounter.push(_uid);
+        }
+      },
+      createDialog: function() {
+        var d = new Dialog(this.createNew());
+        this.dialogs.push(d);
+        this.currentDialog = d;
+        //this.area.value = '';
+        this.currentDialogLine = null;
+      },
+      addDialogLine: function(_text, dl) {
+        if (dl == null) {
+          dl = new DialogLine(this.createNew());
+          this.currentDialog.lines.push(dl);
+        }
+        this.mediamanager.addMedia(dl.uid, _text);
+        this.currentDialogLine = dl;
+        if (dl.person == null) {
+          this.showSelectPerson = true;
+        }
+      },
+      selectPerson: function(_index) {//_x, _y) {
+        this.currentDialogLine.setPerson(this.persons[_index].name);
+        this.showSelectPerson = false;
+        this.showSelectLink = true;
+        //this.update = true;
+      },
+      addPerson: function(_text) {
+        var p = new Person(this.createNew());
+        p.setName(this.createNew());
+        this.mediamanager.addMedia(p.name,_text);
+        this.currentDialogLine.setPerson(p.name);
+        this.persons.push(p);
+        this.area.value = '';
+        this.showSelectPerson = false;
+        //this.currentDialogLine = null;
+        this.showSelectLink = true;
+        //this.update = true;
+      },
+      setLink: function(_link) {
+        this.currentDialogLine.link = _link;
+        this.showSelectLink = false;
+        this.currentDialogLine = null;
+      },
+    /*clicker: function(eve) {
+        var x = eve.pageX;
+        var y = eve.pageY;
+        this.createDialog();
+        this.area.focus();
+      },*/
+      updateGraphics: function() {
+        if (this.update) {
+          this.draw();
+          this.area.focus();
+          editor.area.focus();
+        }
+        requestAnimationFrame(function() { editor.updateGraphics(); });
+      },
+      draw: function() {
+        var btx = this.btx;
+        btx.fillStyle = '#fff';
+        btx.fillRect(0,0,this.canvassize,this.canvassize);
+        btx.fillStyle = '#000';
+        var h = 2;
+        var person = '';
+        for (var i = 0; i < this.dialogs.length; i++) {
+          var ho = h;
+          btx.fillStyle = '#000';
+          h+=23;
+          btx.fillText('dialog uid: '+this.dialogs[i].uid, 7, h-6);
+          for (var j = 0; j < this.dialogs[i].lines.length; j++) {
+            h += 25;
+            if (this.currentDialogLine != null && this.currentDialogLine.uid == this.dialogs[i].lines[j].uid) {
+              btx.fillStyle = 'rgba(102,204,102,0.5)';
+            } else {
+              btx.fillStyle = 'rgba(204,204,204,0.5)';
+            }
+            btx.strokeStyle = 'rgba(124,124,124,0.75)';
+            btx.fillRect(4, h-24, this.canvassize-8, 22);
+            btx.strokeRect(4, h-24, this.canvassize-8, 22);
+            btx.fillStyle = '#000';
+            person = this.mediamanager.getMediaValue(this.dialogs[i].lines[j].person);
+            if (person == null) {
+              person = '';
+            }
+            btx.fillText(person+': "'+this.mediamanager.getMediaValue(this.dialogs[i].lines[j].uid)+'" link to->'+(this.dialogs[i].lines[j].link == null ? '' : this.dialogs[i].lines[j].link), 7, h-6);
+          }
+          if (this.currentDialog != null && this.currentDialog.uid == this.dialogs[i].uid) {
+            btx.strokeStyle = '#0C0';
+          } else {
+            btx.strokeStyle = '#000';
+          }
+          btx.lineWidth = 0.75;
+          btx.strokeRect(2, ho+2, this.canvassize-4, h-ho-2);
+        }
+        if (this.showSelectPerson) {
+          btx.fillStyle = '#f8f8f8';
+          btx.fillRect(145,15,310,this.canvassize-30);
+          var h = 40;
+          btx.fillStyle = '#000';
+          btx.fillText('Select or create person:', 155, h-4);
+          btx.strokeStyle = '#000';
+          for (var i = 0; i < this.persons.length; i++) {
+            btx.strokeRect(150, h+2, 300, 22);
+            btx.fillText(this.mediamanager.getMediaValue(this.persons[i].name), 155, h+20);
+            h += 25;
+          }
+          btx.fillStyle = '#000';
+          btx.fillRect(150, h, 300, 25);
+          btx.fillStyle = '#fff';
+          btx.fillText(this.text, 153, h+20);
+        } else if (this.showSelectLink) {
+          btx.fillStyle = '#f8f8f8';
+          btx.fillRect(145,15,310,this.canvassize-30);
+          var h = 40;
+          btx.fillStyle = '#000';
+          btx.fillText('Select a Dialog to link to:', 155, h-4);
+          btx.strokeStyle = '#000';
+          for (var i = 0; i < this.dialogs.length; i++) {
+            btx.strokeRect(150, h+2, 300, 22);
+            btx.fillText(this.dialogs[i].uid, 155, h+20);
+            h += 25;
+          }
+          btx.strokeRect(150, h+2, 300, 22);
+          btx.fillText('no link', 155, h+20);
+        } else {
+          btx.fillStyle = '#000';
+          btx.fillRect(3, this.canvassize-27, this.canvassize-4, 25);
+          btx.fillStyle = '#fff';
+          btx.fillText(this.text, 7, this.canvassize-7);
+        }
+
+        if (this.showMenu)
+        {
+          btx.fillStyle = 'rgba(0,0,0,0.5)';
+          btx.fillRect(0,0,this.canvassize,this.canvassize);
+          btx.fillStyle = '#fff';
+          btx.fillRect(this.canvassize/2,0,this.canvassize/2,this.canvassize);
+          btx.drawImage(this.logo,this.canvassize/2+40,20,this.canvassize/2-80,this.canvassize/2-80);
+          btx.fillStyle = '#000';
+          btx.strokeStyle = '#000';
+          this.menu = ['new', 'test', 'load', 'save', 'import', 'export', 'publish'];
+          var h = this.canvassize/2+10;
+
+          for (var i = 0; i < this.menu.length; i++)
+          {
+            btx.strokeRect(this.canvassize/2+10, h, this.canvassize/2-20, 25);
+            btx.fillText(this.menu[i], this.canvassize/2+15, h + 21);
+            h += 28;
+          }
+
+          btx.strokeRect(this.canvassize/2+10, this.canvassize-28, this.canvassize/2-20, 25);
+          btx.fillText('close', this.canvassize/2+15, this.canvassize-7);
+        }
+        //
+        this.ctx.drawImage(this.bbcanvas,0,0,this.screendim,this.screendim);
+        this.update = false;
+      },
+      mousePressed: function(_x, _y) {
+        if (!this.pressed) {
+          this.mx = _x;
+          this.my = _y;
+          this.px = _x;
+          this.py = _y;
+          this.mend = false;
+          this.pressed = true;
+        }
+      },
+      mouseMoved: function(_x, _y) {
+        if (this.pressed) {
+          this.mx = _x;
+          this.my = _y;
+        }
+      },
+      mouseReleased: function(_x, _y) {
+        if (this.pressed) {
+          //this.createDialog();
+          if (this.showMenu)
+          {
+            this.showMenu = false;
+          } else if (Math.abs(this.my - this.py) > 10) {
+            //moved in y direction
+            //scrolling
+            console.log('scrolling is not enabled');
+          } else if (Math.abs(this.px - this.mx) > 10) {
+            //menu for load, save, export and import project
+            //alert('show menu');
+            this.showMenu = true;
+          } else {
+            //touched point -> find and select dialog(line)
+            if (this.showSelectPerson) {
+              var h = 40;
+              for (var i = 0; i < this.persons.length; i++) {
+                if ( h < _y && _y < 25 + h) {
+                  this.selectPerson(i);
+                  //this.showSelectPerson = false;
+                  i = this.persons.length;
+                }
+                h += 25;
+              }
+            } else if (this.showSelectLink) {
+              var h = 40;
+              for (var i = 0; i < this.dialogs.length; i++) {
+                if ( h < _y && _y < 25 + h) {
+                  this.setLink(this.dialogs[i].uid);
+                  //this.showSelectLink = false;?
+                  i = this.dialogs.length;
+                }
+                h += 25;
+              }
+              if ( h < _y && _y < 25 + h) {
+                //case no link
+                this.showSelectPerson = false;
+                this.showSelectLink = false;
+                //this.currentDialog = null;
+                this.currentDialogLine = null;
+                //above 4 lines should be a method name?
+              }
+            } else {
+              var h = 2;
+              var b = false;
+              for (var i = 0; i < this.dialogs.length; i++) {
+                ho = h;
+                h+=25;
+                if (ho < _y && h > _y) {
+                  b = true;
+                  this.currentDialog = this.dialogs[i];
+                  this.currentDialogLine = null;
+                  this.area.value = '';
+                  this.text = this.area.value;
+                }
+                for (var j = 0; j < this.dialogs[i].lines.length; j++) {
+                  ho = h;
+                  h+=25;
+                  if (ho < _y && h > _y) {
+                    b = true;
+                    this.currentDialog = this.dialogs[i];
+                    this.currentDialogLine = this.dialogs[i].lines[j];
+                    this.area.value = this.mediamanager.getMediaValue(this.currentDialogLine.uid);
+                    this.text = this.area.value;
+                  }
+                }
+              }
+              if (!b) {
+                this.currentDialogLine = null;
+                this.createDialog();
+                this.area.value = '';
+                this.text = this.area.value;
+              }
+            }
+          }
+          this.mx = 0;
+          this.my = 0;
+          this.px = 0;
+          this.py = 0;
+          this.pressed = false;
+        }
+        this.update = true;
+        //this.area.focus();
+      },
+      mediamanager: {
+        medias: [],
+        addMedia: function(_k, _v) {
+          if (this.hasMedia(_k)) {
+            this.getMedia(_k).value = btoa(_v);
+          } else {
+            this.medias.push(
+              { key: _k, value: btoa(_v) }
+            );
+          }
+        },
+        removeMedia:function(_k) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              this.medias.splice(i,1);
+            }
+          }
+        },
+        getMedia:function(_k) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              return this.medias[i];
+            }
+          }
+          return null;
+        },
+        getMediaValue:function(_k) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              return atob(this.medias[i].value);
+            }
+          }
+          return null;
+        },
+        hasMedia:function(_k) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              return true;
+            }
+          }
+          return false;
+        }
+      }
+    };
+    _win.editor = editor;
+  })(window);
+
+  function Dialog(_uid) {
+    this.uid = _uid;
+    this.lines = [];
+  };
+
+  function DialogLine(_uid) {
+    this.uid = _uid;
+    this.person = null;
+    this.link = null;
+    this.setPerson = function(_p) {
+      this.person = _p;
+    };
+  };
+
+  function Person(_uid) {
+    this.uid = _uid;
+    this.name = null;
+    this.charSheetText = null;
+    this.setName = function(_n) {
+      this.name = _n;
+    };
+    this.setCharSheet = function(_cs) {
+      this.charSheetText = _cs;
+    };
+  };
+
+  (function(_win) {
+    var game = {
+      init: function() {
+
+      }
+    };
+
+    _win.game = game;
+  })(window);
+
+  window.onload = function() { setTimeout(editor.init, 100); };
+  </script>
+ </body>
+</html>

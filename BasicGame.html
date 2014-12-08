@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Document</title>
+  <style>
+  body {background: #000; margin: 0;}
+  canvas {background: #fff;}
+  </style>
+ </head>
+ <body>
+  <script>
+    (function(_win) {
+      var game = {
+        canvas: null,
+        ctx: null,
+        bbcanvas: null,
+        btx: null,
+        mx: 0,
+        my: 0,
+        px: 0,
+        py: 0,
+        pressed: false,
+        mend: false,
+        screenwidth: 0,
+        screenheight: 0,
+        screendim: 0,
+        update: false,
+        area: null,
+        text: '',
+
+        init: function() {
+          game.screenwidth = _win.innerWidth;
+          game.screenheight = _win.innerHeight;
+          game.area = document.createElement('textarea');
+          game.area.style.position = 'absolute';
+          game.area.style.top = '0';
+          game.area.style.left = '0';
+          game.area.style.opacity = '0.01';
+          game.area.style.width = '1px';
+          game.area.style.height = '1px';
+          game.area.style.border = '0';
+          game.area.style.color = 'rgba(0,0,0,0.01)';
+          game.area.addEventListener('keydown', function(eve) {game.keydown(eve);}, true);
+          game.area.addEventListener('keyup', function(eve) {game.keyup(eve);}, true);
+          try {
+            document.body.removeChild(document.querySelector('textarea'));
+          } catch (e) { }
+          document.body.appendChild(game.area);
+          game.canvas = document.querySelector('canvas');
+          if (game.canvas == null)
+          {
+            game.canvas = document.createElement('canvas');
+          }
+          game.screendim = game.screenwidth < game.screenheight ? game.screenwidth : game.screenheight;
+          game.canvas.width = game.screendim;
+          game.canvas.height = game.screendim;
+          game.canvas.style.width = game.screendim+'px';
+          game.canvas.style.height = game.screendim+'px';
+          game.canvas.style.position = 'absolute';
+          game.canvas.style.top = '0';
+          game.canvas.style.left = '0';
+
+          game.ctx = game.canvas.getContext('2d');
+          if (game.bbcanvas == null)
+          {
+            game.bbcanvas = document.createElement('canvas');
+          }
+          game.bbcanvas.width = 600;
+          game.bbcanvas.height = 600;
+          game.btx = game.bbcanvas.getContext('2d');
+          try {
+            document.body.removeChild(document.querySelector('canvas'));
+          } catch (e) { }
+          document.body.appendChild(game.canvas);
+          if ('ontouchstart' in window)
+          {
+            console.log('using touch');
+            game.canvas.addEventListener('touchstart',
+            function(eve) {
+              game.mousePressed(eve.touches[0].pageX/game.screendim*600,
+                eve.touches[0].pageY/game.screendim*600);
+            },
+            false);
+            game.canvas.addEventListener('touchmove',
+            function(eve) {
+              game.mx = eve.touches[0].pageX/game.screendim*600;
+              game.my = eve.touches[0].pageY/game.screendim*600;
+              game.mouseMoved(game.mx,game.my);
+            },
+            false);
+            game.canvas.addEventListener('touchend',
+            function(eve) {
+              if (!game.mend) {
+                game.mend = true;
+                game.mouseReleased(game.mx, game.my);
+              }
+            },
+            false);
+            game.canvas.addEventListener('touchcancel',
+            function(eve) {
+              if (!game.mend) {
+                game.mend = true;
+                game.mouseReleased(game.mx, game.my);
+              }
+            },
+            false);
+          } //else {
+            game.canvas.addEventListener('mousedown',
+            function(eve) {
+              game.mousePressed(eve.pageX/game.screendim*600,
+                eve.pageY/game.screendim*600);
+            },
+            false);
+            game.canvas.addEventListener('mousemove',
+            function(eve) {
+              game.mx = eve.pageX/game.screendim*600;
+              game.my = eve.pageY/game.screendim*600;
+              game.mouseMoved(game.mx,game.my);
+            },
+            false);
+            game.canvas.addEventListener('mouseup',
+            function(eve) {
+              game.mouseReleased(eve.pageX/game.screendim*600,
+                eve.pageY/game.screendim*600);
+            },
+            false);
+          //}
+          game.area.focus();
+          requestAnimationFrame(function() { game.updateGraphics(); });
+        },
+        mousePressed: function(_x, _y) {
+          if (!this.pressed)
+          {
+            this.mend = false;
+            this.pressed = true;
+            this.px = _x;
+            this.py = _y;
+            this.mx = _x;
+            this.my = _y;
+            this.update = true;
+          }
+        },
+        mouseMoved: function(_x, _y) {
+          if (this.pressed)
+          {
+            //use for scrolling or painting features
+            console.log(_x+','+_y);
+            this.update = true;
+          }
+        },
+        mouseReleased: function(_x, _y) {
+          if (this.pressed)
+          {
+            //place some code here
+            this.px = 0;
+            this.py = 0;
+            this.mx = 0;
+            this.my = 0;
+            this.pressed = false;
+            this.update = true;
+          }
+        },
+        updateGraphics: function() {
+          if (this.update)
+          {
+            this.area.blur();
+            this.canvas.focus();
+            this.draw();
+            this.area.focus();
+            console.log('draw');
+          }
+          requestAnimationFrame(function() { game.updateGraphics(); });
+        },
+        draw: function() {
+          this.btx.fillStyle = '#fff';
+          this.btx.fillRect(0,0,this.bbcanvas.width,this.bbcanvas.height);
+          this.btx.fillStyle = '#000';
+          this.btx.fillText(this.text, 10, 20);
+          this.btx.fillRect(this.mx, this.my, 10, 10);
+          this.ctx.drawImage(this.bbcanvas,0,0,this.screendim, this.screendim);
+          this.update = false;
+        },
+        keydown: function(eve) {},
+        keyup: function(eve) {
+          var key = (typeof eve.key == 'undefined') ? eve.which : eve.key.toLowerCase();
+
+          this.text = this.area.value;
+          if (key == 13 || 'enter' == key)
+          {
+            this.text = this.area.value+' ';
+            this.area.value = '';
+          }
+          this.update = true;
+          console.log(key);
+        }
+      };
+      _win.game = game;
+    })(window);
+    game.init();
+  </script>
+ </body>
+</html>
