@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="Malte Kosian">
+  <meta name="Author" content="Malte Kosian">
+  <meta name="Keywords" content="adventure, game, story, story game, editor, simple, kiss, choice, yes, you can">
+  <meta name="Description" content="a grid based linear story game with many choices">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Grid Story Game</title>
+  <style>
+  body {background: #fff; margin: 0; overflow: hidden;}
+
+  .grid-ready,.grid-end,.grid-element,.grid-start{
+  float:left;background:#ccc;border:10px solid #000;margin:5px;width:60px;height:60px;
+  }
+  .grid-start{background:#0c0;}
+  .grid-end{background:#c00;}
+  .grid-ready{background:#99c;}
+  .grid-current{border-color:#f90;}
+  .prompt{position: absolute; left: 5%; top: 5%; min-width: 83%;max-width: 83%; min-height: 83%;max-height: 83%; padding: 1%; z-index: 100; display: block; overflow: auto; background: #fff; color: #000; box-shadow: 5px 5px 8px #999, 0px 0px 1px #000;}
+  /*.ingame-visible{display: block;}*/
+ </style>
+ <!--
+ The title:
+ Hurry, you are too late. To your job as quick as possible!
+ The correct order:
+ 1  Wake and stand up in the morning.   showObject(16);
+ 2  Turn on the lights.                 showText('Say hello to the world!');showObject(3);showObject(8);
+ 3  Go to the kitchen.                  showObject(4);showObject(10);showObject(9);
+ 4  Open the water tap.                 showObject(5);showObject(6);
+ 5  Make coffee.                        showObject(14);
+ 6  Have breakfast.                     showObject(7);
+ 7  Put the dishes in the sink and close the tap.
+ 8  Go to the bath.                     showObject(12);
+ 9  Take a shower.                      showObject(13);
+ 10 Brush your teeth.                   showObject(11);
+ 11 Dry yourself off with the towel     showText('You really have to hurry now!')
+ 12 Don't panic!                        showObject(15);
+ 13 Get yourself dressed.
+ 14 Fetch the keys.
+ 15 Turn off the lights.
+ 16 Leave your home.
+ -->
+ <!--
+ the dependencies:
+ hasMissed:
+ 1 -> NOT possible!
+ 2 -> Seriously! You break your arms and legs. 5 years later someone will find your dead body. You will be reborn as yourself.
+ 3 -> no breakfast like 6.
+ 4 -> you can not have coffee without water. You are still dreaming. You are to late and you loose your job.
+ 5 -> like 6
+ 6 -> without a breakfast you will fall asleep again. You loose your job.
+ 7 -> your landlord will recall the contract, because of the water damage. So you have a very long day and have to stay in a hotel. Next day you'll loose your job, because you'll have overslept.
+ 8 -> you will miss 9,10,11... 
+ 9 -> you stink. A good reason for your boss to fire you.
+ 10 -> your mouth stinks. A good reason for your boss to fire you.
+ 11 -> you get a cold. The very next day you loose your job, because your boss do not believes you.
+ 12 -> you are in panic, so 13, 14 and 15 takes place. You've lost the game and will be reorn as yourself.
+ 13 -> you are naked. The neighbor sees you and calls the police. After 5 years in the psychaty you'll way to late. 
+ 14 -> you will have to wait for the key service. You loose your job, because you are to late.
+ 15 -> the house will burn done. So you have a very long day and have to stay in a hotel. Next day you'll loose your job, because you'll have overslept.
+ 16 -> NOT possible.
+ isSmaller:
+ 8 < 3 Bath before kitchen like -> 11.
+ 15 < 14 you do not take your keys. You have taken your mobile instead. Like -> 14
+ 13 < 12 You are in panic. like -> 13
+ 5 < 4 like -> 4 
+ -->
+ <!--
+ long story:
+ stand up in the morning
+ catch the bus and the underground (anyway you'll be late - if you do not take the bus you will walk to the u-station)
+ loose your job and get the one as a game designer
+ play the help file
+ use the game's editor and write your own small game.
+ -->
+ <!--
+ Even in pure linear story of a game the problem is how to dramatize the story,
+ how to synchronize the events and what to reveal next.
+ You have to give the player choices so the player can make mistakes.
+ It is indeed all about mistakes, because the logical order is both inherit and
+ explicit. The logical order is clear - afterwards. Only mistakes
+ provide the challange to the player, the drama of the psychological conflict.
+ -->
+ <!--
+ BUGS:
+ game.order must be reintialized after one play
+ adding to order only once and NOT is if a object is only clicked(except the start object)
+ TODOS:
+ -> find a way to edit the evaluation tool, dependicies and the reporting output
+    2 smaler 1 -> you made something in the wrong order
+    2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
+    2 missed -> you did not do something (like leaving without key)
+    2. define and detect cases -> show message - may loop to begining (rebirth after death)
+ 
+ make the complete tool canvas based
+ build in uidcounter
+ enable levels (transform game to level)
+ enable level to level methods -> what will be the advanced features?
+ game states and/or status-log
+ build in mediamanager
+ images, audios, translator
+ object sizing and position
+ DONE
+ fixed evaluation on game.over for cases isSmaller and hasMissed
+ fixed evaluation 1. game.over message and statistic evaluation
+ fixed what to reveal next with showEvent code -> showObject, hideObject, showText(a message)
+ fixed showObject set GameObject.active to true
+ fixed GameObject.active if false not visible and playable
+ fixed added Game method for mouse|touch Game.init and update and Game.draw
+ fixed bug with Game.prototype.load method in editor.loadGame method
+ fixed need to load the stuff on start AND update the layout/editor view indeed!
+ fixed ask for the quest on start up. SHOW the quest and the title!
+ fixed output layout
+ fixed output updates
+ -->
+ </head>
+ <body>
+  <script>
+  (function(_win) {
+    var Game = function(){};
+    Game.prototype.start = null;
+    Game.prototype.end = null;
+    Game.prototype.objects = [];
+    /*
+    {priority: 0, method:'isSmaller', text: 'show this text', params: [a,b]}
+    {priority: 1, method:'hasMissed', text: 'show this text because of the higher priority', params: [a]}
+    */
+    Game.prototype.dependencies = [];
+    Game.prototype.current = null;
+    Game.prototype.order = [];
+    Game.prototype.title = null;
+    //maybe the quest will be an object instead of a simple string
+    //so the quest will be validated in the end of the level/game
+    Game.prototype.quest = null;
+    Game.prototype.over = false;
+    /**
+    @method getObject
+    @param id the id of the object
+    @return the object
+    */
+    Game.prototype.getObject = function(id) {
+      var objects = this.objects;
+      for (var i = 0; i < objects.length; i++)
+      {
+        if (objects[i].id==id)
+        {
+          return objects[i];
+        }
+      }
+      return null;
+    };
+    /**
+    activate the Object and make it always visible
+    @method showObject
+    @param id the id of the object
+    */
+    Game.prototype.showObject = function(id) {
+      var obj = this.getObject(id);
+      obj.visible = true;
+      obj.active = true;
+    };
+    /**
+    hide the Object complete on visible false
+    otherwise it is deactivated
+    @method showObject
+    @param id the id of the object
+    @param visible
+    */
+    Game.prototype.hideObject = function(id,visible) {
+      var obj = this.getObject(id);
+      obj.visible = visible;
+      obj.active = false;
+    };
+    /**
+    display the given text
+    @method showText
+    @param text display the given text
+    */
+    Game.prototype.showText = function(text) {
+      //displays the text on the canvas
+      //canvas and ctx are attached to the window
+
+    };
+    /**
+    a dependencies method
+    if the order of a is smaller than the order of b
+    @method isSmaller
+    @param a
+    @param b
+    */
+    Game.prototype.isSmaller = function(a, b) {
+     //code here
+    };
+    /**
+    a dependencies method
+    if you have missed the object specified by id
+    @method hasMissed
+    @param a
+    */
+    Game.prototype.hasMissed = function(a) {
+     //code here
+    };
+    /**
+    follows touch and mouse event
+    @method mousePressed
+    @param x the x coordinate in 0 to 1 .
+    @param y the y coordinate in 0 to 1 .
+    */
+    Game.prototype.mousePressed = function(x,y) {
+      if (!pressed)
+      {
+        pressed = true;
+        var obj = null;
+        for (var i = 0; i < game.objects.length; i++) {
+          obj = game.objects[i];
+          if (obj.pointHits(x,y)) {
+            game.current = obj;
+          }
+        }
+        px = x;
+        py = y;
+        mx = x;
+        my = y;
+        update = true;
+      }
+    };
+    /**
+    follows touch and mouse event
+    @method mouseMoved
+    @param x the x coordinate in 0 to 1 .
+    @param y the y coordinate in 0 to 1 .
+    */
+    Game.prototype.mouseMoved = function(x,y) {
+      if (pressed)
+      {
+        if (game.current != null)
+        {
+          game.current.x += x-game.current.x;
+          game.current.y += y-game.current.y;
+          update = true;
+        }
+      }
+    };
+    /**
+    follows touch and mouse event
+    @method mouseReleased
+    @param x the x coordinate in 0 to 1 .
+    @param y the y coordinate in 0 to 1 .
+    */
+    Game.prototype.mouseReleased = function(x,y) {
+      if (pressed)
+      {
+        //game.menumode false|true
+        if (!game.over) {
+          if (game.current != null && game.start != null && (
+              (game.current.id != game.start &&
+              game.getObject(game.start).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)) ||
+              (game.end != null && game.current.id == game.start &&
+              game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2))
+             ))
+          {
+            if (game.current.id == game.start &&
+               game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)
+               )
+            {
+              game.current = game.getObject(game.end);
+            }
+            game.order.push(game.current.id);
+            game.current.active = false;
+            game.current.visible = false;
+            if (game.current.event != null) {
+              (game.current.getEvent())(window, game);
+            }
+            if (game.current.id == game.end) {
+              game.over = true;
+            }
+          } else if (game.current != null && game.current.id == game.start &&
+                     game.getObject(game.start).pointHits(game.current.ox+game.current.w/2, game.current.oy+game.current.h/2)
+                    )
+          {
+            game.order.push(game.current.id);
+            if (game.current.event != null) {
+              (game.current.getEvent())(window, game);
+            }
+          } else if (game.current != null)
+          {
+            game.current.x = game.current.ox;
+            game.current.y = game.current.oy;
+          }
+        } else {
+
+        }
+        px = 0;
+        py = 0;
+        mx = 0;
+        my = 0;
+        game.current = null;
+        pressed = false;
+        update = true;
+      }
+    };
+    /**
+    used by editor.playGame this to start a game
+    use editor.stopGame to finish the game
+    @method init
+    */
+    Game.prototype.init = function() {
+      var obj = null;
+      for (var i = 0; i < 4; i++)
+      {
+        for (var j = 0; j < 4; j++)
+        {
+          obj = game.getObject('o_'+i+'_'+j);
+          obj.x = 0.04 + j * 0.24;//canvas.width/40 + j * canvas.width/4.5;
+          obj.y = 0.04 + i * 0.24;//canvas.width/8 + i * canvas.width/4.5;
+          obj.w = obj.h = 0.2;//canvas.width/6;
+          obj.ox = obj.x;
+          obj.oy = obj.y;
+          obj.visible = true;
+        }
+      }
+      game.over = false;
+      if ('ontouchstart' in window)
+      {
+        console.log('using touch');
+        canvas.addEventListener('touchstart',
+        function(eve) {
+          game.mousePressed(eve.touches[0].pageX/canvas.width,
+            eve.touches[0].pageY/canvas.width);
+        },
+        false);
+        canvas.addEventListener('touchmove',
+        function(eve) {
+          game.mx = eve.touches[0].pageX/canvas.width;
+          game.my = eve.touches[0].pageY/canvas.width;
+          game.mouseMoved(game.mx,game.my);
+        },
+        false);
+        canvas.addEventListener('touchend',
+        function(eve) {
+          if (!game.mend) {
+            game.mend = true;
+            game.mouseReleased(game.mx, game.my);
+          }
+        },
+        false);
+        canvas.addEventListener('touchcancel',
+        function(eve) {
+          if (!game.mend) {
+            game.mend = true;
+            game.mouseReleased(game.mx, game.my);
+          }
+        },
+        false);
+      }
+      canvas.addEventListener('mousedown',
+      function(eve) {
+        game.mousePressed(eve.pageX/canvas.width,
+          eve.pageY/canvas.width);
+      },
+      false);
+      canvas.addEventListener('mousemove',
+      function(eve) {
+        game.mx = eve.pageX/canvas.width;
+        game.my = eve.pageY/canvas.width;
+        game.mouseMoved(game.mx,game.my);
+      },
+      false);
+      canvas.addEventListener('mouseup',
+      function(eve) {
+        game.mouseReleased(eve.pageX/canvas.width,
+          eve.pageY/canvas.width);
+      },
+      false);
+
+      update = true;
+      requestAnimationFrame(function() { game.updateGraphics(); });
+    };
+    /***/
+    Game.prototype.updateGraphics = function() {
+      if (update)
+      {
+        update = false;
+        game.draw();
+      }
+      requestAnimationFrame(function() { game.updateGraphics(); });
+    };
+    /***/
+    Game.prototype.draw = function() {
+      var cw = canvas.width;
+      var ch = canvas.height;
+      ctx.fillStyle = '#eee';
+      ctx.fillRect(0,0,cw,ch);
+      ctx.fillStyle = '#000';
+      var fts = Math.round(0.035*cw);
+      ctx.font = fts+'px Sans-Serif';
+      var objects = game.objects;
+      var obj = null;
+      if (game.over)
+      {
+        ctx.fillText(''+game.title,0.02*cw,(0.01*cw+fts)*1);
+        ctx.fillText('statistics:',0.02*cw,(0.01*cw+fts)*2);
+        var missed = objects.length - game.order.length;
+        if (missed > 0)
+        {
+          ctx.fillText('You have missed '+missed+' step'+(missed>1 ? 's':''),0.02*cw,(0.01*cw+fts)*3);
+          for (var i = 0; i < objects.length; i++) {
+            obj = objects[i];
+            if (!game.order.indexOf(obj) >= 0)
+            {
+              console.log(obj);
+              ctx.fillStyle = '#c00';
+              ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(4+i));
+            }
+            //hasMissed
+          }
+        } else {
+          for (var i = 0; i < game.order.length; i++) {
+            obj = game.getObject(game.order[i]);
+            console.log(obj);
+            if (obj.order == 1 || (i >= 1 && obj.order > game.getObject(game.order[i-1]).order)) {
+              ctx.fillStyle = '#0c0';
+            } else {
+              ctx.fillStyle = '#c00';
+            }
+            ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(3+i));
+          }
+          //isSmaller
+        }
+      } else {
+        ctx.fillText(''+game.title,0.02*cw,0.01*cw+fts);
+        ctx.fillText(''+game.quest,0.02*cw,(0.01*cw+fts)*2);
+        //begin of btx context
+        ctx.lineWidth = 0.025 * cw;
+        for (var i = 0; i < objects.length; i++)
+        {
+          obj = objects[i];
+          if (obj.visible) {
+            if (obj.id == game.start)
+            {
+              ctx.fillStyle = '#0c0';
+              ctx.strokeStyle = '#000';
+            } else if (obj.id == game.end)
+            {
+              if (obj.active)
+              {
+                ctx.fillStyle = '#c00';
+                ctx.strokeStyle = '#000';
+              } else {
+                ctx.fillStyle = 'rgba(204,51,51,0.5)';
+                ctx.strokeStyle = 'rgba(51,51,51,0.5)';
+              }
+            } else if (obj.active)
+            {
+              ctx.fillStyle = '#99c';
+              ctx.strokeStyle = '#000';
+            } else {
+              ctx.fillStyle = 'rgba(128,128,128,0.5)';
+              ctx.strokeStyle = 'rgba(51,51,51,0.5)';
+            }
+            if (game.current != null && obj.id == game.current.id) {
+              ctx.strokeStyle = '#f90';
+            }
+            ctx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+            ctx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+          }
+        }
+        //end of btx context
+        ctx.fillStyle = '#000';
+        var fts = Math.round(0.035*cw);
+        ctx.font = fts+'px Sans-Serif';
+        ctx.fillText(''+game.title,0.02*cw,0.01*cw+fts);
+        ctx.fillText(''+game.quest,0.02*cw,(0.01*cw+fts)*2);
+        if (game.current != null) {
+          ctx.fillText(''+game.current.text,0.02*cw,(0.01*cw+fts)*3);
+        } else if (game.order.length > 0) {
+          var j = 0;
+          for (var i = game.order.length - 1; i >= (game.order.length > 2 ? game.order.length-3 : 0); i--) {
+            ctx.fillText(''+game.getObject(game.order[i]).text,0.02*cw,
+                    (0.01*cw+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
+            j++;
+          }
+        }
+      }
+    };
+    var mx = 0;
+    var my = 0;
+    var px = 0;
+    var py = 0;
+    var pressed = false;
+    var mend = false;
+    var update = false;
+    var body = document.body;
+    var store = localStorage;
+    /**
+    short for game.showObject (Game.prototype.showObject)
+    a scriptable function
+    @method showObject
+    @param id
+    */
+    _win.showObject = function (id) {
+      game.showObject(id);
+    }
+    /**
+    short for game.hideObject (Game.prototype.hideObject)
+    a scriptable function
+    @method hideObject
+    @param id
+    */
+    _win.hideObject = function (id) {
+      game.hideObject(id);
+    }
+    /**
+    short for game.showText (Game.prototype.showText)
+    a scriptable function
+    @method showText
+    @param id
+    */
+    _win.showText = function (text) {
+      game.showText(text);
+    }
+    /**
+    short for game.isSmaller
+    @method isSmaller
+    @param a
+    @param b
+    */
+    _win.isSmaller = function (a, b) {
+      game.isSmaller(a, b);
+    }
+    /**
+    short for game.hasMissed
+    @method hasMissed
+    @param a
+    */
+    _win.hasMissed = function (a) {
+      game.hasMissed(a);
+    }
+    /**
+    short for document.getElement
+    @method getElement
+    @param t the id
+    @return the HTMLdomObject
+    */
+    _win.getElement = function(t){
+      return document.getElementById(t);
+    };
+    /**
+    short for document.createElement
+    @method createElement
+    @param t the descriptor of the tag|the tag
+    @return the HTMLdomObject
+    */
+    function createElement(t){
+      return document.createElement(t);
+    };
+    /**
+    short for document.createTextNode
+    @method createTextNode
+    @param t the text
+    @return the HTMLdomTextNode
+    */
+    function createTextNode(t){
+      return document.createTextNode(t);
+    };
+
+    /**
+    @class GameObject
+    */
+    var GameObject = function (_id, _t) {
+      this.text = _t;//btoa(_t);
+      this.order = 0;
+      this.id = _id;
+      this.event = null;
+      this.active = false;
+      this.visible = true;
+      this.x = 0;
+      this.y = 0;
+      this.ox = 0;
+      this.oy = 0;
+      this.w = 0;
+      this.h = 0;
+      /**
+      call callback function with window, game as parameters
+      @method getEvent
+      @return the callback function (¿ returns the return value or null ?)
+      */
+      this.getEvent = function() {
+        if (this.event == null){
+          return null;
+        }
+        //var func = new Function('window,game',atob(this.event));
+        //return func(window, game);
+        return new Function('window,game',atob(this.event));
+      }
+      /**
+      @method setEvent
+      @param _code the code to be performed on the clicked|touched|selected event
+      */
+      this.setEvent = function(_code) {
+        this.event = btoa(_code);
+      }
+      /**
+      @method getText
+      */
+      this.getText = function() {
+        return atob(this.text);
+      }
+      /**
+      @method setText
+      */
+      this.setText = function(_t) {
+        this.text = btoa(_t);
+      };
+      /**
+      @method load
+      */
+      this.load = function(data) {
+        this.text = data['text'];
+        this.order = parseInt(data['order']);
+        this.id = data['id'];
+        this.event = data['event'];
+        this.active = typeof data['active'] == 'undefined' ? false : data['active'];
+        this.x = data['x'];
+        this.y = data['y'];
+        this.ox = data['x'];
+        this.oy = data['y'];
+        this.w = data['w'];
+        this.h = data['h'];
+      };
+      /**
+      @method pointHits
+      */
+      this.pointHits = function(x, y) {
+        return (this.x <= x && this.y <= y && this.x + this.w >= x && this.y + this.h >= y);
+      }
+    };
+    /***/
+    //var game = new Game();
+    //for debug purpose only
+    _win.game = new Game();
+    //end debug
+    /***/
+    var editor = {};
+    editor.mode = '';
+    editor.current = null;
+    editor.oldGame = null;
+    /**
+    calls a prompt
+    sets the order for the specified object by id
+    and updates the appearence of the editor's output
+    @method setOrder
+    */
+    editor.setOrder = function(_obj_id) {
+      var obj=game.getObject(_obj_id);
+      var input = prompt('Type in a value between 1 to '+(game.objects.length)+' or leave the input as it is', obj.order);
+      try
+      {
+        input = parseInt(input);
+      }
+      catch (ex)
+      {
+        alert ('Choose a valid value, please!')
+        return;
+      }
+      if (input < 0 || input > game.objects.length) {
+        alert ('Choose a valid value, please!');
+        return;
+      }
+      obj.order = input;
+      var ele = getElement('ord_'+obj.id);
+      ele.innerHTML = '';
+      ele.appendChild(createTextNode(obj.order));
+      editor.saveGame();
+    };
+    /**
+    replacement for setOrder and setEvents
+    sets the order for the specified object by id
+    and updates the appearence of the editor's output
+    setting the code for the event
+    events are code, but !NOT action model structs [(action name),(value)]!
+    @method setOrderAndEvents
+    */
+    editor.setOrderAndEvents = function(obj_id) {
+      var obj=game.getObject(obj_id);
+      var input = getElement('input_ord_'+obj_id).value;
+      try
+      {
+        input = parseInt(input);
+      }
+      catch (ex)
+      {
+        alert ('Choose a valid value, please!')
+        return;
+      }
+      if (input < 0 || input > game.objects.length) {
+        alert ('Choose a valid value, please!');
+        return;
+      }
+      obj.order = input;
+      var ele = getElement('ord_'+obj.id);
+      ele.innerHTML = '';
+      ele.appendChild(createTextNode(obj.order));
+      var code = getElement('input_eve_'+obj_id).value;
+      if (code != '')
+      {
+        obj.setEvent(code);
+      }
+      console.log(input,obj.order, code,atob(obj.event));
+      editor.saveGame();
+      getElement('prompt').style.display = 'none';
+    }
+    /**
+    stores the game if store is available
+    @method setText
+    @param id id of the object
+    @param text the text for the object
+    */
+    editor.setText = function(_id,_text){
+      var obj=game.getObject(_id);
+      if (editor.mode=='setstart') {
+        if (getElement('s_'+game.start)!=null) {
+          getElement('s_'+game.start).style.color = '#006';
+          getElement(game.start).className = 'grid-ready';
+        } else if (game.start!=null) {
+          getElement(game.start).className = 'grid-element';
+        }
+        game.start = _id;
+        obj.active = true;
+        obj.visible = true;
+        if (game.start == game.end) {
+          game.end=null;
+        }
+        getElement(_id).className = 'grid-start';
+        if (getElement('s_'+_id)!=null) {
+          getElement('s_'+_id).style.color = '#0c0';
+        }
+        editor.mode = '';
+        return;
+      }
+      if (editor.mode=='setend') {
+        if (getElement('s_'+game.end)!=null) {
+          getElement('s_'+game.end).style.color = '#006';
+          getElement(game.end).className = 'grid-ready';
+        } else if (game.end!=null) {
+          getElement(game.end).className = 'grid-element';
+        }
+        game.end = _id;
+        if (game.start == game.end) {
+          game.start=null;
+        }
+        getElement(_id).className = 'grid-end';
+        if (getElement('s_'+_id)!=null) {
+          getElement('s_'+_id).style.color = '#c00';
+        }
+        editor.mode = '';
+        return;
+      }
+      if (_text==null) {
+        if (obj.text==null) {
+          _text=prompt('What\'s up next?','');
+        } else {
+          _text=prompt('What\'s up next?',obj.text);
+        }
+      }
+      obj.text=_text;
+      if (game.start == null)
+      {
+        game.start =_id;
+        getElement(_id).className='grid-start';
+      } //else {
+
+      if (_id != game.start && _id != game.end) {
+        getElement(_id).className='grid-ready';
+      } else if (_id == game.start) {
+        getElement(_id).className='grid-start';
+      } else if (_id == game.end)
+      {
+        getElement(_id).className='grid-end';
+      }
+
+      //}
+      var ele = getElement('output');
+      var ele2 = getElement('s_'+obj.id);
+      if (ele2 == null) {
+        ele2 = createElement('span');
+        ele2.style.display='inline-block';
+        ele2.style.borderBottom='dotted 1px #999';
+        ele2.style.marginBottom = '2px';
+        ele2.setAttribute('id','s_'+obj.id);
+        var span = createElement('span');
+        span.style.cssFloat='left';
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.minWidth='40px';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','ord_'+obj.id);
+        span.setAttribute('onclick','editor.showOrderAndEventsPrompt(\''+obj.id+'\');');
+        span.appendChild(createTextNode(obj.order));
+        ele2.appendChild(span);
+        span = createElement('span');
+        span.setAttribute('id','s_t_'+obj.id);
+        span.setAttribute('onclick', 'editor.showDependenciesPrompt(\''+obj.id+'\');');
+        span.appendChild(createTextNode(_text));
+        ele2.appendChild(span);
+        ele.appendChild(ele2);
+        ele.appendChild(createElement('br'));
+      } else {
+        ele2 = getElement('s_t_'+obj.id);
+        ele2.innerHTML = '';
+        ele2.appendChild(createTextNode(_text));
+        ele2 = getElement('ord_'+obj.id);
+        ele2.innerHTML = '';
+        ele2.appendChild(createTextNode(obj.order));
+      }
+      if (_id == game.start) {
+        ele2.style.color = '#0c0';
+      } else {
+        if (_id == game.end) {
+          ele2.style.color = '#c00';
+        } else {
+          ele2.style.color = '#006';
+        }
+      }
+      editor.saveGame();
+    };
+    /**
+    @method saveGame
+    */
+    editor.saveGame = function() {
+      try {
+        store.setItem('gridStoryGame',JSON.stringify(game));
+      } catch (ex) {
+        console.log(ex);
+      }
+    };
+    /**
+    @method setQuest
+    */
+    editor.setQuest = function() {
+      var text = prompt('Enter the quest of the game.', game.quest==null?'':game.quest);
+      game.quest = text;
+      getElement('quest').innerHTML = game.quest;
+      editor.saveGame();
+    };
+    /**
+    @method setTitle
+    */
+    editor.setTitle = function() {
+      var text = prompt('Enter the game\'s title.', game.title==null?'':game.title);
+      game.title = text;
+      getElement('title').innerHTML = game.title;
+      editor.saveGame();
+    };
+    /**
+    a test and play method
+    @method playGame
+    */
+    editor.playGame = function() {
+      editor.saveGame();
+      editor.oldGame = game;
+      //new game instance
+      game = editor.loadGame();
+      _win.canvas = getElement('canvas');
+      if (canvas == null) {
+        canvas = createElement('canvas');
+      } else {
+        body.removeChild(canvas);
+      }
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      //test
+      w > 410 ? w = 410: w = w;
+      //replace this once if everything will be canvas based including the editor
+      canvas.width = w < h ? w : h;
+      canvas.height = w < h ? w : h;
+      canvas.style.width = canvas.width+'px';
+      canvas.style.height = canvas.height+'px';
+      _win.ctx = canvas.getContext('2d');
+      canvas.style.position='absolute';
+      canvas.style.left=0;
+      canvas.style.top=0;
+      canvas.style.background='rgba(255,255,255,0.75)';
+      getElement('playbutton').value='stop';
+      getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
+      body.appendChild(canvas);
+      game.init();
+    };
+    /**
+    stop the play test
+    @method stopGame
+    */
+    editor.stopGame = function() {
+      //restore the old game instance
+      game = editor.oldGame;
+      editor.oldGame = null;
+      canvas.style.display = 'none';
+      getElement('playbutton').value='play';
+      getElement('playbutton').setAttribute('onclick' , 'editor.playGame();');
+    };
+    /**
+    @method newGame
+    */
+    editor.newGame = function() {
+      var value = confirm('Do you realy want to delete the game?');
+      console.log(value);
+      if (value!=true)
+      {
+        return;
+      }
+      game = new Game();
+      game.objects = [];
+      game.start = null;
+      game.end = null;
+      game.quest = null;
+      game.title = null;
+      for (var i = 0; i < 4; i++)
+      {
+        for (var j = 0; j < 4; j++)
+        {
+          ele = getElement('o_'+i+'_'+j);
+          ele.className = 'grid-element';
+          game.objects.push({text:'',order: 0, id:ele.id, event: null});
+        }
+      }
+      getElement('output').innerHTML = '';
+      editor.saveGame();
+    };
+    /**
+    the method might provide an empty game,
+    if the store is not enabled
+    @method loadGame
+    @return an initialized instance of game
+    */
+    editor.loadGame = function() {
+      var g = new Game();
+      try {
+        var data = JSON.parse(store.getItem('gridStoryGame'));
+        g.objects = [];
+        var obj = null;
+        for (var i = 0; i < data['objects'].length; i++)
+        {
+          obj = new GameObject();
+          obj.load(data['objects'][i]);
+          g.objects.push(obj);
+        }
+        g.start = data['start'];
+        g.end = data['end'];
+        g.quest = data['quest'];
+        g.title = data['title'];
+      }
+      catch (ex) {
+        console.log(ex);
+      }
+      return g;
+    };
+    /**
+    @method setCurrent
+    */
+    editor.setCurrent = function(id) {
+      var ele = null
+      if (editor.current != null) {
+        ele = getElement(''+editor.current);
+        ele.className = ele.className.replace(/ grid-current/g, '');
+        ele.setAttribute('onclick','editor.setText(\''+ele.id+'\',null);');
+      }
+      editor.current = id;
+      ele = getElement(''+id);
+      ele.className = ele.className+' grid-current';
+      ele.setAttribute('onclick','editor.setOrderAndEvents(\''+ele.id+'\');');
+    };
+    /**
+    @method showOrderAndEventsPrompt
+    */
+    editor.showOrderAndEventsPrompt = function(obj_id) {
+      var obj = game.getObject(obj_id);
+      var prompt = getElement('prompt');
+      //alert('prompt: '+prompt);
+      if (prompt == null)
+      {
+        prompt = createElement('div');
+        prompt.className = 'prompt';
+        prompt.setAttribute('id','prompt');
+        body.appendChild(prompt);
+      }
+      prompt.innerHTML = '';
+      var ele = createElement('button');
+      ele.setAttribute('onclick','getElement(\'prompt\').style.display=\'none\';');
+      ele.appendChild(createTextNode('close'));
+      prompt.appendChild(ele);
+      prompt.appendChild(createElement('br'));
+      prompt.appendChild(createTextNode('order'));
+      prompt.appendChild(createElement('br'));
+      var span = createElement('input');
+      span.style.marginRight='1px';
+      span.style.display='inline-block';
+      span.style.minWidth='40px';
+      span.style.border = 'solid 1px #999';
+      span.setAttribute('id','input_ord_'+obj.id);
+      span.value = obj.order;
+      prompt.appendChild(span);
+      prompt.appendChild(createElement('br'));
+      prompt.appendChild(createTextNode('event: showObject([object id]), hideObject([object id]), showText([a text])'));
+      prompt.appendChild(createElement('br'));
+      span = createElement('input');
+      span.style.marginRight='1px';
+      span.style.display='inline-block';
+      span.style.minWidth='90%';
+      span.style.maxWidth='90%';
+      span.style.border = 'solid 1px #999';
+      span.setAttribute('id','input_eve_'+obj.id);
+      span.value = obj.event != null ? atob(obj.event) : '';
+      prompt.appendChild(span);
+      prompt.appendChild(createElement('br'));
+      prompt.appendChild(createElement('hr'));
+      span = createElement('button');
+      span.appendChild(createTextNode('set order, events, dependencies'));
+      span.setAttribute('onclick','editor.setOrderAndEvents(\''+obj.id+'\');');
+      prompt.appendChild(span);
+      prompt.appendChild(createElement('br'));
+      prompt.style.display='block';
+    };
+    /**
+    @method showDependenciesPrompt
+    */
+    editor.showDependenciesPrompt = function(obj) {
+      var prompt = getElement('prompt');
+      //alert('prompt: '+prompt);
+      if (prompt == null)
+      {
+        prompt = createElement('div');
+        prompt.className = 'prompt';
+        prompt.setAttribute('id','prompt');
+        body.appendChild(prompt);
+      }
+      prompt.innerHTML = '';
+      var ele = createElement('button');
+      ele.setAttribute('onclick','getElement(\'prompt\').style.display=\'none\';');
+      ele.appendChild(createTextNode('close'));
+      prompt.appendChild(ele);
+      prompt.appendChild(createElement('br'));
+      prompt.appendChild(createTextNode('dependencies: isSmaller, hasMissed'));
+      prompt.appendChild(createElement('br'));
+      prompt.appendChild(createTextNode('{priority: 0, method:\'isSmaller\', text: \'show this text\', params: [a,b]}'));
+      prompt.appendChild(createElement('br'));
+      prompt.appendChild(createTextNode('{priority: 1, method:\'hasMissed\', text: \'show this text because of the higher priority\', params: [a]}'));
+      prompt.appendChild(createElement('br'));
+      ele = createElement('div');
+      var dependencies = game.dependencies;
+      //console.log(dependencies.length);
+      for (var i = 0; i < dependencies.length; i++) {
+        ele.appendChild(createTextNode('priority: '));
+        span = createElement('input');
+        //span.style.cssFloat='left';
+        //console.log(dependencies[i]);
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.minWidth='10%';
+        span.style.maxWidth='10%';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','depend_priority_'+i);
+        span.value = dependencies[i].priority;
+        ele.appendChild(span);
+        ele.appendChild(createTextNode(' method: '));
+        span = createElement('input');
+        span.setAttribute('type', 'radio');
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','depend_smaller_'+i);
+        dependencies[i].method=='isSmaller'? span.checked=true : span.value='';
+        ele.appendChild(span);
+        ele.appendChild(createTextNode(' isSmaller '));
+        span = createElement('input');
+        span.setAttribute('type', 'radio');
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','depend_missed_'+i);
+        dependencies[i].method=='hasMissed' ? span.checked=true : span.value='';
+        ele.appendChild(span);
+        ele.appendChild(createTextNode(' hasMissed'));
+        //need a unselect button here for no issmaller and no hasmissed
+        ele.appendChild(createElement('br'));
+        ele.appendChild(createTextNode('text: '));
+        span = createElement('input');
+        //span.style.cssFloat='left';
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.minWidth='70%';
+        span.style.maxWidth='70%';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','depend_text_'+i);
+        span.value = dependencies[i].text;
+        ele.appendChild(span);
+        ele.appendChild(createElement('br'));
+        ele.appendChild(createTextNode('params: '));
+        for (var j = 0; j < dependencies[i].length; j++) {
+          span = createElement('select');
+          span.style.marginRight='1px';
+          span.style.display='inline-block';
+          span.style.minWidth='40%';
+          span.style.maxWidth='40%';
+          span.style.border = 'solid 1px #999';
+          span.setAttribute('id','depend_params_'+i+'_'+j);
+          var option = null;
+          //set the selected value and avoid the selected object
+          for (var k = 0; k < game.objects.length; k++)
+          {
+            option = createElement('option');
+            option.value = game.objects[k].id;
+            option.appendChild(createTextNode(game.objects[k].id));
+            if (obj.id != game.objects[k].id)
+            {
+              span.appendChild(option);
+            }
+          }
+          ele.appendChild(span);
+        }
+        ele.appendChild(createElement('hr'));
+      }
+      //console.log('hello');
+      ele.setAttribute('id','dependencies');
+      prompt.appendChild(ele);
+      span = createElement('button');
+      span.appendChild(createTextNode('add dependency'));
+      span.setAttribute('onclick','editor.addDependency();');
+      prompt.appendChild(span);
+      prompt.appendChild(createElement('br'));
+      prompt.appendChild(createElement('hr'));
+      span = createElement('button');
+      span.appendChild(createTextNode('set dependencies'));
+      span.setAttribute('onclick','editor.setDependencies(\''+obj.id+'\');');
+      prompt.appendChild(span);
+      prompt.appendChild(createElement('br'));
+      prompt.style.display='block';
+    };
+    /**
+    adds a single empty denpency to the element dependencies and the array
+    @method addDependency
+    */
+    editor.addDependency = function() { //obj_id) {
+      var dependencies = game.dependencies;
+      var ele = getElement('dependencies');
+      ele.appendChild(createTextNode('priority: '));
+      span = createElement('input');
+      //span.style.cssFloat='left';
+      span.style.marginRight='1px';
+      span.style.display='inline-block';
+      span.style.minWidth='10%';
+      span.style.maxWidth='10%';
+      span.style.border = 'solid 1px #999';
+      span.setAttribute('id','depend_priority_'+dependencies.length);
+      span.value = '';
+      ele.appendChild(span);
+      ele.appendChild(createTextNode(' method: '));
+      span = createElement('input');
+        span.setAttribute('type', 'radio');
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','depend_smaller_'+dependencies.length);
+        //dependencies[i].method == 'isSmaller' ? span.checked=true : span.value='';
+        ele.appendChild(span);
+        ele.appendChild(createTextNode(' isSmaller '));
+        span = createElement('input');
+        span.setAttribute('type', 'radio');
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','depend_missed_'+dependencies.length);
+        //dependencies[i].method == 'hasMissed' ? span.checked=true : span.value='';
+        ele.appendChild(span);
+        ele.appendChild(createTextNode(' hasMissed'));
+      ele.appendChild(createElement('br'));
+      ele.appendChild(createTextNode('text: '));
+      span = createElement('input');
+      //span.style.cssFloat='left';
+      span.style.marginRight='1px';
+      span.style.display='inline-block';
+      span.style.minWidth='70%';
+      span.style.maxWidth='70%';
+      span.style.border = 'solid 1px #999';
+      span.setAttribute('id','depend_text_'+dependencies.length);
+      span.value = '';
+      ele.appendChild(span);
+      ele.appendChild(createElement('br'));
+      ele.appendChild(createTextNode('params: '));
+      for (var j = 0; j < 2; j++) {
+        span = createElement('select');
+        //span.style.cssFloat='left';
+        span.style.marginRight='1px';
+        span.style.display='inline-block';
+        span.style.minWidth='40%';
+        span.style.maxWidth='40%';
+        span.style.border = 'solid 1px #999';
+        span.setAttribute('id','depend_params_'+dependencies.length+'_'+j);
+        span.setAttribute('name','depend_params_'+dependencies.length+'_'+j);
+        var option = null;
+        //
+        for (var k = 0; k < game.objects.length; k++)
+        {
+          option = createElement('option');
+          option.value = game.objects[k].id;
+          option.appendChild(createTextNode(game.objects[k].id));
+          span.appendChild(option);
+        }
+        ele.appendChild(span);
+      }
+      ele.appendChild(createElement('hr'));
+      dependencies.push({priority:'',method:'',text:'',params:[]});
+    };
+    /**
+    read the input values of the dendencies element and sets the values in the dependencies array
+    is saving the game
+    @method setDependencies
+    */
+    editor.setDependencies = function() {
+      var dependencies = game.dependencies;
+      //set the selected value and avoid the selected object
+      for (var i = 0; i < dependencies.length; i++)
+      {
+        //
+        var input = getElement('depend_priority_'+i).value;
+        dependencies[i].priority = input;
+        input = getElement('depend_text_'+i).value;
+        dependencies[i].text = input;
+        //it's a radio button!
+        input = getElement('depend_missed_'+i).checked ? 'hasMissed' : 'isSmaller';
+        console.log(input);
+        dependencies[i].method = input;
+        dependencies[i].params = [];
+        var j = 0;
+        var ele = getElement('depend_params_'+i+'_'+j);
+        while (ele != null && j < game.objects.length)
+        {
+          console.log(ele);
+          dependencies[i].params.push(ele.value);
+          j++;
+          ele = getElement('depend_params_'+i+'_'+j);
+        }
+      }
+      //editor.saveGame();
+      //console.log(game.dependencies);
+      getElement('prompt').style.display = 'none';
+    };
+    /**
+    @method setEvent
+    */
+    editor.setEvent = function(id) {
+      var obj = game.getObject(id);
+      var code = prompt('add some event code: showObject, hideObject, showText', obj.event==null?'':atob(obj.event) );
+      //editor.showPrompt(obj);
+      if (code != '')
+      {
+        obj.setEvent(code);
+        //editor.setDependecies(obj);
+        editor.saveGame();
+      }
+    };
+    /**
+    editor method
+    @method init
+    */
+    editor.init = function() {
+      //game = new Game();
+      game = editor.loadGame();
+      var ele = null;
+      ele = createElement('span');
+      ele.style.display = 'inline-block';
+      ele.style.marginBottom = '2px';
+      ele.style.border = 'solid 1px #999';
+      ele.style.maxWidth = '90%';
+      ele.setAttribute('onclick','editor.setTitle();');
+      ele.setAttribute('id','title');
+      ele.appendChild(createTextNode(game.title==null?'click to edit title.':game.title));
+      body.appendChild(ele);
+      ele = createElement('br');
+      ele.style.clear='both';
+      body.appendChild(ele);
+      ele = createElement('span');
+      ele.style.display = 'inline-block';
+      ele.style.marginBottom = '2px';
+      ele.style.border = 'solid 1px #999';
+      ele.style.maxWidth = '90%';
+      ele.setAttribute('onclick','editor.setQuest();');
+      ele.setAttribute('id','quest');
+      ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':game.quest));
+      body.appendChild(ele);
+      ele = createElement('br');
+      ele.style.clear='both';
+      body.appendChild(ele);
+      for (var i = 0; i < 4; i++)
+      {
+        for (var j = 0; j < 4; j++)
+        {
+          ele = createElement('div');
+          ele.className = 'grid-element';
+          ele.setAttribute('id','o_'+i+'_'+j);
+          ele.setAttribute('onclick','editor.setText(\''+ele.id+'\',null);');
+          ele.appendChild(createTextNode(' '+ele.id));
+          //ele.appendChild(createTextNode(' '+obj.order));
+          if (game.getObject(ele.id)==null)
+          {
+            var obj = new GameObject(ele.id, null);
+            //game.objects.push({text:'',order: 0, id:ele.id, event: null});
+            game.objects.push(obj);
+          }
+          body.appendChild(ele);
+        }
+        ele = createElement('br');
+        ele.style.clear='both';
+        body.appendChild(ele);
+      }
+      ele = createElement('input');
+      ele.setAttribute('type','button');
+      ele.setAttribute('value','set start');
+      ele.setAttribute('onclick','alert(\'The next click will set the new start object.\');editor.mode=\'setstart\';');
+      body.appendChild(ele);
+      ele = createElement('input');
+      ele.setAttribute('type','button');
+      ele.setAttribute('value','set end');
+      ele.setAttribute('onclick','alert(\'The next click will set the new end object.\');editor.mode=\'setend\';');
+      body.appendChild(ele);
+      ele = createElement('input');
+      ele.setAttribute('type','button');
+      ele.setAttribute('value','new game');
+      ele.setAttribute('onclick','editor.newGame();');
+      body.appendChild(ele);
+      ele = createElement('input');
+      ele.setAttribute('type','button');
+      ele.setAttribute('id','playbutton');
+      ele.setAttribute('value','play');
+      ele.setAttribute('onclick','alert(\'Here you can play and test you game.\');editor.playGame();');
+      body.appendChild(ele);
+      ele = createElement('div');
+      ele.style.height = '250px';
+      ele.style.overflow = 'scroll';
+      ele.setAttribute('id','output');
+      body.appendChild(ele);
+      for (var i = 0; i < game.objects.length; i++)
+      {
+        var obj = game.objects[i];
+        ele = getElement(obj.id);
+        if (obj.text != null && obj.text != '')
+        {
+          editor.setText(obj.id, obj.text);
+        }
+        getElement(obj.id).appendChild(createElement('br'));
+        getElement(obj.id).appendChild(createTextNode(' '+obj.order));
+      }
+    };
+
+    _win.game = game;
+    _win.editor = editor;
+    window.onload = function() {setTimeout(editor.init(), 100);};
+  })(window)
+  </script>
+ </body>
+</html>

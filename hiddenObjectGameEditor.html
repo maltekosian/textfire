@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <style>
+  body {margin:0;background:#000;overflow:hidden;}
+  </style>
+ </head>
+ <body id="body">
+  <script>
+  /**
+   *  canvas should be 16:10 and show markers for 16:9 and 4:3
+   *  2014-10-23
+   *  adding store and menu new load save exit preferences
+   *  is menu an app inside the app like dialog editor, media manager etc. could be?
+   *
+   *
+   *
+   */
+    (
+    function() {
+      var GameButton = function(_n) {
+        this.name = _n;
+        this.over = false;
+        this.bounds = {x:0,y:0,w:0,h:0};
+        this.setBounds = function(_x,_y,_w,_h) {
+          this.bounds.x = _x;
+          this.bounds.y = _y;
+          this.bounds.w = _w;
+          this.bounds.h = _h;
+        };
+        this.isHit = function(_x, _y) {
+          return (this.bounds.x <= _x && this.bounds.y <= _y &&
+                  this.bounds.x + this.bounds.w >= _x && this.bounds.y + this.bounds.h >= _y);
+        };
+        this.onClick = function() {};
+      };
+      var GameObject = function(_uid, _x, _y) {
+        this.uid = _uid;
+        this.name = null;
+        this.bounds = {x:_x,y:_y,w:0,h:0};
+        /***/
+        this.setBounds = function (_x, _y, _w, _h) {
+          this.bounds.x = _x;
+          this.bounds.y = _y;
+          this.bounds.w = _w;
+          this.bounds.h = _h;
+        };
+        this.getBounds = function () {
+          return this.bounds;
+        };
+        this.isHit = function(_x, _y) {
+          return (this.bounds.x <= _x && this.bounds.y <= _y &&
+                  this.bounds.x + this.bounds.w >= _x && this.bounds.y + this.bounds.h >= _y);
+        };
+        this.load = function(_data) {
+
+        };
+        //obsolete?
+        this.store = function() {
+          return JSON.stringify(this);//, function() { return ...}
+        };
+      };
+      var GameScene = function(_uid) {
+        this.uid = uid;
+        this.objectRefs = [];
+        this.name = null;
+
+        this.init = function (_n) {
+          this.name = _n;
+        };
+        this.load = function(_data) {
+          //load objects!
+          for (key in _data) {
+            if (key == 'objects')
+            {
+              this.objects = [];
+              for (var i = 0; i < _data['objectRefs'].length; i++)
+              {
+                var gobj /*= new GameObject(_data['objectRefs'][i]);
+                gobj =*/ game.getGameObject(_data['objectRefs'][i]);
+                this.objects.push(gobj);
+              }
+            } else {
+              this[key] == _data[key];
+            }
+          }
+        };
+        //obsolete?
+        this.store = function() {
+          return JSON.stringify(this);
+        };
+      };
+      /**
+      @class MediaLanguage
+      @param _lan
+      @since 2014-05-18
+      */
+      function MediaLanguage(_lan) {
+        /**
+        @attribute language
+        */
+        this.language = _lan;
+        /**
+        @property medias
+        */
+        this.medias = [];
+        /**
+        @method load
+        @param data
+        @since 2014-05-29
+        */
+        this.load = function(data) {
+        this.language = data['language'];
+        this.medias = [];
+        for (var i = 0; i < data['medias'].length; i++) {
+         this.medias.push({ key:data['medias'][i]['key'], value:data['medias'][i]['value']});
+        }
+        };
+        /**
+        _t64 indicates if the value has to be base64_encoded or not
+        @method setMedia
+        @since 2014-05-15
+        @param _k the key
+        @param _v the value
+        @param {boolean} _t64 to be 64 encoded
+        */
+        this.setMedia = function(_k, _v, _t64) {
+        //console.log('setMedia'+_k);
+        if (this.hasMedia(_k)) {
+         this.getMedia(_k).value = _t64 ? btoa(_v): _v;
+        } else {
+         this.addMedia(_k, _v, _t64);
+        }
+        };
+        /**
+        use this to get Images, Audios, Videos and other
+        media that should stay bas64 encoded
+        var myMediaValue = [..].getMedia('key').value;
+        @method getMedia
+        @since 2014-05-15
+        @param _k the key
+        @return the complete media Object
+        */
+        this.getMedia = function(_k) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              return this.medias[i];
+            }
+          }
+          return null;
+        };
+        /**
+        Don't use this method for images, audios or videos,
+        because those have to stay base64_encoded
+        @method getTextMedia
+        @since 2014-05-15
+        @param _k the key
+        @return the media value - always base64 decoded
+        */
+        this.getTextMedia = function(_k) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              //console.log('getMedia->'+atob(this.medias[i].value));
+              return atob(this.medias[i].value);
+            }
+          }
+          return null;
+        };
+        /**
+        @method hasMedia
+        @since 2014-05-15
+        @param _k the key
+        @return {boolean} true if the media with the key exists
+        */
+        this.hasMedia = function(_k, _v) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              return true;
+            }
+          }
+          return false;
+        };
+        /**
+        @method deleteMedia
+        @since 2014-05-16
+        @param _k the key
+        */
+        this.deleteMedia = function(_k, _v) {
+          for (var i = 0; i < this.medias.length; i++) {
+            if (this.medias[i].key == _k) {
+              return this.medias.splice(i, 1);
+            }
+          }
+        };
+        /**
+        @method addMedia
+        @since 2014-05-15
+        @param _k the key
+        @param _v the value
+        @param {boolean} _t64 to be 64 encoded
+        */
+        this.addMedia = function(_k, _v, _t64) {
+          this.medias.push(this.createMedia(_k, _v, _t64));
+        };
+        /**
+        @method createMedia
+        @since 2014-05-15
+        @param _k the key
+        @param _v the value
+        @param {boolean} _t64 to be 64 encoded
+        @return the media Object
+        */
+        this.createMedia = function(_k, _v, _t64) {
+          _v = _t64 ? btoa(_v): _v;
+          return { key : _k, value : _v };
+        };
+      };
+      var Game = function() {
+        //store&load the objects before you load the scenes!
+        this.objects = [];
+        this.scenes = [];
+        this.dialogs = [];
+        this.startSceneRef = null;
+        this.currentScene = null;
+        this.currentObject = null;
+        this.currentDialog = null;
+
+        this.init = function() {
+          this.objects = [];
+          this.scenes = [];
+          var update = true;
+          requestAnimationFrame(function() { game.updateDraw()});
+        };
+        this.showGames = function() {
+          //displays games in a list overlay
+
+        };
+        this.load = function(_data) {
+          this.objects = [];
+          this.scenes = [];
+          this.dialogs = [];
+          for (var key in _data)
+          {
+            switch (key)
+            {
+            case '': break;
+            default: this[key] = _data[key];
+            }
+          }
+          var update = true;
+        };
+        this.store = function() {
+          return JSON.stringify(this);
+        };
+        this.updateDraw = function() {
+          if (update)
+          {
+            game.draw();
+          }
+          requestAnimationFrame(function() { game.updateDraw()});
+        };
+        this.draw = function() {
+
+        };
+        this.getGameObject = function(_u) {
+          return null;
+        };
+        this.getGameDialog = function(_u) {
+          return null;
+        };
+        this.getGameScene = function(_u) {
+          return null;
+        };
+        /**
+        @class mediamanager
+        @since 2014-05-18
+        */
+        this.mediamanager = {
+        /**
+        @property defaultLananguage
+        @default 'en'
+        */
+        defaultLanguage : 'en',
+        /**
+        @property currentLanguage
+        @default 'en'
+        */
+        currentLanguage : 'en',
+        /**
+        @property {array} languages
+        */
+        languages : [],
+        /**
+        @property {array} mediaLanguages
+        */
+        mediaLanguages : [],
+        /**
+        @method setCurrentLanguage
+        */
+        setCurrentLanguage : function(_lan) {
+          this.currentLanguage = _lan;
+          if (!this.hasLanguage(_lan)) {
+            this.addLanguage(_lan);
+          }
+        },
+        /**
+        @method addLanguage
+        */
+        addLanguage : function(_lan) {
+          this.mediaLanguages.push( new MediaLanguage(_lan) );
+          this.languages.push(_lan);
+        },
+        /**
+        @method hasLanguage
+        */
+        hasLanguage : function(_lan) {
+          for (var i = 0; i < this.languages.length; i++) {
+            if (this.languages[i] == _lan) {
+              return true;
+            }
+          }
+          return false;
+        },
+        /**
+        @method getLanguage
+        @since 2014-07-31
+        @param _lan a language key like 'en','de',...
+        @return {MediaLanguage} a mediaLanguage or null
+        */
+        getLanguage : function(_lan) {
+          for (var i = 0; i < this.mediaLanguages.length; i++) {
+            if (this.mediaLanguages[i].language == _lan) {
+              return this.mediaLanguages[i];
+            }
+          }
+          return null;
+        },
+        /**
+        @method getCurrentLanguage
+        */
+        getCurrentLanguage : function() {
+          for (var i = 0; i < this.mediaLanguages.length; i++) {
+            if (this.mediaLanguages[i].language == this.currentLanguage) {
+              return this.mediaLanguages[i];
+            }
+          }
+          this.currentLanguage = this.defaultLanguage;
+          var language = new MediaLanguage(this.currentLanguage);
+          this.mediaLanguages.push( language );
+          this.languages.push(this.currentLanguage);
+          return language;
+        },
+        /**
+        returns the keys, defined by the default language
+        @method getKeys
+        @since 2914-07-31
+        @return {Array} keys
+        */
+        getKeys : function () {
+          var d_lan = this.getLanguage(this.defaultLanguage);
+          var keys = [];
+          for (var i = 0; i < d_lan.medias.length; i++) {
+            //console.log(d_lan.getMedia(d_lan.medias[i].key).value.substr(0, 20));
+            if (!(d_lan.getMedia(d_lan.medias[i].key).value.indexOf('data:') == 0 &&
+                d_lan.getMedia(d_lan.medias[i].key).value.indexOf('base64') > 0))
+            {
+              keys.push(d_lan.medias[i].key);
+            }
+          }
+          return keys;
+        },
+        /**
+        use getTextMedia too get the decoded media value
+        @method setTextMedia
+        @since 2014-05-17
+        @param _k the key
+        @param _v the value
+        */
+        setTextMedia : function(_k, _v) {
+          //type64=true|false would regulate de/encoding or not
+          for (var i = 0; i < this.mediaLanguages.length; i++) {
+            if (this.mediaLanguages[i].getMedia(_k) == null) {
+              this.mediaLanguages[i].setMedia(_k, _v, true);
+            }
+          }
+        },
+        /**
+        push through for MediaLanguage.setMedia
+        the media will not be base64 encoded
+        use getMedia too get the media
+        use for Images and other natually base64 encoded media
+        @method setMedia
+        @since 2014-05-29
+        @param _k the key
+        @param _v the value - already base64 encoded
+        */
+        setMedia : function(_k, _v) {
+          //type64=true|false would regulate de/encoding or not
+          for (var i = 0; i < this.mediaLanguages.length; i++) {
+            if (this.mediaLanguages[i].getMedia(_k) == null) {
+              this.mediaLanguages[i].setMedia(_k, _v, false);
+            }
+          }
+        },
+        deleteMedia : function(_k) {
+          for (var i = 0; i < this.mediaLanguages.length; i++) {
+            this.mediaLanguages[i].deleteMedia(_k);
+          }
+        },
+        getMedia : function(_k) {
+          return this.getCurrentLanguage().getMedia(_k);
+        },
+        getTextMedia : function(_k) {
+          return this.getCurrentLanguage().getTextMedia(_k);
+        },
+        /**
+        @method load
+        @param data
+        @since 2014-05-29
+        */
+        load : function(data) {
+          this.defaultLanguage = 'en',
+          this.currentLanguage = data['currentLanguage'];
+          this.languages = data['languages'];
+          this.mediaLanguages = [];
+          for (var i = 0; i < data['mediaLanguages'].length; i++) {
+            var lan = new MediaLanguage(data['mediaLanguages'][i]['uid']);
+            lan.load(data['mediaLanguages'][i]);
+            this.mediaLanguages.push(lan);
+          }
+        }
+        };
+
+      };
+
+      var editor = {};
+      editor.game = new Game();
+      editor.currentScene = null;
+      editor.currentObject = null;
+      editor.currentDialog = null;
+      editor.uidMax = 5;
+      editor.menuMode = false;
+      editor.mediamanager = (new Game()).mediamanager;
+      editor.openButtonLabel = null;
+      editor.openButtonArray = null;
+      editor.buttonLabels = ['game',['new','save','load'],'scene',['new','delete','set name','switch to'],'object',['delete', 'set name'/*,'combine with','collection','link to'*/],'preferences','close menu'];
+      /**
+      */
+      editor.init = function() {
+        editor.game = new Game();
+        editor.mediamanager = (new Game()).mediamanager
+        //load the editor.mediamanager if available
+        //locally or over xhr
+        update = true;
+        requestAnimationFrame(function() { editor.updateDraw();});
+      }
+      /**
+      */
+      editor.updateDraw = function() {
+        if (update)
+        {
+          editor.draw();
+        }
+        requestAnimationFrame(function() { editor.updateDraw();});
+      };
+      /**
+      */
+      editor.createUid = function() {
+        var abc = 'abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var uid = '';
+        while (uid.length < editor.uidMax || editor.hasUid(uid)) {
+           uid = '';
+           for (var i = 0; i < editor.uidMax; i++)
+           {
+             uid = uid + abc.substr(Math.floor(Math.random()*abc.length), 1);
+           }
+           if (!isNaN(uid))
+           {
+             uid = '_'+uid;
+           }
+        }
+        editor.addUid(uid);
+        return uid;
+      };
+      /**
+      */
+      editor.hasUid = function(_uid) {
+        for (var i = 0; i < uidCounter.length; i++) {
+          if (uidCounter[i] == _uid) {
+            return true;
+          }
+        }
+        return false;
+      };
+      /**
+      */
+      editor.removeUid = function(_uid) {
+        for (var i = 0; i < uidCounter.length; i++) {
+          if (uidCounter[i] == _uid) {
+            uidCounter.splice(i,1);
+          }
+        }
+      };
+      /**
+      */
+      editor.addUid = function(_uid) {
+        if (!this.hasUid(_uid)) {
+          uidCounter.push(_uid);
+        }
+      };
+      /**
+
+      */
+      editor.close_menu = function() {
+        editor.menuMode = false;
+        update = true;
+      };
+      /**
+      */
+      editor.game_new = function() {
+        uidCounter = [];
+        editor.game = new Game();
+        update = true;
+      };
+      /**
+      */
+      editor.draw = function() {
+        //
+        var cw = canvasWidth;
+        var ch = canvasHeight;
+        btx.fillStyle = '#fff';
+        btx.fillRect(0,0,cw,ch);
+        var ch10 = ch/10;
+        btx.strokeStyle = '#999';
+        //
+        btx.strokeRect(1,1,cw-2,ch-2);//16:10
+        btx.strokeRect(1,ch10/2+1,cw-2,ch-ch10-2);//16:9
+        btx.strokeRect(cw*1/12 + 1,1,cw*5/6-2,ch-2);
+        //if (editor.currentScene != null)
+        {
+          btx.strokeStyle = '#000';
+          for (var i = 0; i < editor.game.objects.length; i++)
+          {
+            var obj = editor.game.objects[i];
+            if (editor.currentObject == null || obj.uid != editor.currentObject.uid)
+            {
+              btx.strokeRect(obj.bounds.x * cw, obj.bounds.y * ch, obj.bounds.w * cw, obj.bounds.h * ch);
+            }
+          }
+          if (editor.currentObject != null)
+          {
+            btx.strokeStyle = '#0cc';
+            btx.strokeRect(editor.currentObject.bounds.x * cw, editor.currentObject.bounds.y * ch,
+                editor.currentObject.bounds.w * cw, editor.currentObject.bounds.h * ch);
+          }
+
+        }
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (canvas.height < canvas.width / 16 * 10)
+        {
+          ctx.drawImage(bufferImg,(canvas.width-canvasWidth)/2,0,canvasWidth,canvasHeight);
+        } else {
+          ctx.drawImage(bufferImg,0,(canvas.height-canvasHeight)/2,canvasWidth,canvasHeight);
+        }
+        if (editor.menuMode)
+        {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#000';
+          ctx.fillRect(canvas.width*2/3, 0, canvas.width/3, canvas.height);
+          var h = 50;
+          ctx.fillStyle = '#999';
+          ctx.fillRect(canvas.width*2/3+5, h-30, canvas.width/3-10, 1);
+          for (var i = 0; i < editor.buttonLabels.length; i++ )
+          {
+            ctx.fillStyle = '#999';
+            ctx.font = '20px Sans-Serif';
+            if (editor.buttonLabels[i] instanceof Array )
+            {
+              if (editor.buttonLabels[i-1] == editor.openButtonArray) {
+                for (var j = 0; j < editor.buttonLabels[i].length; j++)
+                {
+                  if (editor.buttonLabels[i][j] == editor.openButtonLabel) {
+                    ctx.fillText(editor.buttonLabels[i][j], canvas.width*2/3+31, h-1);
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(editor.buttonLabels[i][j], canvas.width*2/3+30, h);
+                    ctx.fillStyle = '#999';
+                  } else {
+                    ctx.fillText(editor.buttonLabels[i][j], canvas.width*2/3+20, h);
+                  }
+                  ctx.fillRect(canvas.width*2/3+15, h+5, canvas.width/3-30, 1);
+                  h += 35;
+                }
+              }
+            } else {
+              if (editor.buttonLabels[i] == editor.openButtonArray) {
+                ctx.fillText(editor.buttonLabels[i], canvas.width*2/3+21, h-1);
+                ctx.fillStyle = '#fff';
+                ctx.fillText(editor.buttonLabels[i], canvas.width*2/3+20, h);
+                ctx.fillStyle = '#999';
+              } else {
+                ctx.fillText(editor.buttonLabels[i], canvas.width*2/3+10, h);
+              }
+              ctx.fillRect(canvas.width*2/3+5, h+5, canvas.width/3-10, 1);
+              h += 35;
+            }
+          }
+        }
+
+        update = false;
+      };
+      editor.showMenu = function(_ol) {
+        editor.openButtonArray = _ol;
+        editor.openButtonLabel = null;
+      };
+      editor.game_load = function() {
+        if (store != null)
+        {
+          var data = JSON.parse(store.getItem('hogeditor'));
+          for (var key in data['editor'])
+          {
+            editor[key]=data['editor'][key];
+          }
+          editor.game = new Game();
+          editor.game.load(data['editor']['game']);
+          editor.openButtonLabel = 'load';
+          editor.mediamanager = (new Game()).mediamanager;
+          editor.mediamanager.load(data['editor']['mediamanager']);
+          uidCounter = data['uidCounter'];
+        }
+      };
+      editor.game_save = function() {
+        if (store != null)
+        {
+          store.setItem('hogeditor',JSON.stringify({editor: editor, uidCounter: uidCounter}));
+        }
+      };
+      editor.handleDragOver = function(eve) {
+        eve.stopPropagation();
+        eve.preventDefault();
+        eve.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+      };
+/*
+  // Setup the dnd listeners.
+img_canvas.addEventListener('dragover', function(eve) {editor.handleDragOver(eve)}, false);
+img_canvas.addEventListener('drop', function(eve) { 
+    editor.media_upload(eve); }, false);*/
+      /** 
+      */
+      editor.media_upload = function (eve) {
+        eve.stopPropagation();
+        eve.preventDefault();
+        var files = eve.target.files; // FileList object
+        if (files==null) {
+          files = eve.dataTransfer.files;
+        }
+        var f = files[0];
+        if (!(f.type.match('image.*') ) ) 
+        {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = (function(theFile) {
+          return function(e) {
+            console.log(e.target.result);
+            editor.media_input(e.target.result);
+            console.log(theFile.name);
+          };
+        })(f);
+        reader.readAsDataURL(f);
+      };
+      /** 
+      */
+      editor.media_input = function (_media) {
+        console.log(' -> '+_media);
+        img = new Image();
+        img.src = _media;
+        console.log(img.name, img.width, img.height);
+        //put _media into the mediamager with an own unique uid
+        //redraw everything and block the media upload again
+        update = true;
+      };
+      /**
+      */
+      editor.mousePressed = function(_x, _y) {
+        if (!pressed)
+        {
+          mend = false;
+          pressed = true;
+          px = _x;
+          py = _y;
+          mx = _x;
+          my = _y;
+          if (!editor.menuMode)
+          {
+            if (mouseTimer == null)
+            {
+              mouseTimer = setTimeout( function() {
+                  if (mouseTimer != null)
+                  {
+                    console.log('long press');
+                    editor.showMenu();
+                    editor.menuMode = true;
+                    update = true;
+                  }
+                }
+              , 1000);
+            }
+            if (!editor.objectMode)
+            {
+              editor.currentObject = new GameObject(editor.createUid(), px, py);
+            }
+
+          }
+          update = true;
+        }
+      };
+      editor.mouseMoved = function(_x, _y) {
+        if (pressed)
+        {
+          if (!editor.menuMode)
+          {
+            //use for scrolling or painting features
+            //console.log(_x+','+_y);
+            if (editor.objectMode)
+            {
+              editor.currentObject.bounds.x = _x;
+              editor.currentObject.bounds.y = _y;
+            } else if (editor.currentObject != null)
+            {
+              if (_x < editor.currentObject.bounds.x)
+              {
+                editor.currentObject.bounds.w = editor.currentObject.bounds.x - _x;
+                editor.currentObject.bounds.x = _x;
+              } else {
+                editor.currentObject.bounds.w = _x - editor.currentObject.bounds.x;
+              }
+              if (_y < editor.currentObject.bounds.y)
+              {
+                editor.currentObject.bounds.h = editor.currentObject.bounds.y - _y;
+                editor.currentObject.bounds.y = _y;
+              } else {
+                editor.currentObject.bounds.h = _y - editor.currentObject.bounds.y;
+              }
+            }
+            if (mouseTimer != null && (mx<=px-0.01 || my<=py-0.012 || mx>=px+0.01 || my>=py+0.012))
+            {
+              clearTimeout(mouseTimer);
+              mouseTimer = null;
+            }
+          }
+          update = true;
+        }
+      };
+      editor.mouseReleased = function(_x, _y) {
+        if (pressed)
+        {
+          if (!editor.menuMode)
+          {
+            if (mouseTimer != null)
+            {
+              clearTimeout(mouseTimer);
+              mouseTimer = null;
+            }
+            if ((mx>=px+0.01 && my>=py+0.012) && editor.currentObject != null)
+            {
+              //place some code here
+              if (_x < editor.currentObject.bounds.x)
+              {
+                editor.currentObject.bounds.w = editor.currentObject.bounds.x - _x;
+                editor.currentObject.bounds.x = _x;
+              } else {
+                editor.currentObject.bounds.w = _x - editor.currentObject.bounds.x;
+              }
+              if (_y < editor.currentObject.bounds.y)
+              {
+                editor.currentObject.bounds.h = editor.currentObject.bounds.y - _y;
+                editor.currentObject.bounds.y = _y;
+              } else {
+                editor.currentObject.bounds.h = _y - editor.currentObject.bounds.y;
+              }
+              editor.game.objects.push(editor.currentObject);
+              //and add it to the objects array
+
+              //current_object = null;
+              editor.currentObject = null;
+            } else {
+              //not moving
+              //edit object if is Hit
+              editor.currentObject = null;
+              editor.objectMode = false;
+              for (var i = 0; i < editor.game.objects.length; i++)
+              {
+                if (editor.game.objects[i].isHit(px, py))
+                {
+                  editor.currentObject = editor.game.objects[i];
+                  //set the editor.objectmode!
+                  editor.objectMode = true;
+                }
+              }
+            }
+          } else {
+            //look for buttons
+            if (mouseTimer != null)
+            {
+              clearTimeout(mouseTimer);
+              //mouseTimer = null;
+              var h = 50;
+              var x = _x*canvasWidth+((canvas.width-canvasWidth)/2);
+              var y = _y*canvasHeight+((canvas.height-canvasHeight)/2);
+              //alert(x+', '+y);
+              for (var i = 0; i < editor.buttonLabels.length; i++ )
+              {
+                if (editor.buttonLabels[i] instanceof Array )
+                {
+                  if (editor.buttonLabels[i-1] == editor.openButtonArray) {
+                  for (var j = 0; j < editor.buttonLabels[i].length; j++)
+                  {
+                    if(canvas.width*2/3+15 < x && h-30 < y && x < canvas.width-20 && y < h) {
+                      editor.openButtonLabel = editor.buttonLabels[i][j];
+                      var func = new Function('editor','editor.'+editor.buttonLabels[i-1].replace(/ /g,'_')+'_'+editor.buttonLabels[i][j].replace(/ /g,'_')+'();');
+                      try
+                      {
+                        console.log(func, editor.openButtonArray, editor.openButtonLabel);
+                        func(editor);
+                      }
+                      catch (e)
+                      {
+                        console.log(e);
+                      }
+                    }
+                    h += 35;
+                  }
+                  }
+                } else {
+                  //alert((canvas.width*2/3+10)+' , '+(h-30)+' , '+(canvas.width-10)+' , '+h);
+                  if(canvas.width*2/3+10 < x && h-30 < y && x < canvas.width-10 && y < h) {
+                    editor.showMenu(editor.buttonLabels[i]);
+                    var func = new Function('editor','editor.'+editor.buttonLabels[i].replace(/ /g,'_')+'();');
+                    try
+                    {
+                      console.log(func,editor.buttonLabels[i].replace(/ /g,'_'));
+                      func(editor);
+                    }
+                    catch (e)
+                    {
+                      console.log(e);
+                    }
+                  } else {
+                    //mouseTimer = null;
+
+                  }
+                  h += 35;
+                }
+              }
+            } else {
+              editor.menuMode = false;
+            }
+          }
+          //update & draw doublebuffer
+          px = 0;
+          py = 0;
+          mx = 0;
+          my = 0;
+          pressed = false;
+          update = true;
+        }
+      };
+
+      var game = null;
+      var uidCounter = [];
+      var store = window.localStorage;
+      var bufferImg = null;
+      var canvas = null;
+      var btx = null;
+      var ctx = null;
+      var update = true;
+      var canvasWidth = 0;
+      var canvasHeight = 0;
+      var canvasRatio = 43;
+      var px = 0;
+      var py = 0;
+      var mx = 0;
+      var my = 0;
+      var pressed = false;
+      var mend = false;
+      var mouseTimer = null;
+
+
+      function init() {
+        //create btx, canvas, ctx
+        canvasWidth = window.innerWidth ;
+        canvasHeight = window.innerHeight ;
+        canvas = createElement('canvas');
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        canvas.style.width = canvasWidth+'px';
+        canvas.style.height = canvasHeight+'px';
+        ctx = canvas.getContext('2d');
+        body.appendChild(canvas);
+        //default is landscape!
+
+        if (canvasHeight >= canvasWidth / 16 * 10)
+        {
+          canvasHeight = canvasWidth / 16 * 10;
+        } else {
+          //16:9 or wider
+          canvasWidth = canvasHeight / 10 * 16
+        }
+
+        bufferImg = createElement('canvas');
+
+        bufferImg.width = canvasWidth;//400|800|1200|1600|2000|2400
+        bufferImg.height = canvasHeight;//225|450|675|900|1125|1350
+        btx = bufferImg.getContext('2d');
+        //add the touch and mouselisteners to the canvas now.
+        if ('ontouchstart' in window)
+        {
+          console.log('using touch');
+          canvas.addEventListener('touchstart',
+          function(eve) {
+            eve.preventDefault();
+            editor.mousePressed((eve.touches[0].pageX-((canvas.width-canvasWidth)/2))/canvasWidth,
+              (eve.touches[0].pageY-((canvas.height-canvasHeight)/2))/canvasHeight);
+          },
+          false);
+          canvas.addEventListener('touchmove',
+          function(eve) {
+            eve.preventDefault();
+            mx = (eve.touches[0].pageX-((canvas.width-canvasWidth)/2))/canvasWidth;
+            my = (eve.touches[0].pageY-((canvas.height-canvasHeight)/2))/canvasHeight;
+            editor.mouseMoved(mx,my);
+          },
+          false);
+          canvas.addEventListener('touchend',
+          function(eve) {
+            eve.preventDefault();
+            if (!mend) {
+              mend = true;
+              editor.mouseReleased(mx, my);
+            }
+          },
+          false);
+          canvas.addEventListener('touchcancel',
+          function(eve) {
+            eve.preventDefault();
+            if (!mend) {
+              mend = true;
+              editor.mouseReleased(mx, my);
+            }
+          },
+          false);
+        } //else {
+          canvas.addEventListener('mousedown',
+          function(eve) {
+            editor.mousePressed(
+              (eve.pageX-((canvas.width-canvasWidth)/2))/canvasWidth,
+              (eve.pageY-((canvas.height-canvasHeight)/2))/canvasHeight
+           );
+          },
+          false);
+          canvas.addEventListener('mousemove',
+          function(eve) {
+            mx = (eve.pageX-((canvas.width-canvasWidth)/2))/canvasWidth;
+            my = (eve.pageY-((canvas.height-canvasHeight)/2))/canvasHeight;
+            editor.mouseMoved(mx,my);
+          },
+          false);
+          canvas.addEventListener('mouseup',
+          function(eve) {
+            editor.mouseReleased((eve.pageX-((canvas.width-canvasWidth)/2))/canvasWidth,
+              (eve.pageY-((canvas.height-canvasHeight)/2))/canvasHeight);
+          },
+          false);
+        //}
+        //if (editormode) {
+        editor.init();
+        //} else { game.init(); }
+      };
+
+      window.createElement = function(_t) {return document.createElement(_t)};
+      window.getElement = function(_t) {return document.getElementById(_t)};
+      window.onload = function() {setTimeout(init,100);};
+    }
+    )( );
+  </script>
+ </body>
+</html>
