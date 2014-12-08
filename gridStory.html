@@ -1093,7 +1093,7 @@
         span.style.maxWidth='70%';
         span.style.border = 'solid 1px #999';
         span.setAttribute('id','depend_text_'+i);
-        span.value = dependencies[i].text;
+        span.value = atob(dependencies[i].text);
         ele.appendChild(span);
         ele.appendChild(createElement('br'));
         ele.appendChild(createTextNode('params: '));
