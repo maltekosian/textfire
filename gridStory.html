@@ -18,7 +18,7 @@
   .grid-end{background:#c00;}
   .grid-ready{background:#99c;}
   .grid-current{border-color:#f90;}
-  .prompt{position: absolute; left: 5%; top: 5%; min-width: 83%;max-width: 83%; min-height: 83%;max-height: 83%; padding: 1%; z-index: 100; display: block; overflow: auto; background: #fff; color: #000; box-shadow: 5px 5px 8px #999, 0px 0px 1px #000;}
+  .prompt{position: absolute; left: 5%; top: 5%; min-width: 83%;max-width: 83%; min-height: 83%;max-height: 83%; padding: 1%; z-index: 100; display: block; overflow: auto; background: rgba(204,204,204,0.75); color: #000; box-shadow: 5px 5px 8px #999, 0px 0px 1px #000;}
   /*.ingame-visible{display: block;}*/
  </style>
  <!--
@@ -52,12 +52,12 @@
  5 -> like 6
  6 -> without a breakfast you will fall asleep again. You loose your job.
  7 -> your landlord will recall the contract, because of the water damage. So you have a very long day and have to stay in a hotel. Next day you'll loose your job, because you'll have overslept.
- 8 -> you will miss 9,10,11... 
+ 8 -> you will miss 9,10,11...
  9 -> you stink. A good reason for your boss to fire you.
  10 -> your mouth stinks. A good reason for your boss to fire you.
  11 -> you get a cold. The very next day you loose your job, because your boss do not believes you.
  12 -> you are in panic, so 13, 14 and 15 takes place. You've lost the game and will be reorn as yourself.
- 13 -> you are naked. The neighbor sees you and calls the police. After 5 years in the psychaty you'll way to late. 
+ 13 -> you are naked. The neighbor sees you and calls the police. After 5 years in the psychaty you'll way to late.
  14 -> you will have to wait for the key service. You loose your job, because you are to late.
  15 -> the house will burn done. So you have a very long day and have to stay in a hotel. Next day you'll loose your job, because you'll have overslept.
  16 -> NOT possible.
@@ -65,7 +65,7 @@
  8 < 3 Bath before kitchen like -> 11.
  15 < 14 you do not take your keys. You have taken your mobile instead. Like -> 14
  13 < 12 You are in panic. like -> 13
- 5 < 4 like -> 4 
+ 5 < 4 like -> 4
  -->
  <!--
  long story:
@@ -93,7 +93,7 @@
     2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
     2 missed -> you did not do something (like leaving without key)
     2. define and detect cases -> show message - may loop to begining (rebirth after death)
- 
+
  make the complete tool canvas based
  build in uidcounter
  enable levels (transform game to level)
@@ -1226,7 +1226,7 @@
         var input = getElement('depend_priority_'+i).value;
         dependencies[i].priority = input;
         input = getElement('depend_text_'+i).value;
-        dependencies[i].text = input;
+        dependencies[i].text = btoa(input);
         //it's a radio button!
         input = getElement('depend_missed_'+i).checked ? 'hasMissed' : 'isSmaller';
         console.log(input);
@@ -1242,8 +1242,8 @@
           ele = getElement('depend_params_'+i+'_'+j);
         }
       }
-      //editor.saveGame();
-      //console.log(game.dependencies);
+      editor.saveGame();
+      console.log(game.dependencies);
       getElement('prompt').style.display = 'none';
     };
     /**
