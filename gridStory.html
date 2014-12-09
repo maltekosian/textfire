@@ -430,7 +430,7 @@
       var obj = null;
       if (game.over)
       {
-        ctx.fillText(''+game.title,0.02*cw,(0.01*cw+fts)*1);
+        ctx.fillText(''+atob(game.title),0.02*cw,(0.01*cw+fts)*1);
         ctx.fillText('statistics:',0.02*cw,(0.01*cw+fts)*2);
         var missed = objects.length - game.order.length;
         if (missed > 0)
@@ -468,8 +468,8 @@
           //isSmaller
         }
       } else {
-        ctx.fillText(''+game.title,0.02*cw,0.01*cw+fts);
-        ctx.fillText(''+game.quest,0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
         //begin of btx context
         ctx.lineWidth = 0.025 * cw;
         for (var i = 0; i < objects.length; i++)
@@ -509,14 +509,14 @@
         ctx.fillStyle = '#000';
         var fts = Math.round(0.035*cw);
         ctx.font = fts+'px Sans-Serif';
-        ctx.fillText(''+game.title,0.02*cw,0.01*cw+fts);
-        ctx.fillText(''+game.quest,0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
         if (game.current != null) {
-          ctx.fillText(''+game.current.text,0.02*cw,(0.01*cw+fts)*3);
+          ctx.fillText(''+game.current.getText(),0.02*cw,(0.01*cw+fts)*3);
         } else if (game.order.length > 0) {
           var j = 0;
           for (var i = game.order.length - 1; i >= (game.order.length > 2 ? game.order.length-3 : 0); i--) {
-            ctx.fillText(''+game.getObject(game.order[i]).text,0.02*cw,
+            ctx.fillText(''+game.getObject(game.order[i]).getText(),0.02*cw,
                     (0.01*cw+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
             j++;
           }
@@ -608,7 +608,7 @@
     @class GameObject
     */
     var GameObject = function (_id, _t) {
-      this.text = _t;//btoa(_t);
+      this.text = btoa(_t);
       this.order = 0;
       this.id = _id;
       this.event = null;
@@ -805,10 +805,10 @@
         if (obj.text==null) {
           _text=prompt('What\'s up next?','');
         } else {
-          _text=prompt('What\'s up next?',obj.text);
+          _text=prompt('What\'s up next?',obj.getText());
         }
       }
-      obj.text=_text;
+      obj.setText(_text);
       if (game.start == null)
       {
         game.start =_id;
@@ -883,18 +883,18 @@
     @method setQuest
     */
     editor.setQuest = function() {
-      var text = prompt('Enter the quest of the game.', game.quest==null?'':game.quest);
-      game.quest = text;
-      getElement('quest').innerHTML = game.quest;
+      var text = prompt('Enter the quest of the game.', game.quest==null?'':atob(game.quest));
+      game.quest = btoa(text);
+      getElement('quest').innerHTML = atob(game.quest);
       editor.saveGame();
     };
     /**
     @method setTitle
     */
     editor.setTitle = function() {
-      var text = prompt('Enter the game\'s title.', game.title==null?'':game.title);
-      game.title = text;
-      getElement('title').innerHTML = game.title;
+      var text = prompt('Enter the game\'s title.', game.title==null?'':atob(game.title));
+      game.title = btoa(text);
+      getElement('title').innerHTML = atob(game.title);
       editor.saveGame();
     };
     /**
@@ -1318,7 +1318,7 @@
       ele.style.maxWidth = '90%';
       ele.setAttribute('onclick','editor.setTitle();');
       ele.setAttribute('id','title');
-      ele.appendChild(createTextNode(game.title==null?'click to edit title.':game.title));
+      ele.appendChild(createTextNode(game.title==null?'click to edit title.':atob(game.title)));
       body.appendChild(ele);
       ele = createElement('br');
       ele.style.clear='both';
@@ -1330,7 +1330,7 @@
       ele.style.maxWidth = '90%';
       ele.setAttribute('onclick','editor.setQuest();');
       ele.setAttribute('id','quest');
-      ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':game.quest));
+      ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':atob(game.quest)));
       body.appendChild(ele);
       ele = createElement('br');
       ele.style.clear='both';
@@ -1389,7 +1389,7 @@
         ele = getElement(obj.id);
         if (obj.text != null && obj.text != '')
         {
-          editor.setText(obj.id, obj.text);
+          editor.setText(obj.id, obj.getText());
         }
         getElement(obj.id).appendChild(createElement('br'));
         getElement(obj.id).appendChild(createTextNode(' '+obj.order));
