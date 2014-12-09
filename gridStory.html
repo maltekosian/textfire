@@ -387,7 +387,37 @@
       }
       requestAnimationFrame(function() { game.updateGraphics(); });
     };
+    /**
+    formats the text onliner in a readable and screen fitting text array
+    @method formatText
+    @param the text to format
+    @return the line formated text-array
+    */
+    Game.prototype.formatText = function(text) {
+      var ctext = [];
+      var line = '';
+      text = text.split(' ');
+      for (var i = 0; i < text.length; i++)
+      {
+        if (ctx.getMetrics(line+' '+text[i]) < canvas.width * 0.9)
+        {
+          line = line+' '+text[i];
+        } else {
+          ctext.push(line);
+          line = text[i];
+        }
+      }
+      //push the last line here and now ->
+      ctext.push(line);
+      return ctext;
+    };
     /***/
+    Game.prototype.getDependency = function(method, obj_id) {
+
+    }
+    /**
+    @method draw
+    */
     Game.prototype.draw = function() {
       var cw = canvas.width;
       var ch = canvas.height;
@@ -406,15 +436,23 @@
         if (missed > 0)
         {
           ctx.fillText('You have missed '+missed+' step'+(missed>1 ? 's':''),0.02*cw,(0.01*cw+fts)*3);
+          var cprior = 0;
+          var ctext = [];
           for (var i = 0; i < objects.length; i++) {
             obj = objects[i];
-            if (!game.order.indexOf(obj) >= 0)
+            if (game.order.indexOf(obj.id) < 0)
             {
               console.log(obj);
               ctx.fillStyle = '#c00';
               ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(4+i));
+              var dep = game.getDependency('hasMissed',obj.id);
+              if (cprior < dep.priority) { cprior = dep.priority; ctext = game.formatText(atob(dep.text)); }
             }
             //hasMissed
+            for (var i = 0; i < ctext.length; i++) {
+              ctx.fillText(ctext[i],0.02*cw,(0.01*cw+fts)*(4+i));
+            }
+
           }
         } else {
           for (var i = 0; i < game.order.length; i++) {
@@ -704,6 +742,11 @@
       ele.innerHTML = '';
       ele.appendChild(createTextNode(obj.order));
       var code = getElement('input_eve_'+obj_id).value;
+      //select of method (showObject , hideObject) -> showElement select object (order, id, text) -> set value
+      //showText -> show text input -> obj.setText(input.value)
+      //event = { action:[methodname], value:[value]}
+      //usage call game[event.action](event.value);
+      //uses the call action model with predefined actions instead of function(code)
       if (code != '')
       {
         obj.setEvent(code);
