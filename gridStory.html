@@ -676,6 +676,46 @@
       }
     };
     /***/
+    var GameEvent = function(method, value) {
+      this.method = method;
+      this.value = value;
+    };
+    /**
+    {priority:'',method:'',params:[]}
+    */
+    var GameDependency = function(p, method) {
+      this.priority = p;
+      this.method = method;
+      this.text = null;
+      this.params = [];//the referenced object by obj_id
+      this.event = null;
+      /**
+      @method getText
+      @return the b64decoded text
+      */
+      this.getText = function () {
+        return atob(this.text);
+      };
+      /**
+      @method setText
+      @param text encodes the text base64
+      */
+      this.setText = function (text) {
+        this.text = btoa(text);
+      };
+      /**
+      @method load
+      @param data
+      */
+      this.load = function(data) {
+        this.priority = data['priority'];
+        this.method = data['method'];
+        this.params = data['params'];
+        this.text = data['text'];
+        this.event = new GameEvent(data['event']['method'],data['event']['value']);
+      };
+    };
+    /***/
     //var game = new Game();
     //for debug purpose only
     _win.game = new Game();
@@ -1254,6 +1294,8 @@
       }
       ele.appendChild(createElement('hr'));
       dependencies.push({priority:'',method:'',text:'',params:[]});
+      //var d = new GameDependency(0,null,[]);
+      //dependencies.push(d);
     };
     /**
     read the input values of the dendencies element and sets the values in the dependencies array
