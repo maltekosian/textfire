@@ -158,13 +158,14 @@
     */
     Game.prototype.showObject = function(id) {
       var obj = this.getObject(id);
+      console.log('showObject->',id,obj);
       obj.visible = true;
-      obj.active = true;
+      obj.active = true;      
     };
     /**
     hide the Object complete on visible false
     otherwise it is deactivated
-    @method showObject
+    @method hideObject
     @param id the id of the object
     @param visible
     */
@@ -282,7 +283,8 @@
           {
             game.order.push(game.current.id);
             if (game.current.event != null) {
-              (game.current.getEvent())(window, game);
+              //(
+              game.current.getEvent();//)(window, game);
             }
           } else if (game.current != null)
           {
@@ -626,11 +628,15 @@
       @return the callback function (¿ returns the return value or null ?)
       */
       this.getEvent = function() {
-        if (this.event == null){
+        /*if (this.event == null){
           return null;
-        }
+        }*/
         try {
-         game[this.event.method](this.event.value);
+          console.log(this.events);
+          for (var i = 0; i < this.events.length; i++) {
+            console.log(this.events[i].method,this.events[i].value);
+            game[this.events[i].method](this.events[i].value);
+          }
         } catch(ex) {
           console.log(ex);
         }
@@ -641,12 +647,12 @@
       @param _code the code to be performed on the clicked|touched|selected event
       */
       this.setEvent = function(_code) {
-        var events = btoa(_code).split(',');
+        /*var events = btoa(_code).split(',');
         for (var i = 0; i < this.events.length; i++)
         {
           console.log(this.events[i][0],this.events[i][1].replace(/)/,''));
           //this.event.push(new GameEvent(this.event[i][0],this.event[i][1].replace(/)/,'')););
-        }
+        }*/
         //this.event = new GameEvent(this.event[0],this.event[1].replace(/)/,''));
       }
       /**
@@ -675,12 +681,12 @@
 
           //console.log(this.event.split(';'));
           var events = this.event.split(';');
-          console.log(events,events.length);
+          //console.log(events,events.length);
           for (var i = 0; i < (events.length-1); i++)
           {
             events[i] = events[i].split('(');
-            console.log(i, events[i][0],events[i][1].replace(/\)/,'').replace(/\'/,''));
-            this.events.push(new GameEvent(events[i][0],events[i][1].replace(/\)/,'').replace(/\'/,'')));
+            //console.log(i, events[i][0],events[i][1].replace(/\)/,'').replace(/\'/,''));
+            this.events.push(new GameEvent(events[i][0],events[i][1].replace(/\)/,'').replace(/\'/g,'')));
           }
         }
         this.event = btoa(this.event);
