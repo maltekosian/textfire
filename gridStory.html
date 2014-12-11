@@ -161,6 +161,7 @@
       console.log('showObject->',id,obj);
       obj.visible = true;
       obj.active = true;      
+      //game.currentText = null;
     };
     /**
     hide the Object complete on visible false
@@ -173,6 +174,7 @@
       var obj = this.getObject(id);
       obj.visible = visible;
       obj.active = false;
+      //game.currentText = null;
     };
     /**
     display the given text
@@ -182,7 +184,8 @@
     Game.prototype.showText = function(text) {
       //displays the text on the canvas
       //canvas and ctx are attached to the window
-
+      console.log('showText='+atob(text));
+      game.currentText = atob(text);
     };
     /**
     a dependencies method
@@ -268,11 +271,13 @@
             {
               game.current = game.getObject(game.end);
             }
-            game.order.push(game.current.id);
+            if (game.order.indexOf(game.current.id)<0) {
+              game.order.push(game.current.id);
+            }
             game.current.active = false;
             game.current.visible = false;
             if (game.current.event != null) {
-              game.current.getEvent();//(window, game);
+              game.current.getEvent();
             }
             if (game.current.id == game.end) {
               game.over = true;
@@ -281,10 +286,11 @@
                      game.getObject(game.start).pointHits(game.current.ox+game.current.w/2, game.current.oy+game.current.h/2)
                     )
           {
-            game.order.push(game.current.id);
+            if (game.order.indexOf(game.current.id)<0) {
+              game.order.push(game.current.id);
+            }
             if (game.current.event != null) {
-              //(
-              game.current.getEvent();//)(window, game);
+              game.current.getEvent();
             }
           } else if (game.current != null)
           {
@@ -522,6 +528,9 @@
                     (0.01*cw+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
             j++;
           }
+          if (game.currentText!= null) {
+            ctx.fillText(''+game.currentText,0.02*cw,(0.01*cw+fts)*5.2);
+          }
         }
       }
     };
@@ -614,6 +623,7 @@
       this.order = 0;
       this.id = _id;
       this.event = null;
+      this.events = [];
       this.active = false;
       this.visible = true;
       this.x = 0;
@@ -632,10 +642,36 @@
           return null;
         }*/
         try {
+          game.currentText = null;
           console.log(this.events);
           for (var i = 0; i < this.events.length; i++) {
-            console.log(this.events[i].method,this.events[i].value);
-            game[this.events[i].method](this.events[i].value);
+            console.log(this.events[i].method,this.events[i].values);
+            switch (this.events[i].values.length) {
+              case 1:
+              game[this.events[i].method](this.events[i].values[0]);
+              break;
+              case 2:
+              game[this.events[i].method](this.events[i].values[0],
+              this.events[i].values[1]);
+              break;
+              case 3:
+              game[this.events[i].method](this.events[i].values[0],
+              this.events[i].values[1],this.events[i].values[2]);
+              break;
+              case 4:
+              game[this.events[i].method](this.events[i].values[0],
+              this.events[i].values[1],this.events[i].values[2],
+              this.events[i].values[3]);
+              break;
+              case 5:
+              game[this.events[i].method](this.events[i].values[0],
+              this.events[i].values[1],this.events[i].values[2],
+              this.events[i].values[3],this.events[i].values[4]);              
+              break;
+              default:
+              game[this.events[i].method]();
+              break;
+            }
           }
         } catch(ex) {
           console.log(ex);
@@ -686,7 +722,11 @@
           {
             events[i] = events[i].split('(');
             //console.log(i, events[i][0],events[i][1].replace(/\)/,'').replace(/\'/,''));
-            this.events.push(new GameEvent(events[i][0],events[i][1].replace(/\)/,'').replace(/\'/g,'')));
+            var values = events[i][1].replace(/\)/,'').replace(/\'/g,'').split(',');
+            if (events[i][0]=='showText') {
+              values[0]=btoa(values[0]);
+            }
+            this.events.push(new GameEvent(events[i][0],values));
           }
         }
         this.event = btoa(this.event);
@@ -708,9 +748,9 @@
     /**
     @class GameEvent
     */
-    var GameEvent = function(method, value) {
+    var GameEvent = function(method, values) {
       this.method = method;
-      this.value = value;
+      this.values = values;
     };
     /**
     @class GameDependency
