@@ -629,16 +629,25 @@
         if (this.event == null){
           return null;
         }
-        //var func = new Function('window,game',atob(this.event));
-        //return func(window, game);
-        return new Function('window,game',atob(this.event));
+        try {
+         game[this.event.method](this.event.value);
+        } catch(ex) {
+          console.log(ex);
+        }
+        //return new Function('window,game',atob(this.event));
       }
       /**
       @method setEvent
       @param _code the code to be performed on the clicked|touched|selected event
       */
       this.setEvent = function(_code) {
-        this.event = btoa(_code);
+        var events = btoa(_code).split(',');
+        for (var i = 0; i < this.events.length; i++)
+        {
+          console.log(this.events[i][0],this.events[i][1].replace(/)/,''));
+          //this.event.push(new GameEvent(this.event[i][0],this.event[i][1].replace(/)/,'')););
+        }
+        //this.event = new GameEvent(this.event[0],this.event[1].replace(/)/,''));
       }
       /**
       @method getText
@@ -659,7 +668,22 @@
         this.text = data['text'];
         this.order = parseInt(data['order']);
         this.id = data['id'];
-        this.event = data['event'];
+        this.event = data['event']==null?null:atob(data['event']);
+        this.events=[];
+        if (this.event != null)
+        {
+
+          //console.log(this.event.split(';'));
+          var events = this.event.split(';');
+          console.log(events,events.length);
+          for (var i = 0; i < (events.length-1); i++)
+          {
+            events[i] = events[i].split('(');
+            console.log(i, events[i][0],events[i][1].replace(/\)/,'').replace(/\'/,''));
+            this.events.push(new GameEvent(events[i][0],events[i][1].replace(/\)/,'').replace(/\'/,'')));
+          }
+        }
+        this.event = btoa(this.event);
         this.active = typeof data['active'] == 'undefined' ? false : data['active'];
         this.x = data['x'];
         this.y = data['y'];
@@ -675,12 +699,15 @@
         return (this.x <= x && this.y <= y && this.x + this.w >= x && this.y + this.h >= y);
       }
     };
-    /***/
+    /**
+    @class GameEvent
+    */
     var GameEvent = function(method, value) {
       this.method = method;
       this.value = value;
     };
     /**
+    @class GameDependency
     {priority:'',method:'',params:[]}
     */
     var GameDependency = function(p, method) {
@@ -1019,7 +1046,7 @@
     */
     editor.loadGame = function() {
       var g = new Game();
-      try {
+      //try {
         var data = JSON.parse(store.getItem('gridStoryGame'));
         g.objects = [];
         var obj = null;
@@ -1033,10 +1060,10 @@
         g.end = data['end'];
         g.quest = data['quest'];
         g.title = data['title'];
-      }
+      /*}
       catch (ex) {
         console.log(ex);
-      }
+      }*/
       return g;
     };
     /**
