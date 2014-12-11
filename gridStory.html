@@ -272,7 +272,7 @@
             game.current.active = false;
             game.current.visible = false;
             if (game.current.event != null) {
-              (game.current.getEvent())(window, game);
+              game.current.getEvent();//(window, game);
             }
             if (game.current.id == game.end) {
               game.over = true;
