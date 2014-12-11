@@ -419,9 +419,18 @@
       ctext.push(line);
       return ctext;
     };
-    /***/
+    /**
+    @method getDependency
+    */
     Game.prototype.getDependency = function(method, obj_id) {
-
+      var depend = null;
+      for (var i = 0; i < this.dependencies.length; i++) {
+        depend = this.dependencies[i];
+        if (depend.method == method && depend.param[0] == obj_id) {
+          return depend;
+        }
+      }
+      return null;
     }
     /**
     @method draw
@@ -454,7 +463,10 @@
               ctx.fillStyle = '#c00';
               ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(4+i));
               var dep = game.getDependency('hasMissed',obj.id);
-              if (cprior < dep.priority) { cprior = dep.priority; ctext = game.formatText(atob(dep.text)); }
+              if (dep != null && cprior < dep.priority) { 
+                cprior = dep.priority; 
+                ctext = game.formatText(atob(dep.text)); 
+              }
             }
             //hasMissed
             for (var i = 0; i < ctext.length; i++) {
@@ -1102,6 +1114,14 @@
           obj = new GameObject();
           obj.load(data['objects'][i]);
           g.objects.push(obj);
+        }
+        g.dependencies = [];
+        if (data['dependencies']!= null) {
+          for (var i = 0; i < data['dependencies'].length; i++) {
+            var d = new GameDependeny();
+            d.load(data['dependencies'][i]);
+            g.dependencies.push(d);
+          }
         }
         g.start = data['start'];
         g.end = data['end'];
