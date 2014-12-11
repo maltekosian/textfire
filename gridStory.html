@@ -219,7 +219,7 @@
         var obj = null;
         for (var i = 0; i < game.objects.length; i++) {
           obj = game.objects[i];
-          if (obj.pointHits(x,y)) {
+          if (obj.pointHits(x,y) && obj.active) {
             game.current = obj;
           }
         }
@@ -271,12 +271,12 @@
             {
               game.current = game.getObject(game.end);
             }
-            if (game.order.indexOf(game.current.id)<0) {
+            if (game.order.indexOf(game.current.id) < 0) {
               game.order.push(game.current.id);
             }
             game.current.active = false;
             game.current.visible = false;
-            if (game.current.event != null) {
+            if (game.current.events != null) {
               game.current.getEvent();
             }
             if (game.current.id == game.end) {
@@ -286,10 +286,10 @@
                      game.getObject(game.start).pointHits(game.current.ox+game.current.w/2, game.current.oy+game.current.h/2)
                     )
           {
-            if (game.order.indexOf(game.current.id)<0) {
+            if (game.order.indexOf(game.current.id) < 0) {
               game.order.push(game.current.id);
             }
-            if (game.current.event != null) {
+            if (game.current.events != null) {
               game.current.getEvent();
             }
           } else if (game.current != null)
@@ -710,26 +710,27 @@
         this.text = data['text'];
         this.order = parseInt(data['order']);
         this.id = data['id'];
-        this.event = data['event']==null?null:atob(data['event']);
+        //this.event = data['event']==null?null:atob(data['event']);
         this.events=[];
-        if (this.event != null)
+        for (var i = 0; i < data['events'].length; i++) {
+          this.events.push(new GameEvent(data['events'][i]['method'],data['events'][i]['values']));
+        }
+        /*if (this.event != null)
         {
 
           //console.log(this.event.split(';'));
           var events = this.event.split(';');
-          //console.log(events,events.length);
           for (var i = 0; i < (events.length-1); i++)
           {
             events[i] = events[i].split('(');
-            //console.log(i, events[i][0],events[i][1].replace(/\)/,'').replace(/\'/,''));
             var values = events[i][1].replace(/\)/,'').replace(/\'/g,'').split(',');
             if (events[i][0]=='showText') {
               values[0]=btoa(values[0]);
             }
             this.events.push(new GameEvent(events[i][0],values));
           }
-        }
-        this.event = btoa(this.event);
+        }*/
+        //this.event = btoa(this.event);
         this.active = typeof data['active'] == 'undefined' ? false : data['active'];
         this.x = data['x'];
         this.y = data['y'];
