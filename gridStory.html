@@ -1091,7 +1091,7 @@
         {
           ele = getElement('o_'+i+'_'+j);
           ele.className = 'grid-element';
-          game.objects.push({text:'',order: 0, id:ele.id, event: null});
+          game.objects.push(new GameObject(ele.id, null) );
         }
       }
       getElement('output').innerHTML = '';
