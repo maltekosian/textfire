@@ -1193,11 +1193,18 @@
       span.style.border = 'solid 1px #999';
       span.setAttribute('id','div_events');
       prompt.appendChild(span);
+      var methods = ['showText','showObject','hideObject'];
       //console.log(''+obj.events.length);
       for (var i = 0; i < obj.events.length; i++) {
-        var ele = createElement('input');
+        var ele = createElement('select');
         ele.setAttribute('id', 'eve_method_'+i);
         ele.style.cssFloat='left';
+        for (var j = 0; j < methods.length; j++) {
+          var opt = createElement('option');
+          opt.value = methods[j];
+          opt.appendChild(createTextNode(methods[j]));
+          ele.appendChild(opt);
+        }
         ele.style.width='48%';
         ele.value = obj.events[i].method;
         span.appendChild(ele);
@@ -1231,9 +1238,16 @@
       //the prompt scoll element-div
       var ele = getElement('div_events');
       //add a new event div
-      var span = createElement('input');
+      var span = createElement('select');
       span.setAttribute('id', 'eve_method_'+obj.events.length);
       span.style.cssFloat='left';
+      var methods = ['showText','showObject','hideObject'];
+      for (var j = 0; j < methods.length; j++) {
+        var opt = createElement('option');
+        opt.value = methods[j];
+        opt.appendChild(createTextNode(methods[j]));
+        ele.appendChild(opt);
+      }
       span.style.width='48%';
       span.setAttribute('placeholder','method');
       ele.appendChild(span);
