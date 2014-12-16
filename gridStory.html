@@ -1181,15 +1181,38 @@
       prompt.appendChild(createElement('br'));
       prompt.appendChild(createTextNode('event: showObject([object id]), hideObject([object id]), showText([a text])'));
       prompt.appendChild(createElement('br'));
-      span = createElement('input');
+      span = createElement('button');
+      span.appendChild(createTextNode('add event'));
+      span.setAttribute('onclick', 'editor.addEvent(\''+obj.id+'\');');
+      prompt.appendChild(span);
+      span = createElement('div');
       span.style.marginRight='1px';
       span.style.display='inline-block';
       span.style.minWidth='90%';
       span.style.maxWidth='90%';
       span.style.border = 'solid 1px #999';
-      span.setAttribute('id','input_eve_'+obj.id);
-      span.value = obj.event != null ? atob(obj.event) : '';
+      span.setAttribute('id','div_events');
       prompt.appendChild(span);
+      //console.log(''+obj.events.length);
+      for (var i = 0; i < obj.events.length; i++) {
+        var ele = createElement('input');
+        ele.setAttribute('id', 'eve_method_'+i);
+        ele.style.cssFloat='left';
+        ele.style.width='48%';
+        ele.value = obj.events[i].method;
+        span.appendChild(ele);
+        ele = createElement('input');
+        ele.setAttribute('id', 'eve_values_'+i);
+        ele.style.cssFloat='left';
+        ele.style.width = obj.events[i].method=='showText' ? '98%':'48%';
+        ele.value = 
+            obj.events[i].method=='showText' ? atob(obj.events[i].values) : obj.events[i].values;
+        span.appendChild(ele);
+        ele = createElement('br');
+        ele.style.clear = 'both';
+        span.appendChild(ele);        
+        span.appendChild(createElement('hr'));
+      }      
       prompt.appendChild(createElement('br'));
       prompt.appendChild(createElement('hr'));
       span = createElement('button');
@@ -1198,6 +1221,30 @@
       prompt.appendChild(span);
       prompt.appendChild(createElement('br'));
       prompt.style.display='block';
+    };
+    /**
+    @method addEvent
+    */
+    editor.addEvent = function(obj_id) {
+      var obj = game.getObject(obj_id);
+      //the current object
+      //the prompt scoll element-div
+      var ele = getElement('div_events');
+      //add a new event div
+      var span = createElement('input');
+      span.setAttribute('id', 'eve_method_'+obj.events.length);
+      span.style.cssFloat='left';
+      span.style.width='48%';
+      span.setAttribute('placeholder','method');
+      ele.appendChild(span);
+      span = createElement('input');
+      span.setAttribute('id', 'eve_values_'+obj.events.length);
+      span.style.cssFloat='left';
+      span.style.width='48%';
+      span.setAttribute('placeholder','value');
+      ele.appendChild(span);
+      ele.appendChild(createElement('hr'));
+      obj.events.push(new GameEvent());
     };
     /**
     @method showDependenciesPrompt
