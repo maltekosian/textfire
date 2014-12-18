@@ -724,6 +724,7 @@
         this.id = data['id'];
         //this.event = data['event']==null?null:atob(data['event']);
         this.events=[];
+        if (typeof data['events'] != 'undefined')
         for (var i = 0; i < data['events'].length; i++) {
           this.events.push(new GameEvent(data['events'][i]['method'],data['events'][i]['values']));
         }
@@ -1109,6 +1110,7 @@
         var data = JSON.parse(store.getItem('gridStoryGame'));
         g.objects = [];
         var obj = null;
+        if (data != null)
         for (var i = 0; i < data['objects'].length; i++)
         {
           obj = new GameObject();
@@ -1116,6 +1118,7 @@
           g.objects.push(obj);
         }
         g.dependencies = [];
+        if (data != null)
         if (data['dependencies']!= null) {
           for (var i = 0; i < data['dependencies'].length; i++) {
             var d = new GameDependeny();
@@ -1123,10 +1126,17 @@
             g.dependencies.push(d);
           }
         }
-        g.start = data['start'];
-        g.end = data['end'];
-        g.quest = data['quest'];
-        g.title = data['title'];
+        if (data != null) {
+          g.start = data['start'];
+          g.end = data['end'];
+          g.quest = data['quest'];
+          g.title = data['title'];
+        } else {
+          g.start = null;
+          g.end = null;
+          g.quest = null;
+          g.title = null;
+        }
       /*}
       catch (ex) {
         console.log(ex);
