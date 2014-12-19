@@ -407,9 +407,13 @@
       text = text.split(' ');
       for (var i = 0; i < text.length; i++)
       {
-        if (ctx.getMetrics(line+' '+text[i]) < canvas.width * 0.9)
+        if (ctx.measureText(line+' '+text[i]).width <= canvas.width * 0.9)
         {
-          line = line+' '+text[i];
+          if (line.length > 0) {
+            line = line+' '+text[i];
+          } else {
+            line = text[i];
+          }
         } else {
           ctext.push(line);
           line = text[i];
@@ -417,6 +421,7 @@
       }
       //push the last line here and now ->
       ctext.push(line);
+      console.log('ctext -> ',ctext);
       return ctext;
     };
     /**
@@ -426,7 +431,9 @@
       var depend = null;
       for (var i = 0; i < this.dependencies.length; i++) {
         depend = this.dependencies[i];
-        if (depend.method == method && depend.param[0] == obj_id) {
+        if (depend.method != null && depend.method == method && 
+            depend.params.length > 0 && depend.params[0] == obj_id)
+        {
           return depend;
         }
       }
@@ -452,28 +459,27 @@
         var missed = objects.length - game.order.length;
         if (missed > 0)
         {
-          ctx.fillText('You have missed '+missed+' step'+(missed>1 ? 's':''),0.02*cw,(0.01*cw+fts)*3);
+          //ctx.fillText('You have missed '+missed+' step'+(missed>1 ? 's':''),0.02*cw,(0.01*cw+fts)*3);
           var cprior = 0;
           var ctext = [];
           for (var i = 0; i < objects.length; i++) {
             obj = objects[i];
             if (game.order.indexOf(obj.id) < 0)
             {
-              console.log(obj);
+              console.log(obj.id);
               ctx.fillStyle = '#c00';
-              ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(4+i));
+              //ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(4+i));
               var dep = game.getDependency('hasMissed',obj.id);
               if (dep != null && cprior < dep.priority) { 
                 cprior = dep.priority; 
                 ctext = game.formatText(atob(dep.text)); 
               }
             }
-            //hasMissed
-            for (var i = 0; i < ctext.length; i++) {
-              ctx.fillText(ctext[i],0.02*cw,(0.01*cw+fts)*(4+i));
-            }
-
           }
+          //hasMissed
+          for (var j = 0; j < ctext.length; j++) {
+            ctx.fillText(ctext[j],0.02*cw,(0.01*cw+fts)*(4+j));
+          }          
         } else {
           for (var i = 0; i < game.order.length; i++) {
             obj = game.getObject(game.order[i]);
@@ -555,50 +561,50 @@
     var update = false;
     var body = document.body;
     var store = localStorage;
-    /**
+    /*
     short for game.showObject (Game.prototype.showObject)
     a scriptable function
     @method showObject
     @param id
-    */
+    /
     _win.showObject = function (id) {
       game.showObject(id);
     }
-    /**
+    /
     short for game.hideObject (Game.prototype.hideObject)
     a scriptable function
     @method hideObject
     @param id
-    */
+    /
     _win.hideObject = function (id) {
       game.hideObject(id);
     }
-    /**
+    /
     short for game.showText (Game.prototype.showText)
     a scriptable function
     @method showText
     @param id
-    */
+    /
     _win.showText = function (text) {
       game.showText(text);
     }
-    /**
+    /
     short for game.isSmaller
     @method isSmaller
     @param a
     @param b
-    */
+    /
     _win.isSmaller = function (a, b) {
       game.isSmaller(a, b);
     }
-    /**
+    /
     short for game.hasMissed
     @method hasMissed
     @param a
-    */
+    /
     _win.hasMissed = function (a) {
       game.hasMissed(a);
-    }
+    }*/
     /**
     short for document.getElement
     @method getElement
