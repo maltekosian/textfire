@@ -56,8 +56,8 @@
  9 -> you stink. A good reason for your boss to fire you.
  10 -> your mouth stinks. A good reason for your boss to fire you.
  11 -> you get a cold. The very next day you loose your job, because your boss do not believes you.
- 12 -> you are in panic, so 13, 14 and 15 takes place. You've lost the game and will be reorn as yourself.
- 13 -> you are naked. The neighbor sees you and calls the police. After 5 years in the psychaty you'll way to late.
+ 12 -> you are in panic, so 13, 14 and 15 takes place. You've lost the game and will be reborn as yourself.
+ 13 -> you are naked. The neighbor sees you and calls the police. After 5 years in the psychiatry you'll way to late.
  14 -> you will have to wait for the key service. You loose your job, because you are to late.
  15 -> the house will burn done. So you have a very long day and have to stay in a hotel. Next day you'll loose your job, because you'll have overslept.
  16 -> NOT possible.
@@ -775,7 +775,7 @@
       this.method = method;
       this.text = null;
       this.params = [];//the referenced object by obj_id
-      this.event = null;
+      this.event = null; //not used in the moment
       /**
       @method getText
       @return the b64decoded text
@@ -799,7 +799,11 @@
         this.method = data['method'];
         this.params = data['params'];
         this.text = data['text'];
-        this.event = new GameEvent(data['event']['method'],data['event']['value']);
+        if (data['event'] != null) {
+          this.event = new GameEvent(data['event']['method'],data['event']['value']);
+        } else {
+          this.event = null;
+        }
       };
     };
     /***/
@@ -1121,7 +1125,7 @@
         if (data != null)
         if (data['dependencies']!= null) {
           for (var i = 0; i < data['dependencies'].length; i++) {
-            var d = new GameDependeny();
+            var d = new GameDependency();
             d.load(data['dependencies'][i]);
             g.dependencies.push(d);
           }
@@ -1345,7 +1349,8 @@
         ele.appendChild(span);
         ele.appendChild(createElement('br'));
         ele.appendChild(createTextNode('params: '));
-        for (var j = 0; j < dependencies[i].length; j++) {
+        var dmax = dependencies[i].method == 'hasMissed' ? 1 : 2;
+        for (var j = 0; j < dmax; j++) {
           span = createElement('select');
           span.style.marginRight='1px';
           span.style.display='inline-block';
@@ -1360,9 +1365,9 @@
             option = createElement('option');
             option.value = game.objects[k].id;
             option.appendChild(createTextNode(game.objects[k].id));
-            if (obj.id != game.objects[k].id)
-            {
-              span.appendChild(option);
+            span.appendChild(option);
+            if (dependencies[i].method == 'hasMissed' && dependencies[i].params[0] == game.objects[k].id) {
+              option.setAttribute('selected', 'true');
             }
           }
           ele.appendChild(span);
