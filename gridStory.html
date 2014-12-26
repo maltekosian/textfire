@@ -85,14 +85,10 @@
  -->
  <!--
  BUGS:
- game.order must be reintialized after one play
- adding to order only once and NOT is if a object is only clicked(except the start object)
+ 
  TODOS:
  -> find a way to edit the evaluation tool, dependicies and the reporting output
     2 smaler 1 -> you made something in the wrong order
-    2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
-    2 missed -> you did not do something (like leaving without key)
-    2. define and detect cases -> show message - may loop to begining (rebirth after death)
 
  make the complete tool canvas based
  build in uidcounter
@@ -103,6 +99,11 @@
  images, audios, translator
  object sizing and position
  DONE
+ ?FIX? game.order must be reintialized after one play
+ ?FIX? adding to order only once and NOT is if a object is only clicked(except the start object)
+ fixed 2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
+ fixed 2 missed -> you did not do something (like leaving without key)
+ fixed 2. define and detect cases -> show message - may loop to begining (rebirth after death)
  fixed evaluation on game.over for cases isSmaller and hasMissed
  fixed evaluation 1. game.over message and statistic evaluation
  fixed what to reveal next with showEvent code -> showObject, hideObject, showText(a message)
@@ -1096,6 +1097,7 @@
       game.end = null;
       game.quest = null;
       game.title = null;
+      game.order = [];
       for (var i = 0; i < 4; i++)
       {
         for (var j = 0; j < 4; j++)
@@ -1136,6 +1138,7 @@
             g.dependencies.push(d);
           }
         }
+        g.order = [];
         if (data != null) {
           g.start = data['start'];
           g.end = data['end'];
