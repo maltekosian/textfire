@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title> new document </title>
+  <meta name="generator" content="editplus" />
+  <meta name="author" content="" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+ </head>
+
+ <body>
+  
+  <script>
+    (
+      function(win) {
+        var game = {};
+        var canvas = null;
+        var ctx = null;
+        var menu = true;
+        var select = false;
+        var currentMenu = [ {text:'new',method:'newGame'},{text:'select',method:'showSelect'},{text:'prompt',method:'showPrompt'}];
+        var currentSelect = [{text:'o_0_0',value:'o_0_0'},{text:'o_0_1',value:'o_0_1'}];
+        
+        game.drawGame = false;
+
+        game.init = function() {
+          canvas = document.createElement('canvas');
+          canvas.width=400;
+          canvas.height=400;
+          document.body.appendChild(canvas);
+          ctx = canvas.getContext('2d');
+          update = true;
+          requestAnimationFrame(function() {updateDraw();});
+        };
+        game.callAction = function(method, value) {
+          game[method](value);
+        };
+        game.showSelect = function(value) {
+          //currentSelect = value;
+          select = true;
+        }
+        var update = false;
+        var updateDraw = function() {
+          if (update) {
+            draw();
+            update = false;
+          }
+          requestAnimationFrame(function() {updateDraw();});
+        }
+        var draw = function() {
+          ctx.fillStyle = '#ddd';
+          ctx.fillRect(0,0,canvas.width,canvas.height);
+          ctx.font = (0.05*canvas.height)+'px Sans-Serif';
+          if (game.drawGame) {
+          
+          } else {
+            //drawEditor
+          }
+          if (menu) {
+            ctx.fillStyle = 'rgba(50,50,50,0.5)';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#ddd';
+            ctx.fillRect(0.5*canvas.width,0,canvas.width/2,canvas.height);
+            ctx.fillStyle = '#000';
+            for (var i = 0; i < currentMenu.length; i++) {
+              //draw the menu text entries + the close button
+              ctx.fillText(currentMenu[i].text,0.52*canvas.width,(0.135 + 0.075*i)*canvas.height);
+              //draw a line or so
+            }
+            ctx.fillText('close menu',0.52*canvas.width,0.06*canvas.height);
+          }
+          if (select) {
+            ctx.fillStyle = 'rgba(50,50,50,0.5)';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#ddd';
+            ctx.fillRect(0.1*canvas.width,0.1*canvas.height,0.8*canvas.width,0.8*canvas.height);
+            ctx.fillStyle = '#000';
+            for (var i = 0; i < currentSelect.length; i++) {
+              //draw the select text entries
+              ctx.fillText(currentSelect[i].text,0.12*canvas.width,(0.16+i*0.075)*canvas.height);
+            }
+          }
+        }
+        var mouseReleased = function() {
+          if (select) {
+          
+          } else if (menu) {
+            for (var i = 0; i < currentMenu.length; i++) {
+
+              //game.callAction = function(method, value);
+            }
+          } else if (prompt) {
+          
+          } else {
+            //the normal mouse up/released events
+          }
+        }
+        win.game = game;
+      }
+    )(window)
+  
+    window.onload=function() {setTimeout(game.init,100)};
+  </script>
+ </body>
+</html>
