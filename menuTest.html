@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style>
+    body {background: #000; overflow: hidden;}
+  </style>
+ </head>
+ <body>
+  <script>
+    (
+      function(win) {
+        var canvas = null;
+        var ctx = null;
+        var game = {
+        bbcanvas: null,
+        btx: null,
+        mx: 0,
+        my: 0,
+        px: 0,
+        py: 0,
+        pressed: false,
+        mend: false,
+        screenwidth: 0,
+        screenheight: 0,
+        screendim: 0,
+        area: null,
+        text: '',
+
+        init: function() {
+          game.screenwidth = win.innerWidth;
+          game.screenheight = win.innerHeight;
+          game.area = document.createElement('textarea');
+          game.area.style.position = 'absolute';
+          game.area.style.top = '0';
+          game.area.style.left = '0';
+          game.area.style.opacity = '0.01';
+          game.area.style.width = '1px';
+          game.area.style.height = '1px';
+          game.area.style.border = '0';
+          game.area.style.color = 'rgba(0,0,0,0.01)';
+          game.area.addEventListener('keydown', function(eve) {game.keydown(eve);}, true);
+          game.area.addEventListener('keyup', function(eve) {game.keyup(eve);}, true);
+          try {
+            document.body.removeChild(document.querySelector('textarea'));
+          } catch (e) { }
+          document.body.appendChild(game.area);
+          canvas = document.querySelector('canvas');
+          if (canvas == null)
+          {
+            canvas = document.createElement('canvas');
+          }
+          game.screendim = game.screenwidth < game.screenheight ? game.screenwidth : game.screenheight;
+          console.log(game.screendim);
+          canvas.width = game.screendim;
+          canvas.height = game.screendim;
+          canvas.style.width = game.screendim+'px';
+          canvas.style.height = game.screendim+'px';
+          canvas.style.position = 'absolute';
+          canvas.style.top = '0';
+          canvas.style.left = '0';
+
+          ctx = canvas.getContext('2d');
+          if (game.bbcanvas == null)
+          {
+            game.bbcanvas = document.createElement('canvas');
+          }
+          game.bbcanvas.width = 600;
+          game.bbcanvas.height = 600;
+          game.btx = game.bbcanvas.getContext('2d');
+          try {
+            document.body.removeChild(document.querySelector('canvas'));
+          } catch (e) { }
+          document.body.appendChild(canvas);
+          if ('ontouchstart' in window)
+          {
+            console.log('using touch');
+            canvas.addEventListener('touchstart',
+            function(eve) {
+              game.mousePressed(eve.touches[0].pageX/game.screendim,
+                eve.touches[0].pageY/game.screendim);
+            },
+            false);
+            canvas.addEventListener('touchmove',
+            function(eve) {
+              game.mx = eve.touches[0].pageX/game.screendim;
+              game.my = eve.touches[0].pageY/game.screendim;
+              game.mouseMoved(game.mx,game.my);
+            },
+            false);
+            canvas.addEventListener('touchend',
+            function(eve) {
+              if (!game.mend) {
+                game.mend = true;
+                game.mouseReleased(game.mx, game.my);
+              }
+            },
+            false);
+            canvas.addEventListener('touchcancel',
+            function(eve) {
+              if (!game.mend) {
+                game.mend = true;
+                game.mouseReleased(game.mx, game.my);
+              }
+            },
+            false);
+          } //else {
+            canvas.addEventListener('mousedown',
+            function(eve) {
+              game.mousePressed(eve.pageX/game.screendim,
+                eve.pageY/game.screendim);
+            },
+            false);
+            canvas.addEventListener('mousemove',
+            function(eve) {
+              game.mx = eve.pageX/game.screendim;
+              game.my = eve.pageY/game.screendim;
+              game.mouseMoved(game.mx,game.my);
+            },
+            false);
+            canvas.addEventListener('mouseup',
+            function(eve) {
+              game.mouseReleased(eve.pageX/game.screendim,
+                eve.pageY/game.screendim);
+            },
+            false);
+          //}
+          game.area.focus();
+          update = true;
+          requestAnimationFrame(function() { updateGraphics(); });
+        },
+        mousePressed: function(x, y) {
+          if (!this.pressed)
+          {
+            this.mend = false;
+            this.pressed = true;
+            this.px = x;
+            this.py = y;
+            this.mx = x;
+            this.my = y;
+            this.update = true;
+          }
+        },
+        mouseMoved: function(x, y) {
+          if (this.pressed)
+          {
+            //use for scrolling or painting features
+            //console.log(x+','+y);
+            this.update = true;
+          }
+        },
+        mouseReleased: function(x, y) {
+          if (this.pressed)
+          {
+            //x = x*game.screendim;
+            //y = y*game.screendim;
+            console.log('up->'+x+','+y);
+            //place some code here
+            if (select) {
+
+            } else if (menu) {
+              for (var i = 0; i < currentMenu.length; i++) {
+                if (x >= 0.52 && y > (0.06 + 0.075*(i-1)) && y < (0.06 + 0.075*i) )
+                {
+                  game.callAction(currentMenu[i].method, currentMenu[i].value);
+                }
+              }
+
+            } else if (prompt) {
+
+            } else {
+              //the normal mouse up/released events
+            }
+            this.px = 0;
+            this.py = 0;
+            this.mx = 0;
+            this.my = 0;
+            this.pressed = false;
+            this.update = true;
+          }
+        },
+        keydown: function(eve) {},
+        keyup: function(eve) {
+          var key = (typeof eve.key == 'undefined') ? eve.which : eve.key.toLowerCase();
+
+          this.text = this.area.value;
+          if (key == 13 || 'enter' == key)
+          {
+            this.text = this.area.value+' ';
+            this.area.value = '';
+          }
+          this.update = true;
+          console.log(key);
+        }
+        };
+        var menu = true;
+        var select = false;
+        var prompt = false;
+        var currentMenu = [ {text:'close menu',method:'closeMenu'}, {text:'new',method:'newGame'},
+                            {text:'select',method:'showSelect'}, {text:'prompt',method:'showPrompt'}];
+        var currentSelect = [{text:'o_0_0',value:'o_0_0'}, {text:'o_0_1',value:'o_0_1'}];
+
+        game.drawGame = false;
+        game.callAction = function(method, value) {
+          console.log('game action->'+method+','+value)
+          game[method](value);
+          update = true;
+        };
+        game.showSelect = function(value) {
+          //currentSelect = value;
+          select = true;
+        };
+        game.showPrompt = function(value) {
+          //currentSelect = value;
+          prompt = true;
+        };
+        game.newGame = function(value) {
+
+        };
+        game.closeMenu = function() {
+          menu = false;
+        };
+        var update = false;
+        var updateGraphics = function() {
+          if (update) {
+            draw();
+            update = false;
+          }
+          requestAnimationFrame(function() {updateGraphics();});
+        }
+        var draw = function() {
+          ctx.fillStyle = '#ddd';
+          ctx.fillRect(0,0,canvas.width,canvas.height);
+          ctx.font = (0.05*canvas.height)+'px Sans-Serif';
+          if (game.drawGame) {
+
+          } else {
+            //drawEditor
+          }
+          if (menu) {
+            ctx.fillStyle = 'rgba(50,50,50,0.5)';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#ddd';
+            ctx.fillRect(0.5*canvas.width,0,canvas.width/2,canvas.height);
+            ctx.fillStyle = '#000';
+            for (var i = 0; i < currentMenu.length; i++) {
+              //draw the menu text entries + the close button
+              ctx.fillText(currentMenu[i].text,0.52*canvas.width,(0.06 + 0.075*i)*canvas.height);
+              //draw a line or so
+            }
+            ctx.fillText('close menu',0.52*canvas.width,0.06*canvas.height);
+          }
+          if (select) {
+            ctx.fillStyle = 'rgba(50,50,50,0.5)';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#ddd';
+            ctx.fillRect(0.1*canvas.width,0.1*canvas.height,0.8*canvas.width,0.8*canvas.height);
+            ctx.fillStyle = '#000';
+            for (var i = 0; i < currentSelect.length; i++) {
+              //draw the select text entries
+              ctx.fillText(currentSelect[i].text,0.12*canvas.width,(0.16+i*0.075)*canvas.height);
+            }
+          }
+        }
+
+        win.game = game;
+      }
+    )(window)
+
+    window.onload=function() {setTimeout(game.init,100)};
+  </script>
+ </body>
+</html>
