@@ -1118,8 +1118,12 @@
     */
     editor.loadGame = function() {
       var g = new Game();
-      //try {
-        var data = JSON.parse(store.getItem('gridStoryGame'));
+      var data = null;
+      try {
+        data = JSON.parse(store.getItem('gridStoryGame'));
+      } catch(ex) {
+        console.log(ex);
+      }
         g.objects = [];
         var obj = null;
         if (data != null)
@@ -1525,6 +1529,91 @@
       }
     };
     /**
+    an editor method
+    @method updateDraw
+    */
+    editor.updateDraw = function() {
+      if (update) {
+        editor.draw();
+        update = false;
+      }
+      requestAnimationFrame(function() { editor.updateDraw() } );
+    };
+    /**
+    an editor method
+    @method updateDraw
+    */
+    editor.draw = function() {
+      var cw = canvas.width;
+      var ch = canvas.height;
+      //ctx.fillStyle = '#eee';
+      //ctx.fillRect(0,0,cw,ch);
+      ctx.fillStyle = '#000';
+      var fts = Math.round(0.035*cw);
+      ctx.font = fts+'px Sans-Serif';
+      var objects = game.objects;
+      var obj = null;
+      {//game or editor 
+        //ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
+        //ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        //begin of btx context
+        ctx.lineWidth = 0.025 * cw;
+        //alert('objects.length='+objects.length);
+        for (var i = 0; i < objects.length; i++)
+        {
+          obj = objects[i];
+          //if (obj.visible) {
+            if (obj.id == game.start)
+            {
+              ctx.fillStyle = '#0c0';
+              ctx.strokeStyle = '#000';
+            } else if (obj.id == game.end)
+            {
+              if (obj.active)
+              {
+                ctx.fillStyle = '#c00';
+                ctx.strokeStyle = '#000';
+              } else {
+                ctx.fillStyle = 'rgba(204,51,51,0.5)';
+                ctx.strokeStyle = 'rgba(51,51,51,0.5)';
+              }
+            } else if (obj.active)
+            {
+              ctx.fillStyle = '#99c';
+              ctx.strokeStyle = '#000';
+            } else {
+              ctx.fillStyle = 'rgba(128,128,128,0.5)';
+              ctx.strokeStyle = 'rgba(51,51,51,0.5)';
+            }
+            if (game.current != null && obj.id == game.current.id) {
+              ctx.strokeStyle = '#f90';
+            }
+            ctx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+            ctx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+          //}
+        }
+        //end of btx context
+        /*ctx.fillStyle = '#000';
+        var fts = Math.round(0.035*cw);
+        ctx.font = fts+'px Sans-Serif';
+        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        if (game.current != null) {
+          ctx.fillText(''+game.current.getText(),0.02*cw,(0.01*cw+fts)*3);
+        } else if (game.order.length > 0) {
+          var j = 0;
+          for (var i = game.order.length - 1; i >= (game.order.length > 2 ? game.order.length-3 : 0); i--) {
+            ctx.fillText(''+game.getObject(game.order[i]).getText(),0.02*cw,
+                    (0.01*cw+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
+            j++;
+          }
+          if (game.currentText!= null) {
+            ctx.fillText(''+game.currentText,0.02*cw,(0.01*cw+fts)*6.25);
+          }
+        }*/
+      }//draw menu, inputs, prompts and selects here
+    };
+    /**
     editor method
     @method init
     */
@@ -1556,6 +1645,29 @@
       ele = createElement('br');
       ele.style.clear='both';
       body.appendChild(ele);
+      _win.canvas = getElement('canvas');
+      if (canvas == null) {
+        canvas = createElement('canvas');
+      } else {
+        body.removeChild(canvas);
+      }
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      //test
+      w > 410 ? w = 410: w = w;
+      //replace this once if everything will be canvas based including the editor
+      canvas.width = w < h ? w : h;
+      canvas.height = w < h ? w : h;
+      canvas.style.width = canvas.width+'px';
+      canvas.style.height = canvas.height+'px';
+      _win.ctx = canvas.getContext('2d');
+      //canvas.style.position='absolute';
+      canvas.style.left=0;
+      canvas.style.top=0;
+      canvas.style.background='rgba(255,255,255,0.75)';
+      //getElement('playbutton').value='stop';
+      //getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
+      body.appendChild(canvas);
       for (var i = 0; i < 4; i++)
       {
         for (var j = 0; j < 4; j++)
@@ -1570,6 +1682,11 @@
           {
             var obj = new GameObject(ele.id, null);
             //game.objects.push({text:'',order: 0, id:ele.id, event: null});
+            obj.x = 0.04 + j * 0.24;//canvas.width/40 + j * canvas.width/4.5;
+            obj.y = 0.04 + i * 0.24;//canvas.width/8 + i * canvas.width/4.5;
+            obj.w = obj.h = 0.2;//canvas.width/6;
+            obj.ox = obj.x;
+            obj.oy = obj.y;
             game.objects.push(obj);
           }
           body.appendChild(ele);
@@ -1615,6 +1732,8 @@
         getElement(obj.id).appendChild(createElement('br'));
         getElement(obj.id).appendChild(createTextNode(' '+obj.order));
       }
+      update = true;
+      requestAnimationFrame(function() {editor.updateDraw();} );
     };
 
     _win.game = game;
