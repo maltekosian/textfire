@@ -1,0 +1,171 @@
+<!DOCTYPE html >
+<html>
+ <head>
+  <title> basic </title>
+  <meta name="generator" content="" />
+  <meta name="author" content="" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+<style>
+</style>
+ </head>
+ <body>
+  <script>
+  (
+    function(win) {
+      //game section
+      var Game = function(){};
+      //editor section
+      var editor = {};
+      //global section
+      var update = false;
+      var canvas = null;      
+      var ctx = null;
+      var gmode = 'editor';
+      var body = null;
+      var area = null;
+      var text = '';
+      var pressed = false;
+      var mx = 0;
+      var my = 0;
+      /**
+      mouse or touch event ended
+      */
+      var mend = false;
+
+      win.createElement = function(t) {
+        return document.createElement(t);
+      };
+
+      win.getElement = function(id) {
+        return document.getElementById(id);
+      };
+
+      function updateDraw() {
+        if (update) {         
+          if (gmode == 'editor') {
+            //editor.draw();
+          } else {
+            //game.draw();
+          }
+          update = false;
+          area.focus();
+        }
+        requestAnimationFrame(function() {updateDraw();});
+      };
+
+      function textInput(eve) {
+        text = getElement('area').value;
+        console.log(text);
+        //keycode return
+        if (gmode == 'editor') {
+        
+        } else {
+        
+        }
+      };
+
+      function mousePressed(x, y) {
+        
+      };
+
+      function mouseMoved(x, y) {
+      
+      };
+
+      function mouseReleased(x, y) {
+      
+      };
+
+      function init() {
+        //build the canvas
+        body = documnet.body;
+        canvas = createElement('canvas');
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        canvas.width = w < h ? w : h;
+        canvas.height = w < h ? w : h;
+        canvas.style.width = canvas.width+'px';
+        canvas.style.height = canvas.height+'px';
+        ctx = canvas.getContext('2d');
+        body.appendChild(canvas);
+        //add the hidden textarea
+        area = createElement('textarea');
+        area.setAttribute('id','area');
+        area.style.opacity = '0.01';
+        area.style.color = 'transparent';
+        area.style.position = 'absulute';
+        area.style.top = '-2px';
+        area.style.left = '-2px';
+        area.style.width = '1px';
+        area.style.height = '1px';
+        area.style.fontSize = '1px';
+        area.style.border = '0';
+        area.addEventListener('change',textInput,true);
+        body.appendChild(area);
+        //if touch init the touch
+        if ('ontouchstart' in window)
+        {
+          console.log('using touch');
+          canvas.addEventListener('touchstart',
+          function(eve) {
+            mousePressed(eve.touches[0].pageX/canvas.width,
+              eve.touches[0].pageY/canvas.width);
+          },
+          false);
+          canvas.addEventListener('touchmove',
+          function(eve) {
+            mx = eve.touches[0].pageX/canvas.width;
+            my = eve.touches[0].pageY/canvas.width;
+            mouseMoved(mx,my);
+          },
+          false);
+          canvas.addEventListener('touchend',
+          function(eve) {
+            if (!mend) {
+              mend = true;
+              mouseReleased(mx, my);
+            }
+          },
+          false);
+          canvas.addEventListener('touchcancel',
+          function(eve) {
+            if (!mend) {
+              mend = true;
+              mouseReleased(mx, my);
+            }
+          },
+          false);
+        }
+        //init the mouse anyway
+        canvas.addEventListener('mousedown',
+        function(eve) {
+          mousePressed(eve.pageX/canvas.width,
+            eve.pageY/canvas.width);
+        },
+        false);
+        canvas.addEventListener('mousemove',
+        function(eve) {
+          mx = eve.pageX/canvas.width;
+          my = eve.pageY/canvas.width;
+          mouseMoved(mx,my);
+        },
+        false);
+        canvas.addEventListener('mouseup',
+        function(eve) {
+          mouseReleased(eve.pageX/canvas.width,
+            eve.pageY/canvas.width);
+        },
+        false);
+        //start the animation
+        update = true;
+        requestAnimationFrame(function() {updateDraw();});
+      };
+
+      win.onload = function() {setTimeout(init, 100);};
+    };
+  )(window);
+ 
+  </script>
+ </body>
+</html>
