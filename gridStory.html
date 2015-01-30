@@ -12,7 +12,7 @@
   body {background: #fff; margin: 0; overflow: hidden;}
 
   .grid-ready,.grid-end,.grid-element,.grid-start{
-  float:left;background:#ccc;border:10px solid #000;margin:5px;width:60px;height:60px;
+  float:left;background:#ccc;border:0px solid #000;margin:5px;width:0px;height:0px;display:none;
   }
   .grid-start{background:#0c0;}
   .grid-end{background:#c00;}
@@ -85,7 +85,7 @@
  -->
  <!--
  BUGS:
- 
+
  TODOS:
  -> find a way to edit the evaluation tool, dependicies and the reporting output
     2 smaler 1 -> you made something in the wrong order
@@ -119,7 +119,7 @@
  </head>
  <body>
   <script>
-  (function(_win) {
+  (function(win) {
     var Game = function(){};
     Game.prototype.start = null;
     Game.prototype.end = null;
@@ -161,7 +161,7 @@
       var obj = this.getObject(id);
       console.log('showObject->',id,obj);
       obj.visible = true;
-      obj.active = true;      
+      obj.active = true;
       //game.currentText = null;
     };
     /**
@@ -432,7 +432,7 @@
       var depend = null;
       for (var i = 0; i < this.dependencies.length; i++) {
         depend = this.dependencies[i];
-        if (depend.method != null && depend.method == method && 
+        if (depend.method != null && depend.method == method &&
             depend.params.length > 0 && depend.params[0] == obj_id)
         {
           return depend;
@@ -471,16 +471,16 @@
               ctx.fillStyle = '#c00';
               //ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(4+i));
               var dep = game.getDependency('hasMissed',obj.id);
-              if (dep != null && cprior < dep.priority) { 
-                cprior = dep.priority; 
-                ctext = game.formatText(atob(dep.text)); 
+              if (dep != null && cprior < dep.priority) {
+                cprior = dep.priority;
+                ctext = game.formatText(atob(dep.text));
               }
             }
           }
           //hasMissed
           for (var j = 0; j < ctext.length; j++) {
             ctx.fillText(ctext[j],0.02*cw,(0.01*cw+fts)*(4+j));
-          }          
+          }
         } else {
           for (var i = 0; i < game.order.length; i++) {
             obj = game.getObject(game.order[i]);
@@ -568,7 +568,7 @@
     @method showObject
     @param id
     /
-    _win.showObject = function (id) {
+    win.showObject = function (id) {
       game.showObject(id);
     }
     /
@@ -577,7 +577,7 @@
     @method hideObject
     @param id
     /
-    _win.hideObject = function (id) {
+    win.hideObject = function (id) {
       game.hideObject(id);
     }
     /
@@ -586,7 +586,7 @@
     @method showText
     @param id
     /
-    _win.showText = function (text) {
+    win.showText = function (text) {
       game.showText(text);
     }
     /
@@ -595,7 +595,7 @@
     @param a
     @param b
     /
-    _win.isSmaller = function (a, b) {
+    win.isSmaller = function (a, b) {
       game.isSmaller(a, b);
     }
     /
@@ -603,7 +603,7 @@
     @method hasMissed
     @param a
     /
-    _win.hasMissed = function (a) {
+    win.hasMissed = function (a) {
       game.hasMissed(a);
     }*/
     /**
@@ -612,7 +612,7 @@
     @param t the id
     @return the HTMLdomObject
     */
-    _win.getElement = function(t){
+    win.getElement = function(t){
       return document.getElementById(t);
     };
     /**
@@ -685,7 +685,7 @@
               case 5:
               game[this.events[i].method](this.events[i].values[0],
               this.events[i].values[1],this.events[i].values[2],
-              this.events[i].values[3],this.events[i].values[4]);              
+              this.events[i].values[3],this.events[i].values[4]);
               break;
               default:
               game[this.events[i].method]();
@@ -816,7 +816,7 @@
     /***/
     //var game = new Game();
     //for debug purpose only
-    _win.game = new Game();
+    win.game = new Game();
     //end debug
     /***/
     var editor = {};
@@ -954,12 +954,12 @@
       } //else {
 
       if (_id != game.start && _id != game.end) {
-        getElement(_id).className='grid-ready';
+        //getElement(_id).className='grid-ready';
       } else if (_id == game.start) {
-        getElement(_id).className='grid-start';
+        //getElement(_id).className='grid-start';
       } else if (_id == game.end)
       {
-        getElement(_id).className='grid-end';
+        //getElement(_id).className='grid-end';
       }
 
       //}
@@ -1044,7 +1044,7 @@
       editor.oldGame = game;
       //new game instance
       game = editor.loadGame();
-      _win.canvas = getElement('canvas');
+      win.canvas = getElement('canvas');
       if (canvas == null) {
         canvas = createElement('canvas');
       } else {
@@ -1059,7 +1059,7 @@
       canvas.height = w < h ? w : h;
       canvas.style.width = canvas.width+'px';
       canvas.style.height = canvas.height+'px';
-      _win.ctx = canvas.getContext('2d');
+      win.ctx = canvas.getContext('2d');
       canvas.style.position='absolute';
       canvas.style.left=0;
       canvas.style.top=0;
@@ -1239,14 +1239,14 @@
         ele.setAttribute('id', 'eve_values_'+i);
         ele.style.cssFloat='left';
         ele.style.width = obj.events[i].method=='showText' ? '98%':'48%';
-        ele.value = 
+        ele.value =
             obj.events[i].method=='showText' ? atob(obj.events[i].values) : obj.events[i].values;
         span.appendChild(ele);
         ele = createElement('br');
         ele.style.clear = 'both';
-        span.appendChild(ele);        
+        span.appendChild(ele);
         span.appendChild(createElement('hr'));
-      }      
+      }
       prompt.appendChild(createElement('br'));
       prompt.appendChild(createElement('hr'));
       span = createElement('button');
@@ -1546,14 +1546,14 @@
     editor.draw = function() {
       var cw = canvas.width;
       var ch = canvas.height;
-      //ctx.fillStyle = '#eee';
-      //ctx.fillRect(0,0,cw,ch);
+      ctx.fillStyle = '#eee';
+      ctx.fillRect(0,0,cw,ch);
       ctx.fillStyle = '#000';
       var fts = Math.round(0.035*cw);
       ctx.font = fts+'px Sans-Serif';
       var objects = game.objects;
       var obj = null;
-      {//game or editor 
+      {//game or editor
         //ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
         //ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
         //begin of btx context
@@ -1582,7 +1582,7 @@
               ctx.fillStyle = '#99c';
               ctx.strokeStyle = '#000';
             } else {
-              ctx.fillStyle = 'rgba(128,128,128,0.5)';
+              ctx.fillStyle = 'rgba(128,128,205,0.5)';
               ctx.strokeStyle = 'rgba(51,51,51,0.5)';
             }
             if (game.current != null && obj.id == game.current.id) {
@@ -1590,6 +1590,9 @@
             }
             ctx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
             ctx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+            ctx.fillStyle = '#000';
+            ctx.fillText(''+obj.id, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 1.2);
+            ctx.fillText(''+obj.order, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 2.4);
           //}
         }
         //end of btx context
@@ -1612,6 +1615,7 @@
           }
         }*/
       }//draw menu, inputs, prompts and selects here
+      console.log('editor.draw->'+objects.length);
     };
     /**
     editor method
@@ -1645,7 +1649,7 @@
       ele = createElement('br');
       ele.style.clear='both';
       body.appendChild(ele);
-      _win.canvas = getElement('canvas');
+      canvas = getElement('canvas');
       if (canvas == null) {
         canvas = createElement('canvas');
       } else {
@@ -1660,7 +1664,7 @@
       canvas.height = w < h ? w : h;
       canvas.style.width = canvas.width+'px';
       canvas.style.height = canvas.height+'px';
-      _win.ctx = canvas.getContext('2d');
+      //win.ctx = canvas.getContext('2d');
       //canvas.style.position='absolute';
       canvas.style.left=0;
       canvas.style.top=0;
@@ -1668,6 +1672,7 @@
       //getElement('playbutton').value='stop';
       //getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
       body.appendChild(canvas);
+      ctx = canvas.getContext('2d');
       for (var i = 0; i < 4; i++)
       {
         for (var j = 0; j < 4; j++)
@@ -1676,11 +1681,11 @@
           ele.className = 'grid-element';
           ele.setAttribute('id','o_'+i+'_'+j);
           ele.setAttribute('onclick','editor.setText(\''+ele.id+'\',null);');
-          ele.appendChild(createTextNode(' '+ele.id));
+          //ele.appendChild(createTextNode(' '+ele.id));
           //ele.appendChild(createTextNode(' '+obj.order));
-          if (game.getObject(ele.id)==null)
+          if (game.getObject('o_'+i+'_'+j)==null)
           {
-            var obj = new GameObject(ele.id, null);
+            var obj = new GameObject('o_'+i+'_'+j, null);
             //game.objects.push({text:'',order: 0, id:ele.id, event: null});
             obj.x = 0.04 + j * 0.24;//canvas.width/40 + j * canvas.width/4.5;
             obj.y = 0.04 + i * 0.24;//canvas.width/8 + i * canvas.width/4.5;
@@ -1688,13 +1693,23 @@
             obj.ox = obj.x;
             obj.oy = obj.y;
             game.objects.push(obj);
+          } else {
+            var obj = game.getObject('o_'+i+'_'+j);
+            obj.x = 0.04 + j * 0.24;//canvas.width/40 + j * canvas.width/4.5;
+            obj.y = 0.04 + i * 0.24;//canvas.width/8 + i * canvas.width/4.5;
+            obj.w = obj.h = 0.2;//canvas.width/6;
+            obj.ox = obj.x;
+            obj.oy = obj.y;
           }
           body.appendChild(ele);
         }
-        ele = createElement('br');
-        ele.style.clear='both';
-        body.appendChild(ele);
+        //ele = createElement('br');
+        //ele.style.clear='both';
+        //body.appendChild(ele);
       }
+      ele = createElement('br');
+      ele.style.clear='both';
+      body.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('value','set start');
@@ -1736,8 +1751,8 @@
       requestAnimationFrame(function() {editor.updateDraw();} );
     };
 
-    _win.game = game;
-    _win.editor = editor;
+    win.game = game;
+    win.editor = editor;
     window.onload = function() {setTimeout(editor.init(), 100);};
   })(window)
   </script>
