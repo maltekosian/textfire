@@ -1553,11 +1553,20 @@
       ctx.font = fts+'px Sans-Serif';
       var objects = game.objects;
       var obj = null;
+      if (typeof btx == 'undefined')
+      {
+        buffer = createElement('canvas');
+        buffer.width = 410;
+        buffer.height = 410;
+        btx = buffer.getContext('2d');
+        var cw = buffer.width;
+        var ch = buffer.height;
+      }
       {//game or editor
-        //ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
-        //ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
         //begin of btx context
-        ctx.lineWidth = 0.025 * cw;
+        btx.lineWidth = 0.025 * cw;
         //alert('objects.length='+objects.length);
         for (var i = 0; i < objects.length; i++)
         {
@@ -1565,36 +1574,37 @@
           //if (obj.visible) {
             if (obj.id == game.start)
             {
-              ctx.fillStyle = '#0c0';
-              ctx.strokeStyle = '#000';
+              btx.fillStyle = '#0c0';
+              btx.strokeStyle = '#000';
             } else if (obj.id == game.end)
             {
               if (obj.active)
               {
-                ctx.fillStyle = '#c00';
-                ctx.strokeStyle = '#000';
+                btx.fillStyle = '#c00';
+                btx.strokeStyle = '#000';
               } else {
-                ctx.fillStyle = 'rgba(204,51,51,0.5)';
-                ctx.strokeStyle = 'rgba(51,51,51,0.5)';
+                btx.fillStyle = 'rgba(204,51,51,0.5)';
+                btx.strokeStyle = 'rgba(51,51,51,0.5)';
               }
             } else if (obj.active)
             {
-              ctx.fillStyle = '#99c';
-              ctx.strokeStyle = '#000';
+              btx.fillStyle = '#99c';
+              btx.strokeStyle = '#000';
             } else {
-              ctx.fillStyle = 'rgba(128,128,205,0.5)';
-              ctx.strokeStyle = 'rgba(51,51,51,0.5)';
+              btx.fillStyle = 'rgba(128,128,205,0.5)';
+              btx.strokeStyle = 'rgba(51,51,51,0.5)';
             }
             if (game.current != null && obj.id == game.current.id) {
-              ctx.strokeStyle = '#f90';
+              btx.strokeStyle = '#f90';
             }
-            ctx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
-            ctx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
-            ctx.fillStyle = '#000';
-            ctx.fillText(''+obj.id, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 1.2);
-            ctx.fillText(''+obj.order, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 2.4);
+            btx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+            btx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+            btx.fillStyle = '#000';
+            btx.fillText(''+obj.id, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 1.2);
+            btx.fillText(''+obj.order, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 2.4);
           //}
         }
+        ctx.drawImage(buffer, 0, (canvas.height-cw)/4, cw, cw);
         //end of btx context
         /*ctx.fillStyle = '#000';
         var fts = Math.round(0.035*cw);
@@ -1624,31 +1634,6 @@
     editor.init = function() {
       //game = new Game();
       game = editor.loadGame();
-      var ele = null;
-      ele = createElement('span');
-      ele.style.display = 'inline-block';
-      ele.style.marginBottom = '2px';
-      ele.style.border = 'solid 1px #999';
-      ele.style.maxWidth = '90%';
-      ele.setAttribute('onclick','editor.setTitle();');
-      ele.setAttribute('id','title');
-      ele.appendChild(createTextNode(game.title==null?'click to edit title.':atob(game.title)));
-      body.appendChild(ele);
-      ele = createElement('br');
-      ele.style.clear='both';
-      body.appendChild(ele);
-      ele = createElement('span');
-      ele.style.display = 'inline-block';
-      ele.style.marginBottom = '2px';
-      ele.style.border = 'solid 1px #999';
-      ele.style.maxWidth = '90%';
-      ele.setAttribute('onclick','editor.setQuest();');
-      ele.setAttribute('id','quest');
-      ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':atob(game.quest)));
-      body.appendChild(ele);
-      ele = createElement('br');
-      ele.style.clear='both';
-      body.appendChild(ele);
       canvas = getElement('canvas');
       if (canvas == null) {
         canvas = createElement('canvas');
@@ -1661,7 +1646,7 @@
       w > 410 ? w = 410: w = w;
       //replace this once if everything will be canvas based including the editor
       canvas.width = w < h ? w : h;
-      canvas.height = w < h ? w : h;
+      canvas.height = h;//w < h ? w : h;
       canvas.style.width = canvas.width+'px';
       canvas.style.height = canvas.height+'px';
       //win.ctx = canvas.getContext('2d');
@@ -1669,6 +1654,10 @@
       canvas.style.left=0;
       canvas.style.top=0;
       canvas.style.background='rgba(255,255,255,0.75)';
+      //canvas.style.position='absolute';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+
       //getElement('playbutton').value='stop';
       //getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
       body.appendChild(canvas);
@@ -1707,34 +1696,74 @@
         //ele.style.clear='both';
         //body.appendChild(ele);
       }
+      //adding touch to canvas
+
+      //adding mouse to canvas
+
+      //adding invisible textarea
+      var ele = null;
       ele = createElement('br');
       ele.style.clear='both';
+
+      body.appendChild(ele);
+      ele = createElement('span');
+      ele.style.display = 'inline-block';
+      ele.style.marginBottom = '2px';
+      ele.style.border = 'solid 1px #999';
+      ele.style.maxWidth = '90%';
+      ele.setAttribute('onclick','editor.setTitle();');
+      ele.setAttribute('id','title');
+      ele.appendChild(createTextNode(game.title==null?'click to edit title.':atob(game.title)));
+
+      body.appendChild(ele);
+      ele = createElement('br');
+
+      ele.style.clear='both';
+      body.appendChild(ele);
+      ele = createElement('span');
+      ele.style.display = 'inline-block';
+      ele.style.marginBottom = '2px';
+      ele.style.border = 'solid 1px #999';
+      ele.style.maxWidth = '90%';
+      ele.setAttribute('onclick','editor.setQuest();');
+      ele.setAttribute('id','quest');
+      ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':atob(game.quest)));
+
+      body.appendChild(ele);
+      ele = createElement('br');
+      ele.style.clear='both';
+
       body.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('value','set start');
       ele.setAttribute('onclick','alert(\'The next click will set the new start object.\');editor.mode=\'setstart\';');
+
       body.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('value','set end');
       ele.setAttribute('onclick','alert(\'The next click will set the new end object.\');editor.mode=\'setend\';');
+
       body.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('value','new game');
       ele.setAttribute('onclick','editor.newGame();');
+
       body.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('id','playbutton');
       ele.setAttribute('value','play');
       ele.setAttribute('onclick','alert(\'Here you can play and test you game.\');editor.playGame();');
+
       body.appendChild(ele);
       ele = createElement('div');
       ele.style.height = '250px';
       ele.style.overflow = 'scroll';
       ele.setAttribute('id','output');
+
       body.appendChild(ele);
       for (var i = 0; i < game.objects.length; i++)
       {
@@ -1744,9 +1773,11 @@
         {
           editor.setText(obj.id, obj.getText());
         }
-        getElement(obj.id).appendChild(createElement('br'));
-        getElement(obj.id).appendChild(createTextNode(' '+obj.order));
+        //getElement(obj.id).appendChild(createElement('br'));
+        //getElement(obj.id).appendChild(createTextNode(' '+obj.order));
       }
+      gmode = 'editor';
+      //request animation frame
       update = true;
       requestAnimationFrame(function() {editor.updateDraw();} );
     };
