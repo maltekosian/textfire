@@ -1353,7 +1353,7 @@
       var w = window.innerWidth;
       var h = window.innerHeight;
       //test
-      w > 410 ? w = 410: w = w;
+      w > 420 ? w = 420: w = w;
       //replace this once if everything will be canvas based including the editor
       canvas.width = w < h ? w : h;
       canvas.height = w < h ? w : h;
@@ -1860,8 +1860,8 @@
       if (typeof btx == 'undefined' || btx == null)
       {
         bufferImg = createElement('canvas');
-        bufferImg.width = 410;
-        bufferImg.height = 410;
+        bufferImg.width = 420;
+        bufferImg.height = 420;
         btx = bufferImg.getContext('2d');
         var cw = bufferImg.width;
         var ch = bufferImg.height;
@@ -1918,6 +1918,21 @@
         ctx.fillRect(0,0,cw,ch);
         ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.fillRect(cw/2,0,cw/2,ch);
+        ctx.fillStyle = '#000';
+        var h = fts * 1.2;
+        for (var i = 0; i < editor.buttonLabels.length; i++) {
+          if (editor.buttonLabels[i] instanceof Array) {
+            for (var j = 0; j < editor.buttonLabels[i].length; j++) {
+              ctx.fillText(editor.buttonLabels[i][j], cw / 2 + 0.055 * cw, h);
+              ctx.fillRect(cw / 2 + 0.05 * cw, h + fts * 0.1, cw / 2 - 0.1 * cw, 1);
+              h += fts * 1.5; 
+            }
+          } else {
+            ctx.fillText(editor.buttonLabels[i], cw / 2 + 0.03 * cw, h);
+            ctx.fillRect(cw / 2 + 0.025 * cw, h + fts * 0.1, cw / 2 - 0.05 * cw, 1);
+            h += fts * 1.5;
+          }
+        }
       }
       console.log('editor.draw->'+objects.length);
     };
@@ -2158,7 +2173,8 @@
       var w = window.innerWidth;
       var h = window.innerHeight;
       //test
-      w > 410 ? w = 410: w = w;
+      w > 420 ? w = 420: w = w;
+      h > 560 ? h = 560: h = h;
       //replace this once if everything will be canvas based including the editor
       canvas.width = w;//w < h ? w : h;
       canvas.height = h;//w < h ? w : h;
@@ -2286,8 +2302,13 @@
       var ele = null;
       ele = createElement('br');
       ele.style.clear='both';
-
-      body.appendChild(ele);
+      var element = createElement('div');
+      element.style.position = 'absolute';
+      element.style.zIndex = '10';
+      element.style.top = '0';
+      element.style.left = '0';
+      body.appendChild(element);
+      element.appendChild(ele);
       ele = createElement('span');
       ele.style.display = 'inline-block';
       ele.style.marginBottom = '2px';
@@ -2297,11 +2318,11 @@
       ele.setAttribute('id','title');
       ele.appendChild(createTextNode(game.title==null?'click to edit title.':atob(game.title)));
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('br');
 
       ele.style.clear='both';
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('span');
       ele.style.display = 'inline-block';
       ele.style.marginBottom = '2px';
@@ -2311,42 +2332,42 @@
       ele.setAttribute('id','quest');
       ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':atob(game.quest)));
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('br');
       ele.style.clear='both';
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('value','set start');
       ele.setAttribute('onclick','alert(\'The next click will set the new start object.\');editor.mode=\'setstart\';');
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('value','set end');
       ele.setAttribute('onclick','alert(\'The next click will set the new end object.\');editor.mode=\'setend\';');
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('value','new game');
       ele.setAttribute('onclick','editor.newGame();');
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
       ele.setAttribute('id','playbutton');
       ele.setAttribute('value','play');
       ele.setAttribute('onclick','alert(\'Here you can play and test you game.\');editor.playGame();');
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       ele = createElement('div');
       ele.style.height = '250px';
       ele.style.overflow = 'scroll';
       ele.setAttribute('id','output');
 
-      body.appendChild(ele);
+      element.appendChild(ele);
       for (var i = 0; i < game.objects.length; i++)
       {
         var obj = game.objects[i];
