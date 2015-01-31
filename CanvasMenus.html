@@ -22,17 +22,30 @@
     canvas.style.height = canvas.width+'px';
     var ctx = canvas.getContext('2d');
     var drawmethod = [];
+    var buttons = [];
 
-    function showSelect() {
-    
+    function showSelect(name, buttons) {
+      //name => value
+      for (var i = 0; i < buttons.length; i++) {
+        //select buttons need a value
+      }
     };
 
-    function showPrompt() {
-    
+    function showPrompt(name, elements) {
+      //close
+
+      for (var i = 0; i < elements.length; i++) {
+        //inputs, selects, radio-buttons, (checkboxes) or buttons
+      }
+      //done
     };
 
-    function showMenu() {
-    
+    function showMenu(buttons) {
+      //close
+
+      for (var i = 0; i < buttons.length; i++) {
+      
+      }
     };
 
     var update = true;
@@ -79,7 +92,7 @@
       //mouse Eventlisteners and touch
 
       //d
-      drawmethod = ['menu','prompt','select'];
+      drawmethod = ['menu'];
       update = true;
       requestAnimationFrame(function(){ updateDraw(); });
     };
