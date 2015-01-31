@@ -2088,6 +2088,25 @@
       }
     };
     /**
+    */
+    editor.createUid = function() {
+      var abc = 'abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      var uid = '';
+      while (uid.length < editor.uidMax || editor.hasUid(uid)) {
+         uid = '';
+         for (var i = 0; i < editor.uidMax; i++)
+         {
+           uid = uid + abc.substr(Math.floor(Math.random()*abc.length), 1);
+         }
+         if (!isNaN(uid))
+         {
+           uid = '_'+uid;
+         }
+      }
+      editor.addUid(uid);
+      return uid;
+    };
+    /**
     @method
     */
     var mousePressed = function(x,y) {
