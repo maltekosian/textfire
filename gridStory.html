@@ -120,6 +120,131 @@
  <body>
   <script>
   (function(win) {
+    /**
+    @class MediaLanguage
+    @param _lan
+    @since 2014-05-18
+    */
+    function MediaLanguage(_lan) {
+      /**
+      @attribute language
+      */
+      this.language = _lan;
+      /**
+      @property medias
+      */
+      this.medias = [];
+      /**
+      @method load
+      @param data
+      @since 2014-05-29
+      */
+      this.load = function(data) {
+      this.language = data['language'];
+      this.medias = [];
+      for (var i = 0; i < data['medias'].length; i++) {
+       this.medias.push({ key:data['medias'][i]['key'], value:data['medias'][i]['value']});
+      }
+      };
+      /**
+      _t64 indicates if the value has to be base64_encoded or not
+      @method setMedia
+      @since 2014-05-15
+      @param _k the key
+      @param _v the value
+      @param {boolean} _t64 to be 64 encoded
+      */
+      this.setMedia = function(_k, _v, _t64) {
+      //console.log('setMedia'+_k);
+      if (this.hasMedia(_k)) {
+       this.getMedia(_k).value = _t64 ? btoa(_v): _v;
+      } else {
+       this.addMedia(_k, _v, _t64);
+      }
+      };
+      /**
+      use this to get Images, Audios, Videos and other
+      media that should stay bas64 encoded
+      var myMediaValue = [..].getMedia('key').value;
+      @method getMedia
+      @since 2014-05-15
+      @param _k the key
+      @return the complete media Object
+      */
+      this.getMedia = function(_k) {
+        for (var i = 0; i < this.medias.length; i++) {
+          if (this.medias[i].key == _k) {
+            return this.medias[i];
+          }
+        }
+        return null;
+      };
+      /**
+      Don't use this method for images, audios or videos,
+      because those have to stay base64_encoded
+      @method getTextMedia
+      @since 2014-05-15
+      @param _k the key
+      @return the media value - always base64 decoded
+      */
+      this.getTextMedia = function(_k) {
+        for (var i = 0; i < this.medias.length; i++) {
+          if (this.medias[i].key == _k) {
+            //console.log('getMedia->'+atob(this.medias[i].value));
+            return atob(this.medias[i].value);
+          }
+        }
+        return null;
+      };
+      /**
+      @method hasMedia
+      @since 2014-05-15
+      @param _k the key
+      @return {boolean} true if the media with the key exists
+      */
+      this.hasMedia = function(_k, _v) {
+        for (var i = 0; i < this.medias.length; i++) {
+          if (this.medias[i].key == _k) {
+            return true;
+          }
+        }
+        return false;
+      };
+      /**
+      @method deleteMedia
+      @since 2014-05-16
+      @param _k the key
+      */
+      this.deleteMedia = function(_k, _v) {
+        for (var i = 0; i < this.medias.length; i++) {
+          if (this.medias[i].key == _k) {
+            return this.medias.splice(i, 1);
+          }
+        }
+      };
+      /**
+      @method addMedia
+      @since 2014-05-15
+      @param _k the key
+      @param _v the value
+      @param {boolean} _t64 to be 64 encoded
+      */
+      this.addMedia = function(_k, _v, _t64) {
+        this.medias.push(this.createMedia(_k, _v, _t64));
+      };
+      /**
+      @method createMedia
+      @since 2014-05-15
+      @param _k the key
+      @param _v the value
+      @param {boolean} _t64 to be 64 encoded
+      @return the media Object
+      */
+      this.createMedia = function(_k, _v, _t64) {
+        _v = _t64 ? btoa(_v): _v;
+        return { key : _k, value : _v };
+      };
+    };
     var Game = function(){};
     Game.prototype.start = null;
     Game.prototype.end = null;
@@ -440,6 +565,165 @@
       }
       return null;
     }
+    /**
+      @class mediamanager
+      @since 2014-05-18
+    */
+    Game.prototype.mediamanager = {
+      /**
+      @property defaultLananguage
+      @default 'en'
+      */
+      defaultLanguage : 'en',
+      /**
+      @property currentLanguage
+      @default 'en'
+      */
+      currentLanguage : 'en',
+      /**
+      @property {array} languages
+      */
+      languages : [],
+      /**
+      @property {array} mediaLanguages
+      */
+      mediaLanguages : [],
+      /**
+      @method setCurrentLanguage
+      */
+      setCurrentLanguage : function(_lan) {
+        this.currentLanguage = _lan;
+        if (!this.hasLanguage(_lan)) {
+          this.addLanguage(_lan);
+        }
+      },
+      /**
+      @method addLanguage
+      */
+      addLanguage : function(_lan) {
+        this.mediaLanguages.push( new MediaLanguage(_lan) );
+        this.languages.push(_lan);
+      },
+      /**
+      @method hasLanguage
+      */
+      hasLanguage : function(_lan) {
+        for (var i = 0; i < this.languages.length; i++) {
+          if (this.languages[i] == _lan) {
+            return true;
+          }
+        }
+        return false;
+      },
+      /**
+      @method getLanguage
+      @since 2014-07-31
+      @param _lan a language key like 'en','de',...
+      @return {MediaLanguage} a mediaLanguage or null
+      */
+      getLanguage : function(_lan) {
+        for (var i = 0; i < this.mediaLanguages.length; i++) {
+          if (this.mediaLanguages[i].language == _lan) {
+            return this.mediaLanguages[i];
+          }
+        }
+        return null;
+      },
+      /**
+      @method getCurrentLanguage
+      */
+      getCurrentLanguage : function() {
+        for (var i = 0; i < this.mediaLanguages.length; i++) {
+          if (this.mediaLanguages[i].language == this.currentLanguage) {
+            return this.mediaLanguages[i];
+          }
+        }
+        this.currentLanguage = this.defaultLanguage;
+        var language = new MediaLanguage(this.currentLanguage);
+        this.mediaLanguages.push( language );
+        this.languages.push(this.currentLanguage);
+        return language;
+      },
+      /**
+      returns the keys, defined by the default language
+      @method getKeys
+      @since 2914-07-31
+      @return {Array} keys
+      */
+      getKeys : function () {
+        var d_lan = this.getLanguage(this.defaultLanguage);
+        var keys = [];
+        for (var i = 0; i < d_lan.medias.length; i++) {
+          //console.log(d_lan.getMedia(d_lan.medias[i].key).value.substr(0, 20));
+          if (!(d_lan.getMedia(d_lan.medias[i].key).value.indexOf('data:') == 0 &&
+              d_lan.getMedia(d_lan.medias[i].key).value.indexOf('base64') > 0))
+          {
+            keys.push(d_lan.medias[i].key);
+          }
+        }
+        return keys;
+      },
+      /**
+      use getTextMedia too get the decoded media value
+      @method setTextMedia
+      @since 2014-05-17
+      @param _k the key
+      @param _v the value
+      */
+      setTextMedia : function(_k, _v) {
+        //type64=true|false would regulate de/encoding or not
+        for (var i = 0; i < this.mediaLanguages.length; i++) {
+          if (this.mediaLanguages[i].getMedia(_k) == null) {
+            this.mediaLanguages[i].setMedia(_k, _v, true);
+          }
+        }
+      },
+      /**
+      push through for MediaLanguage.setMedia
+      the media will not be base64 encoded
+      use getMedia too get the media
+      use for Images and other natually base64 encoded media
+      @method setMedia
+      @since 2014-05-29
+      @param _k the key
+      @param _v the value - already base64 encoded
+      */
+      setMedia : function(_k, _v) {
+        //type64=true|false would regulate de/encoding or not
+        for (var i = 0; i < this.mediaLanguages.length; i++) {
+          if (this.mediaLanguages[i].getMedia(_k) == null) {
+            this.mediaLanguages[i].setMedia(_k, _v, false);
+          }
+        }
+      },
+      deleteMedia : function(_k) {
+        for (var i = 0; i < this.mediaLanguages.length; i++) {
+          this.mediaLanguages[i].deleteMedia(_k);
+        }
+      },
+      getMedia : function(_k) {
+        return this.getCurrentLanguage().getMedia(_k);
+      },
+      getTextMedia : function(_k) {
+        return this.getCurrentLanguage().getTextMedia(_k);
+      },
+      /**
+      @method load
+      @param data
+      @since 2014-05-29
+      */
+      load : function(data) {
+        this.defaultLanguage = 'en',
+        this.currentLanguage = data['currentLanguage'];
+        this.languages = data['languages'];
+        this.mediaLanguages = [];
+        for (var i = 0; i < data['mediaLanguages'].length; i++) {
+          var lan = new MediaLanguage(data['mediaLanguages'][i]['uid']);
+          lan.load(data['mediaLanguages'][i]);
+          this.mediaLanguages.push(lan);
+        }
+      }
+    };
     /**
     @method draw
     */
@@ -830,6 +1114,15 @@
     editor.mode = '';
     editor.current = null;
     editor.oldGame = null;
+    //editor.currentScene = null;
+    editor.currentObject = null;
+    //editor.currentDialog = null;
+    editor.uidMax = 5;
+    editor.menuMode = false;
+    editor.mediamanager = (new Game()).mediamanager;
+    editor.openButtonLabel = null;
+    editor.openButtonArray = null;
+    editor.buttonLabels = ['game',['new','save','load'],'scene',['new','delete','set name','switch to'],'object',['delete', 'set name'/*,'combine with','collection','link to'*/],'preferences','close menu'];
     /**
     calls a prompt
     sets the order for the specified object by id
