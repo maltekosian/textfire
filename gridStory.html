@@ -1122,7 +1122,7 @@
     editor.mediamanager = (new Game()).mediamanager;
     editor.openButtonLabel = null;
     editor.openButtonArray = null;
-    editor.buttonLabels = ['game',['new','save','load'],'scene',['new','delete','set name','switch to'],'object',['delete', 'set name'/*,'combine with','collection','link to'*/],'preferences','close menu'];
+    editor.buttonLabels = ['set start','set game','new game','play','dependencies','close menu'];
     /**
     calls a prompt
     sets the order for the specified object by id
@@ -1863,8 +1863,8 @@
         bufferImg.width = 420;
         bufferImg.height = 420;
         btx = bufferImg.getContext('2d');
-        var cw = bufferImg.width;
-        var ch = bufferImg.height;
+        cw = bufferImg.width;
+        ch = bufferImg.height;
       }
       {//game or editor
         ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
@@ -1910,7 +1910,7 @@
             btx.fillText(''+obj.order, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 2.4);
           //}
         }
-        ctx.drawImage(bufferImg, 0, (canvas.height-cw)/4, cw, cw);
+        ctx.drawImage(bufferImg, 0, (canvas.height-cw)/2, cw, cw);
         
       }//draw menu, inputs, prompts and selects here
       if (menuMode) {
