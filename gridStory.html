@@ -1053,9 +1053,9 @@
       /**
       @method pointHits
       */
-      this.pointHits = function(x, y) {
-        return (this.x <= x && this.y <= y && this.x + this.w >= x && this.y + this.h >= y);
-      }
+      this.pointHits = function(_x, _y) {
+        return (this.x <= _x && this.y <= _y && this.x + this.w >= _x && this.y + this.h >= _y);
+      };
     };
     /**
     @class GameEvent
@@ -1202,43 +1202,44 @@
     editor.setText = function(_id,_text){
       var obj=game.getObject(_id);
       if (editor.mode=='setstart') {
-        if (getElement('s_'+game.start)!=null) {
+        /*if (getElement('s_'+game.start)!=null) {
           getElement('s_'+game.start).style.color = '#006';
           getElement(game.start).className = 'grid-ready';
         } else if (game.start!=null) {
           getElement(game.start).className = 'grid-element';
-        }
+        }*/
         game.start = _id;
         obj.active = true;
         obj.visible = true;
         if (game.start == game.end) {
           game.end=null;
         }
-        getElement(_id).className = 'grid-start';
+        /*getElement(_id).className = 'grid-start';
         if (getElement('s_'+_id)!=null) {
           getElement('s_'+_id).style.color = '#0c0';
-        }
+        }*/
         editor.mode = '';
         return;
       }
       if (editor.mode=='setend') {
-        if (getElement('s_'+game.end)!=null) {
+        /*if (getElement('s_'+game.end)!=null) {
           getElement('s_'+game.end).style.color = '#006';
           getElement(game.end).className = 'grid-ready';
         } else if (game.end!=null) {
           getElement(game.end).className = 'grid-element';
-        }
+        }*/
         game.end = _id;
         if (game.start == game.end) {
           game.start=null;
         }
-        getElement(_id).className = 'grid-end';
+        /*getElement(_id).className = 'grid-end';
         if (getElement('s_'+_id)!=null) {
           getElement('s_'+_id).style.color = '#c00';
-        }
+        }*/
         editor.mode = '';
         return;
       }
+      console.log('set text for '+obj.id+' '+_text);
       if (_text==null) {
         if (obj.text==null) {
           _text=prompt('What\'s up next?','');
@@ -1911,7 +1912,7 @@
           //}
         }
         ctx.drawImage(bufferImg, 0, (canvas.height-cw)/2, cw, cw);
-        
+
       }//draw menu, inputs, prompts and selects here
       if (menuMode) {
         ctx.fillStyle = 'rgba(25,25,25,0.5)';
@@ -1925,7 +1926,7 @@
             for (var j = 0; j < editor.buttonLabels[i].length; j++) {
               ctx.fillText(editor.buttonLabels[i][j], cw / 2 + 0.055 * cw, h);
               ctx.fillRect(cw / 2 + 0.05 * cw, h + fts * 0.1, cw / 2 - 0.1 * cw, 1);
-              h += fts * 1.5; 
+              h += fts * 1.5;
             }
           } else {
             ctx.fillText(editor.buttonLabels[i], cw / 2 + 0.03 * cw, h);
@@ -2016,7 +2017,7 @@
     /**
     @method mouseReleased
     */
-    editor.mouseReleased = function(_x, _y) {
+    editor.mouseReleased = function(x, y) {
       if (pressed)
       {
         if (!menuMode)
@@ -2026,13 +2027,44 @@
             clearTimeout(mouseTimer);
             mouseTimer = null;
           }
-          if ((mx>=px+0.01 && my>=py+0.012) && editor.currentObject != null)
+          if ((x>=px+0.01 && y>=py+0.012) && editor.currentObject != null)
           {
-            
+            //you can move the current object here (release)
           } else {
+            //editor.inputs -> edit text
+            var cw = canvas.width;
+            var fts = 0.035;
+            //console.log(editor.inputs,fts);
+            for (var i = 0; i < editor.inputs.length; i++)
+            {
+              if (y < (0.01 + (i + 1) * fts) && y > (0.01 + fts * i))
+              {
+                console.log(editor.inputs[i]);
+                return;
+              }
+            }
             //not moving
             //edit object if is Hit
-            
+            //object text and order edit
+            console.log(x+' '+y+'~'+game.objects.length);
+            var yo = (y - 0.125)* canvas.height / bufferImg.height;
+            var obj = null;
+            for (var i = 0; i < game.objects.length; i++)
+            {
+              obj = game.objects[i];
+              //console.log(i+'-'+obj.x+' '+(obj.x+obj.w)+', '+obj.y+' '+(obj.y+obj.h))
+              if (obj.pointHits(x,yo))
+              {
+                editor.setText(obj.id,null);
+                px = 0;
+                py = 0;
+                mx = 0;
+                my = 0;
+                pressed = false;
+                update = true;
+                return;
+              }
+            }
           }
         } else {
           //look for buttons
@@ -2125,7 +2157,7 @@
     @method
     */
     var mousePressed = function(x,y) {
-      
+
       if (gmode == 'editor') {
         editor.mousePressed(x,y);
       } else {
@@ -2137,7 +2169,7 @@
     @method
     */
     var mouseMoved = function(x,y) {
-      
+
       if (gmode == 'editor') {
         editor.mouseMoved(x,y);
       } else {
@@ -2149,7 +2181,7 @@
     @method
     */
     var mouseReleased = function(x,y) {
-  
+
       if (gmode == 'editor') {
         editor.mouseReleased(x,y);
       } else {
@@ -2300,42 +2332,50 @@
       body.appendChild(area);
       //adding invisible textarea
       var ele = null;
-      ele = createElement('br');
-      ele.style.clear='both';
+
       var element = createElement('div');
       element.style.position = 'absolute';
       element.style.zIndex = '10';
       element.style.top = '0';
       element.style.left = '0';
       body.appendChild(element);
-      element.appendChild(ele);
-      ele = createElement('span');
-      ele.style.display = 'inline-block';
-      ele.style.marginBottom = '2px';
-      ele.style.border = 'solid 1px #999';
-      ele.style.maxWidth = '90%';
-      ele.setAttribute('onclick','editor.setTitle();');
-      ele.setAttribute('id','title');
-      ele.appendChild(createTextNode(game.title==null?'click to edit title.':atob(game.title)));
+      for (var i = 0; i < 10; i++)
+      {
+        //adding a lot of breaks
+        ele = createElement('br');
+        ele.style.clear='both';
+        element.appendChild(ele);
+      }
+      //ele = createElement('span');
+      //ele.style.display = 'inline-block';
+      //ele.style.marginBottom = '2px';
+      //ele.style.border = 'solid 1px #999';
+      //ele.style.maxWidth = '90%';
+      //ele.setAttribute('onclick','editor.setTitle();');
+      //ele.setAttribute('id','title');
+      //ele.appendChild(createTextNode(game.title==null?'click to edit title.':atob(game.title)));
 
-      element.appendChild(ele);
+      //element.appendChild(ele);
       ele = createElement('br');
 
       ele.style.clear='both';
       element.appendChild(ele);
-      ele = createElement('span');
-      ele.style.display = 'inline-block';
-      ele.style.marginBottom = '2px';
-      ele.style.border = 'solid 1px #999';
-      ele.style.maxWidth = '90%';
-      ele.setAttribute('onclick','editor.setQuest();');
-      ele.setAttribute('id','quest');
-      ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':atob(game.quest)));
+      //ele = createElement('span');
+      //ele.style.display = 'inline-block';
+      //ele.style.marginBottom = '2px';
+      //ele.style.border = 'solid 1px #999';
+      //ele.style.maxWidth = '90%';
+      //ele.setAttribute('onclick','editor.setQuest();');
+      //ele.setAttribute('id','quest');
+      //ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':atob(game.quest)));
 
+      editor.inputs = [];
+      editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'setTitle'});
+      editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'setQuest'});
       element.appendChild(ele);
       ele = createElement('br');
       ele.style.clear='both';
-
+      /*
       element.appendChild(ele);
       ele = createElement('input');
       ele.setAttribute('type','button');
@@ -2361,7 +2401,7 @@
       ele.setAttribute('value','play');
       ele.setAttribute('onclick','alert(\'Here you can play and test you game.\');editor.playGame();');
 
-      element.appendChild(ele);
+      element.appendChild(ele);*/
       ele = createElement('div');
       ele.style.height = '250px';
       ele.style.overflow = 'scroll';
