@@ -1122,7 +1122,7 @@
     editor.mediamanager = (new Game()).mediamanager;
     editor.openButtonLabel = null;
     editor.openButtonArray = null;
-    editor.buttonLabels = ['set start','set game','new game','play','dependencies','close menu'];
+    editor.buttonLabels = [{text:'set start',onclick:'setStart'},{text:'set end',onclick:'setEnd'},{text:'new game',onclick:'newGame'},{text:'play',onclick:'playGame'},{text:'dependencies',onclick:'showDependenciesPrompt'},{text:'close menu',onclick:'closeMenu'}];
     /**
     calls a prompt
     sets the order for the specified object by id
@@ -1130,7 +1130,14 @@
     @method setOrder
     */
     editor.setOrder = function(_obj_id) {
-      var obj=game.getObject(_obj_id);
+      if (_obj_id == null && editor.currentObject != null)
+      {
+        _obj_id = editor.currentObject.id;
+      } else if (_obj_id == null && editor.currentObject == null)
+      {
+        return;
+      }
+      var obj = game.getObject(_obj_id);
       var input = prompt('Type in a value between 1 to '+(game.objects.length)+' or leave the input as it is', obj.order);
       try
       {
@@ -1146,9 +1153,9 @@
         return;
       }
       obj.order = input;
-      var ele = getElement('ord_'+obj.id);
-      ele.innerHTML = '';
-      ele.appendChild(createTextNode(obj.order));
+      //var ele = getElement('ord_'+obj.id);
+      //ele.innerHTML = '';
+      //ele.appendChild(createTextNode(obj.order));
       editor.saveGame();
     };
     /**
@@ -1277,6 +1284,7 @@
       }
 
       //}
+      /*
       var ele = getElement('output');
       var ele2 = getElement('s_'+obj.id);
       if (ele2 == null) {
@@ -1318,7 +1326,7 @@
         } else {
           ele2.style.color = '#006';
         }
-      }
+      }*/
       editor.saveGame();
     };
     /**
@@ -1475,6 +1483,12 @@
         console.log(ex);
       }*/
       return g;
+    };
+    /**
+    @method closeMenu
+    */
+    editor.closeMenu = function() {
+      menuMode = false;
     };
     /**
     @method setCurrentObject
@@ -1845,6 +1859,40 @@
       }
     };
     /**
+    @method setEnd
+    */
+    editor.setStart = function() {
+      if (editor.currentObject == null)
+      {
+        alert('Select an object first.');
+        menuMode = false;
+        update = true;
+        return;
+      }
+      //alert('The next click will set the start object.');
+      editor.mode='setstart';
+      editor.setText(editor.currentObject.id);
+      menuMode = false;
+      update = true;
+    };
+    /**
+    @method setEnd
+    */
+    editor.setEnd = function() {
+      if (editor.currentObject == null)
+      {
+        alert('Select an object first.');
+        menuMode = false;
+        update = true;
+        return;
+      }
+      //alert('The next click will set the end object.');
+      editor.mode='setend';
+      editor.setText(editor.currentObject.id);
+      menuMode = false;
+      update = true;
+    };
+    /**
     an editor method
     @method updateDraw
     */
@@ -1873,7 +1921,7 @@
       ctx.font = fts+'px Sans-Serif';
       var objects = game.objects;
       var obj = null;
-      if (typeof btx == 'undefined' || btx == null)
+      /*if (typeof btx == 'undefined' || btx == null)
       {
         bufferImg = createElement('canvas');
         bufferImg.width = 420;
@@ -1881,14 +1929,15 @@
         btx = bufferImg.getContext('2d');
         cw = bufferImg.width;
         ch = bufferImg.height;
-      }
+      }*/
       {//game or editor
-        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
-        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,(0.01*cw+fts)*editor.inputs[0].pos);
+        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*editor.inputs[1].pos);
         if (editor.currentObject != null)
         {
-          ctx.fillText(editor.currentObject.id+':',0.02*cw,(0.01*cw+fts)*3);
-          ctx.fillText(''+atob(editor.currentObject.text),0.2*cw,(0.01*cw+fts)*3);
+          ctx.fillText(editor.currentObject.id+':',0.02*cw,(0.01*cw+fts)*editor.inputs[2].pos);
+          ctx.fillText(''+atob(editor.currentObject.text),0.2*cw,(0.01*cw+fts)*editor.inputs[2].pos);
+          ctx.fillText('order: '+editor.currentObject.order,0.02*cw,(0.01*cw+fts)*editor.inputs[3].pos);
         }
         //begin of btx context
         btx.lineWidth = 0.025 * cw;
@@ -1927,6 +1976,7 @@
             }
             btx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
             btx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
+            btx.font = fts+'px Sans-Serif';
             btx.fillStyle = '#000';
             btx.fillText(''+obj.id, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 1.2);
             btx.fillText(''+obj.order, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 2.4);
@@ -1941,19 +1991,19 @@
         ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.fillRect(cw/2,0,cw/2,ch);
         ctx.fillStyle = '#000';
-        var h = fts * 1.2;
+        var h = fts * 1.5;
         for (var i = 0; i < editor.buttonLabels.length; i++) {
-          if (editor.buttonLabels[i] instanceof Array) {
+          /*if (editor.buttonLabels[i] instanceof Array) {
             for (var j = 0; j < editor.buttonLabels[i].length; j++) {
-              ctx.fillText(editor.buttonLabels[i][j], cw / 2 + 0.055 * cw, h);
+              ctx.fillText(editor.buttonLabels[i][j].text, cw / 2 + 0.055 * cw, h);
               ctx.fillRect(cw / 2 + 0.05 * cw, h + fts * 0.1, cw / 2 - 0.1 * cw, 1);
               h += fts * 1.5;
             }
-          } else {
-            ctx.fillText(editor.buttonLabels[i], cw / 2 + 0.03 * cw, h);
+          } else {*/
+            ctx.fillText(editor.buttonLabels[i].text, cw / 2 + 0.03 * cw, h);
             ctx.fillRect(cw / 2 + 0.025 * cw, h + fts * 0.1, cw / 2 - 0.05 * cw, 1);
             h += fts * 1.5;
-          }
+          //}
         }
       }
       console.log('editor.draw->'+objects.length);
@@ -2032,7 +2082,7 @@
             mouseTimer = null;
           }
         }
-        update = true;
+        //update = true;
       }
     };
     /**
@@ -2058,7 +2108,8 @@
             //console.log(editor.inputs,fts);
             for (var i = 0; i < editor.inputs.length; i++)
             {
-              if (y < (0.01 + (i + 1) * fts) && y > (0.01 + fts * i))
+              //console.log('e.in', fts * editor.inputs[i].pos,y,( (editor.inputs[i].pos-1.05) * fts),'puts');
+              if (y > ((editor.inputs[i].pos-1.05) * fts) && y < (fts * editor.inputs[i].pos))
               {
                 console.log(editor.inputs[i]);
                 editor[editor.inputs[i].onclick]();
@@ -2097,19 +2148,19 @@
           } else {
             //menu here
             var fts = 0.035;
-            var h = fts * 1.2;
-            var cw = canvas.width;
-            console.log(x,y,editor.buttonLabels);
+            var h = 0;//fts * 1.2;
+            //console.log(x,y,editor.buttonLabels);
             for (var i = 0; i < editor.buttonLabels.length; i++)
             {
               //missing array here!
-              if (x>0.5 && y > h - fts*1.5 && y < h)
+              console.log((h)+', '+y+', '+(h + fts * 1.2));
+              if (x>0.5 && y > h  && y < (h + fts * 1.2))
               {
                 console.log(editor.buttonLabels[i]);
-                //editor[editor.buttonLabels[i].onclick]();
-                menuMode = false;
+                editor[editor.buttonLabels[i].onclick]();
+                //menuMode = false;
               }
-              h += fts * 1.5;
+              h += fts * 1.2;
             }
             //menu ends
             //menuMode = false;
@@ -2329,12 +2380,12 @@
       element.style.top = '0';
       element.style.left = '0';
       body.appendChild(element);
-      for (var i = 0; i < 10; i++)
+      //for (var i = 0; i < 10; i++)
       {
         //adding a lot of breaks
-        ele = createElement('br');
-        ele.style.clear='both';
-        element.appendChild(ele);
+        //ele = createElement('br');
+        //ele.style.clear='both';
+        //element.appendChild(ele);
       }
       //ele = createElement('span');
       //ele.style.display = 'inline-block';
@@ -2346,10 +2397,10 @@
       //ele.appendChild(createTextNode(game.title==null?'click to edit title.':atob(game.title)));
 
       //element.appendChild(ele);
-      ele = createElement('br');
+      //ele = createElement('br');
 
-      ele.style.clear='both';
-      element.appendChild(ele);
+      //ele.style.clear='both';
+      //element.appendChild(ele);
       //ele = createElement('span');
       //ele.style.display = 'inline-block';
       //ele.style.marginBottom = '2px';
@@ -2360,12 +2411,13 @@
       //ele.appendChild(createTextNode(game.quest==null?'click and enter quest.':atob(game.quest)));
 
       editor.inputs = [];
-      editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'setTitle'});
-      editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'setQuest'});
-      editor.inputs.push({name:'currentObject',text:'',onclick:'setText'});
-      element.appendChild(ele);
-      ele = createElement('br');
-      ele.style.clear='both';
+      editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'setTitle',pos:1.1});
+      editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'setQuest',pos:2.2});
+      editor.inputs.push({name:'currentObject',text:'current object text',onclick:'setText',pos:27.2});
+      editor.inputs.push({name:'order',text:'order number',onclick:'setOrderAndEvents',pos:28.3});
+      //element.appendChild(ele);
+      //ele = createElement('br');
+      //ele.style.clear='both';
       /*
       element.appendChild(ele);
       ele = createElement('input');
@@ -2392,17 +2444,17 @@
       ele.setAttribute('value','play');
       ele.setAttribute('onclick','alert(\'Here you can play and test you game.\');editor.playGame();');
 
-      element.appendChild(ele);*/
+      element.appendChild(ele);
       ele = createElement('div');
       ele.style.height = '250px';
       ele.style.overflow = 'scroll';
       ele.setAttribute('id','output');
 
-      element.appendChild(ele);
+      element.appendChild(ele);*/
       for (var i = 0; i < game.objects.length; i++)
       {
         var obj = game.objects[i];
-        ele = getElement(obj.id);
+        //ele = getElement(obj.id);
         if (obj.text != null && obj.text != '')
         {
           editor.setText(obj.id, obj.getText());
