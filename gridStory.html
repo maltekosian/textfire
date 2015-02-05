@@ -1195,11 +1195,24 @@
     }
     /**
     stores the game if store is available
+    if id and text is set this is an initial call
+    otherwise it is setting the text
+    if id is null and currentObject not set the text of the
+    currentObject
     @method setText
     @param id id of the object
     @param text the text for the object
     */
     editor.setText = function(_id,_text){
+      if (_id == null && _text == null && editor.currentObject != null)
+      {
+        _id = editor.currentObject.id;
+        _text = null;//?atob()
+      } else if (_id == null && editor.currentObject == null)
+      {
+        alert('Pleae, select the object first!');
+        return;
+      }
       var obj=game.getObject(_id);
       if (editor.mode=='setstart') {
         /*if (getElement('s_'+game.start)!=null) {
@@ -1324,7 +1337,8 @@
     editor.setQuest = function() {
       var text = prompt('Enter the quest of the game.', game.quest==null?'':atob(game.quest));
       game.quest = btoa(text);
-      getElement('quest').innerHTML = atob(game.quest);
+      update = true;
+      //getElement('quest').innerHTML = atob(game.quest);
       editor.saveGame();
     };
     /**
@@ -1333,7 +1347,8 @@
     editor.setTitle = function() {
       var text = prompt('Enter the game\'s title.', game.title==null?'':atob(game.title));
       game.title = btoa(text);
-      getElement('title').innerHTML = atob(game.title);
+      //getElement('title').innerHTML = atob(game.title);
+      update = true;
       editor.saveGame();
     };
     /**
@@ -1462,19 +1477,19 @@
       return g;
     };
     /**
-    @method setCurrent
+    @method setCurrentObject
     */
-    editor.setCurrent = function(id) {
-      var ele = null
+    editor.setCurrentObject = function(id) {
+      /*var ele = null
       if (editor.current != null) {
         ele = getElement(''+editor.current);
         ele.className = ele.className.replace(/ grid-current/g, '');
         ele.setAttribute('onclick','editor.setText(\''+ele.id+'\',null);');
-      }
-      editor.current = id;
-      ele = getElement(''+id);
+      }*/
+      editor.currentObject = editor.getObject(id);
+      /*ele = getElement(''+id);
       ele.className = ele.className+' grid-current';
-      ele.setAttribute('onclick','editor.setOrderAndEvents(\''+ele.id+'\');');
+      ele.setAttribute('onclick','editor.setOrderAndEvents(\''+ele.id+'\');');*/
     };
     /**
     @method showOrderAndEventsPrompt
@@ -1870,6 +1885,11 @@
       {//game or editor
         ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
         ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        if (editor.currentObject != null)
+        {
+          ctx.fillText(editor.currentObject.id+':',0.02*cw,(0.01*cw+fts)*3);
+          ctx.fillText(''+atob(editor.currentObject.text),0.2*cw,(0.01*cw+fts)*3);
+        }
         //begin of btx context
         btx.lineWidth = 0.025 * cw;
         btx.fillStyle = '#ddd';
@@ -1901,8 +1921,9 @@
               btx.fillStyle = 'rgba(128,128,205,0.5)';
               btx.strokeStyle = 'rgba(51,51,51,0.5)';
             }
-            if (game.current != null && obj.id == game.current.id) {
+            if (editor.currentObject != null && obj.id == editor.currentObject.id) {
               btx.strokeStyle = '#f90';
+              btx.fillStyle = 'rgba(255,204,128,0.7)';
             }
             btx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
             btx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
@@ -2040,6 +2061,7 @@
               if (y < (0.01 + (i + 1) * fts) && y > (0.01 + fts * i))
               {
                 console.log(editor.inputs[i]);
+                editor[editor.inputs[i].onclick]();
                 return;
               }
             }
@@ -2055,7 +2077,7 @@
               //console.log(i+'-'+obj.x+' '+(obj.x+obj.w)+', '+obj.y+' '+(obj.y+obj.h))
               if (obj.pointHits(x,yo))
               {
-                editor.setText(obj.id,null);
+                editor.currentObject = obj;
                 px = 0;
                 py = 0;
                 mx = 0;
@@ -2072,57 +2094,25 @@
           {
             clearTimeout(mouseTimer);
             mouseTimer = null;
-            /*
-            var h = 50;
-            var x = _x*canvasWidth+((canvas.width-canvasWidth)/2);
-            var y = _y*canvasHeight+((canvas.height-canvasHeight)/2);
-            //alert(x+', '+y);
-            for (var i = 0; i < editor.buttonLabels.length; i++ )
-            {
-              if (editor.buttonLabels[i] instanceof Array )
-              {
-                if (editor.buttonLabels[i-1] == editor.openButtonArray) {
-                for (var j = 0; j < editor.buttonLabels[i].length; j++)
-                {
-                  if(canvas.width*2/3+15 < x && h-30 < y && x < canvas.width-20 && y < h) {
-                    editor.openButtonLabel = editor.buttonLabels[i][j];
-                    var func = new Function('editor','editor.'+editor.buttonLabels[i-1].replace(/ /g,'_')+'_'+editor.buttonLabels[i][j].replace(/ /g,'_')+'();');
-                    try
-                    {
-                      console.log(func, editor.openButtonArray, editor.openButtonLabel);
-                      func(editor);
-                    }
-                    catch (e)
-                    {
-                      console.log(e);
-                    }
-                  }
-                  h += 35;
-                }
-                }
-              } else {
-                //alert((canvas.width*2/3+10)+' , '+(h-30)+' , '+(canvas.width-10)+' , '+h);
-                if(canvas.width*2/3+10 < x && h-30 < y && x < canvas.width-10 && y < h) {
-                  editor.showMenu(editor.buttonLabels[i]);
-                  var func = new Function('editor','editor.'+editor.buttonLabels[i].replace(/ /g,'_')+'();');
-                  try
-                  {
-                    console.log(func,editor.buttonLabels[i].replace(/ /g,'_'));
-                    func(editor);
-                  }
-                  catch (e)
-                  {
-                    console.log(e);
-                  }
-                } else {
-                  //mouseTimer = null;
-
-                }
-                h += 35;
-              }
-            }*/
           } else {
-            menuMode = false;
+            //menu here
+            var fts = 0.035;
+            var h = fts * 1.2;
+            var cw = canvas.width;
+            console.log(x,y,editor.buttonLabels);
+            for (var i = 0; i < editor.buttonLabels.length; i++)
+            {
+              //missing array here!
+              if (x>0.5 && y > h - fts*1.5 && y < h)
+              {
+                console.log(editor.buttonLabels[i]);
+                //editor[editor.buttonLabels[i].onclick]();
+                menuMode = false;
+              }
+              h += fts * 1.5;
+            }
+            //menu ends
+            //menuMode = false;
           }
         }
         //update & draw doublebuffer
@@ -2372,6 +2362,7 @@
       editor.inputs = [];
       editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'setTitle'});
       editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'setQuest'});
+      editor.inputs.push({name:'currentObject',text:'',onclick:'setText'});
       element.appendChild(ele);
       ele = createElement('br');
       ele.style.clear='both';
