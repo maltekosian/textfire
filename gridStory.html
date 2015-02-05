@@ -1509,6 +1509,13 @@
     @method showOrderAndEventsPrompt
     */
     editor.showOrderAndEventsPrompt = function(obj_id) {
+      if (editor.currentObject != null)
+      {
+        obj_id = editor.currentObject.id;
+      } else {
+        alert('Please, select an object first!');
+        return;
+      }
       var obj = game.getObject(obj_id);
       var prompt = getElement('prompt');
       //alert('prompt: '+prompt);
@@ -1930,7 +1937,7 @@
         cw = bufferImg.width;
         ch = bufferImg.height;
       }*/
-      {//game or editor
+      //game or editor
         ctx.fillText(''+atob(game.title),0.02*cw,(0.01*cw+fts)*editor.inputs[0].pos);
         ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*editor.inputs[1].pos);
         if (editor.currentObject != null)
@@ -1947,7 +1954,6 @@
         for (var i = 0; i < objects.length; i++)
         {
           obj = objects[i];
-          //if (obj.visible) {
             if (obj.id == game.start)
             {
               btx.fillStyle = '#0c0';
@@ -1972,7 +1978,7 @@
             }
             if (editor.currentObject != null && obj.id == editor.currentObject.id) {
               btx.strokeStyle = '#f90';
-              btx.fillStyle = 'rgba(255,204,128,0.7)';
+              //btx.fillStyle = 'rgba(255,204,128,0.7)';
             }
             btx.fillRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
             btx.strokeRect(obj.x * cw, obj.y * cw, obj.w * cw, obj.h * cw);
@@ -1980,11 +1986,10 @@
             btx.fillStyle = '#000';
             btx.fillText(''+obj.id, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 1.2);
             btx.fillText(''+obj.order, obj.x * cw + 0.02 * cw, obj.y * cw + fts * 2.4);
-          //}
+
         }
         ctx.drawImage(bufferImg, 0, (canvas.height-cw)/2, cw, cw);
-
-      }//draw menu, inputs, prompts and selects here
+      //draw menu, inputs, prompts and selects here
       if (menuMode) {
         ctx.fillStyle = 'rgba(25,25,25,0.5)';
         ctx.fillRect(0,0,cw,ch);
@@ -2374,12 +2379,12 @@
       //adding invisible textarea
       var ele = null;
 
-      var element = createElement('div');
+      /*var element = createElement('div');
       element.style.position = 'absolute';
       element.style.zIndex = '10';
       element.style.top = '0';
       element.style.left = '0';
-      body.appendChild(element);
+      body.appendChild(element);*/
       //for (var i = 0; i < 10; i++)
       {
         //adding a lot of breaks
@@ -2414,7 +2419,7 @@
       editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'setTitle',pos:1.1});
       editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'setQuest',pos:2.2});
       editor.inputs.push({name:'currentObject',text:'current object text',onclick:'setText',pos:27.2});
-      editor.inputs.push({name:'order',text:'order number',onclick:'setOrderAndEvents',pos:28.3});
+      editor.inputs.push({name:'order',text:'order number',onclick:'showOrderAndEventsPrompt',pos:28.3});
       //element.appendChild(ele);
       //ele = createElement('br');
       //ele.style.clear='both';
