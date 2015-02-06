@@ -2204,37 +2204,31 @@
     @method
     */
     var mousePressed = function(x,y) {
-
       if (gmode == 'editor') {
         editor.mousePressed(x,y);
       } else {
         game.mousePressed(x,y);
       }
-
     };
     /**
     @method
     */
     var mouseMoved = function(x,y) {
-
       if (gmode == 'editor') {
         editor.mouseMoved(x,y);
       } else {
         game.mouseMoved(x,y);
       }
-
     };
     /**
     @method
     */
     var mouseReleased = function(x,y) {
-
       if (gmode == 'editor') {
         editor.mouseReleased(x,y);
       } else {
         game.mouseReleased(x,y);
       }
-
     };
     /**
     editor method
@@ -2336,7 +2330,7 @@
               mouseReleased(mx, my);
             }
           },
-          false);
+          false);/*
           canvas.addEventListener('touchcancel',
           function(eve) {
             eve.preventDefault();
@@ -2345,7 +2339,7 @@
               mouseReleased(mx, my);
             }
           },
-          false);
+          false);*/
         } //else {
           canvas.addEventListener('mousedown',
           function(eve) {
