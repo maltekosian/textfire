@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title> new document </title>
@@ -6,11 +6,10 @@
   <meta name="author" content="" />
   <meta name="keywords" content="" />
   <meta name="description" content="" />
+  <meta charset="UTF-8">
  </head>
-
- <body>
-  
-  <script>
+ <body>  
+  <script charset="UTF-8">
     (
       function(win) {
         var game = {};
@@ -18,9 +17,9 @@
         var ctx = null;
         var menu = true;
         var select = false;
-        var currentMenu = [ {text:'new',method:'newGame'},{text:'select',method:'showSelect'},{text:'prompt',method:'showPrompt'}];
-        var currentSelect = [{text:'o_0_0',value:'o_0_0'},{text:'o_0_1',value:'o_0_1'}];
-        
+        var currentSelect = [{text:'o_0_0',value:'o_0_0'},{text:'o_0_1',value:'o_0_1'},{text:'o_0_2',value:'o_0_2'},{text:'o_0_3',value:'o_0_3'}];
+        var currentMenu = [ {text:'close menu',method:'closeMenu',value: null},{text:'new',method:'newGame',value:null},{text:'select▼',method:'showSelect',value:currentSelect},{text:'prompt',method:'showPrompt',value:null}];       
+        var currentValue = null;
         game.drawGame = false;
 
         game.init = function() {
@@ -29,6 +28,8 @@
           canvas.height=400;
           document.body.appendChild(canvas);
           ctx = canvas.getContext('2d');
+          canvas.addEventListener('click',function(eve) {mouseReleased(eve.pageX, eve.pageY)},true);
+          select = false;
           update = true;
           requestAnimationFrame(function() {updateDraw();});
         };
@@ -36,9 +37,20 @@
           game[method](value);
         };
         game.showSelect = function(value) {
-          //currentSelect = value;
+          currentSelect = value;
           select = true;
-        }
+        };
+        game.showPrompt = function(value) {
+          //currentPrompt = value;
+          prompt = true;
+        };
+        game.closeMenu = function() {
+          menu = false;
+        };
+        game.newGame = function() {
+          //do nothing here
+          //or paste some code
+        };
         var update = false;
         var updateDraw = function() {
           if (update) {
@@ -55,6 +67,8 @@
           
           } else {
             //drawEditor
+            ctx.fillStyle = '#000';
+            ctx.fillText('value='+currentValue,0.02*canvas.width,0.06*canvas.height);
           }
           if (menu) {
             ctx.fillStyle = 'rgba(50,50,50,0.5)';
@@ -64,10 +78,10 @@
             ctx.fillStyle = '#000';
             for (var i = 0; i < currentMenu.length; i++) {
               //draw the menu text entries + the close button
-              ctx.fillText(currentMenu[i].text,0.52*canvas.width,(0.135 + 0.075*i)*canvas.height);
+              ctx.fillText(currentMenu[i].text,0.52*canvas.width,(0.06 + 0.075*i)*canvas.height);
               //draw a line or so
             }
-            ctx.fillText('close menu',0.52*canvas.width,0.06*canvas.height);
+            //ctx.fillText('close menu',0.52*canvas.width,0.06*canvas.height);
           }
           if (select) {
             ctx.fillStyle = 'rgba(50,50,50,0.5)';
@@ -80,21 +94,46 @@
               ctx.fillText(currentSelect[i].text,0.12*canvas.width,(0.16+i*0.075)*canvas.height);
             }
           }
-        }
-        var mouseReleased = function() {
+          if (prompt) {
+            //how to add buttons, inputs and selects here?
+          }
+        };
+        var mouseReleased = function(x,y) {
+          console.log(x,y);
           if (select) {
-          
+            for (var i = 0; i < currentSelect.length; i++) {
+              if (y> (0.16+i*0.075)*canvas.height &&  
+                y<(0.14+(i+1)*0.075)*canvas.height)
+              {
+                alert(currentSelect[i].text+' with value='+currentSelect[i].value);
+                currentValue = currentSelect[i].value;
+                select = false;
+                update = true;
+                return;
+              }
+            }
           } else if (menu) {
+            console.log('menu');
             for (var i = 0; i < currentMenu.length; i++) {
-
-              //game.callAction = function(method, value);
+              if (y> (0.06 + 0.075*i)*canvas.height && 
+                  y<(0.04 + 0.075*(i+1))*canvas.height)
+              {
+                if (currentMenu[i].value != null) {
+                  game[currentMenu[i].method](currentMenu[i].value);
+                } else {
+                  game[currentMenu[i].method](); 
+                }
+                update = true;
+                return;
+              }
+              //
             }
           } else if (prompt) {
           
           } else {
             //the normal mouse up/released events
           }
-        }
+        };
         win.game = game;
       }
     )(window)
