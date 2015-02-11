@@ -24,7 +24,7 @@
    */
     (
     function() {
-      var GameButton = function(_n) {
+      /*var GameButton = function(_n) {
         this.name = _n;
         this.over = false;
         this.bounds = {x:0,y:0,w:0,h:0};
@@ -39,7 +39,7 @@
                   this.bounds.x + this.bounds.w >= _x && this.bounds.y + this.bounds.h >= _y);
         };
         this.onClick = function() {};
-      };
+      };*/
       var GameObject = function(_uid, _x, _y) {
         this.uid = _uid;
         this.name = null;
@@ -650,9 +650,9 @@
 /*
   // Setup the dnd listeners.
 img_canvas.addEventListener('dragover', function(eve) {editor.handleDragOver(eve)}, false);
-img_canvas.addEventListener('drop', function(eve) { 
+img_canvas.addEventListener('drop', function(eve) {
     editor.media_upload(eve); }, false);*/
-      /** 
+      /**
       */
       editor.media_upload = function (eve) {
         eve.stopPropagation();
@@ -662,7 +662,7 @@ img_canvas.addEventListener('drop', function(eve) {
           files = eve.dataTransfer.files;
         }
         var f = files[0];
-        if (!(f.type.match('image.*') ) ) 
+        if (!(f.type.match('image.*') ) )
         {
           return;
         }
@@ -676,7 +676,7 @@ img_canvas.addEventListener('drop', function(eve) {
         })(f);
         reader.readAsDataURL(f);
       };
-      /** 
+      /**
       */
       editor.media_input = function (_media) {
         console.log(' -> '+_media);
@@ -825,14 +825,15 @@ img_canvas.addEventListener('drop', function(eve) {
                   {
                     if(canvas.width*2/3+15 < x && h-30 < y && x < canvas.width-20 && y < h) {
                       editor.openButtonLabel = editor.buttonLabels[i][j];
-                      var func = new Function('editor','editor.'+editor.buttonLabels[i-1].replace(/ /g,'_')+'_'+editor.buttonLabels[i][j].replace(/ /g,'_')+'();');
+                      var func = editor.buttonLabels[i-1].replace(/ /g,'_')+'_'+editor.buttonLabels[i][j].replace(/ /g,'_');
                       try
                       {
                         console.log(func, editor.openButtonArray, editor.openButtonLabel);
-                        func(editor);
+                        editor[func]();
                       }
                       catch (e)
                       {
+                        alert('could not call '+func)
                         console.log(e);
                       }
                     }
@@ -843,19 +844,19 @@ img_canvas.addEventListener('drop', function(eve) {
                   //alert((canvas.width*2/3+10)+' , '+(h-30)+' , '+(canvas.width-10)+' , '+h);
                   if(canvas.width*2/3+10 < x && h-30 < y && x < canvas.width-10 && y < h) {
                     editor.showMenu(editor.buttonLabels[i]);
-                    var func = new Function('editor','editor.'+editor.buttonLabels[i].replace(/ /g,'_')+'();');
+                    var func = ''+editor.buttonLabels[i].replace(/ /g,'_')+'();';
                     try
                     {
                       console.log(func,editor.buttonLabels[i].replace(/ /g,'_'));
-                      func(editor);
+                      editor[func]();
                     }
                     catch (e)
                     {
+                      alert('could not call '+func)
                       console.log(e);
                     }
                   } else {
                     //mouseTimer = null;
-
                   }
                   h += 35;
                 }
