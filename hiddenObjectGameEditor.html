@@ -59,7 +59,10 @@
                   this.bounds.x + this.bounds.w >= _x && this.bounds.y + this.bounds.h >= _y);
         };
         this.load = function(_data) {
-
+          for (var key in _data)
+          {
+            this[key] = _data[key];
+          }
         };
         //obsolete?
         this.store = function() {
@@ -249,7 +252,30 @@
           {
             switch (key)
             {
-            case '': break;
+            case 'objects':
+              for (var i = 0; i < _data[key].length; i++)
+              {
+                var obj = new GameObject();
+                obj.load(_data[key][i]);
+                this[key].push(obj);
+              }
+            break;
+            case 'scenes':
+              for (var i = 0; i < _data[key].length; i++)
+              {
+                var scene = new GameScene();
+                scene.load(_data[key][i]);
+                this[key].push(scene);
+              }
+            break;
+            case 'dialogs':
+              for (var i = 0; i < _data[key].length; i++)
+              {
+                var dia = new GameDialog();
+                dia.load(_data[key][i]);
+                this[key].push(dia);
+              }
+            break;
             default: this[key] = _data[key];
             }
           }
@@ -458,14 +484,35 @@
         //load the editor.mediamanager if available
         //locally or over xhr
         update = true;
+        editor.area.focus();
         requestAnimationFrame(function() { editor.updateDraw();});
       }
+      editor.keydown = function(eve) {
+
+      };
+      editor.keyup = function(eve) {
+        //console.log(eve);
+        var keycode = (typeof eve.key == 'undefined' ? eve.which : eve.key.toLowerCase());
+        console.log('keycode -> '+keycode);
+        //alert('keycode -> '+keycode);
+        //ctx.fillText('keycode -> '+(keycode), 5, 20);
+        if (keycode == 'enter' || keycode == 13) {
+          //set the name of the currentObject, Scene or a dialogline
+          //also the game.title
+        } else {
+          console.log('keycode -> '+keycode);
+        }
+        this.text = this.area.value;
+        this.update = true;
+      };
       /**
       */
       editor.updateDraw = function() {
         if (update)
         {
           editor.draw();
+          update = false;
+          editor.area.focus();
         }
         requestAnimationFrame(function() { editor.updateDraw();});
       };
@@ -517,7 +564,7 @@
       /**
 
       */
-      editor.close_menu = function() {
+      editor.menu_close_menu = function() {
         editor.menuMode = false;
         update = true;
       };
@@ -616,30 +663,71 @@
 
         update = false;
       };
+      editor.area = null;
+      editor.text = '';
+      /***/
       editor.showMenu = function(_ol) {
         editor.openButtonArray = _ol;
         editor.openButtonLabel = null;
       };
+      editor.menu_game = function() {};
+      editor.menu_object = function() {};
+      editor.menu_scene = function() {};
+      editor.menu_object = function() {};
+      editor.menu_preferences = function() {};
+      /***/
+      editor.object_set_name = function() {
+        //show the dialog component
+        //activate the hidden text area
+        //
+      };
+      /***/
+      editor.object_delete = function() {
+
+      };
+      /***/
+      editor.scene_set_name = function() {
+
+      };
+      /***/
+      editor.scene_delete = function() {
+
+      };
+      /***/
+      editor.scene_new = function() {
+
+      };
+      /***/
+      editor.scene_switch_to = function() {
+
+      };
+      /***/
+      editor.game_set_title = function() {
+
+      };
+      /***/
       editor.game_load = function() {
         if (store != null)
         {
           var data = JSON.parse(store.getItem('hogeditor'));
-          for (var key in data['editor'])
+          /*for (var key in data['editor'])
           {
             editor[key]=data['editor'][key];
-          }
+          }*/
           editor.game = new Game();
-          editor.game.load(data['editor']['game']);
+          editor.game.load(data['game']);
           editor.openButtonLabel = 'load';
           editor.mediamanager = (new Game()).mediamanager;
-          editor.mediamanager.load(data['editor']['mediamanager']);
+          editor.mediamanager.load(data['mediamanager']);
           uidCounter = data['uidCounter'];
+          console.log(editor.game);
         }
+        update = true;
       };
       editor.game_save = function() {
         if (store != null)
         {
-          store.setItem('hogeditor',JSON.stringify({editor: editor, uidCounter: uidCounter}));
+          store.setItem('hogeditor',JSON.stringify({game: editor.game, mediamanager: editor.mediamanager, uidCounter: uidCounter}));
         }
       };
       editor.handleDragOver = function(eve) {
@@ -828,12 +916,12 @@ img_canvas.addEventListener('drop', function(eve) {
                       var func = editor.buttonLabels[i-1].replace(/ /g,'_')+'_'+editor.buttonLabels[i][j].replace(/ /g,'_');
                       try
                       {
-                        console.log(func, editor.openButtonArray, editor.openButtonLabel);
+                        //console.log(func, editor.openButtonArray, editor.openButtonLabel);
                         editor[func]();
                       }
                       catch (e)
                       {
-                        alert('could not call '+func)
+                        alert('+could not call '+func);
                         console.log(e);
                       }
                     }
@@ -844,15 +932,15 @@ img_canvas.addEventListener('drop', function(eve) {
                   //alert((canvas.width*2/3+10)+' , '+(h-30)+' , '+(canvas.width-10)+' , '+h);
                   if(canvas.width*2/3+10 < x && h-30 < y && x < canvas.width-10 && y < h) {
                     editor.showMenu(editor.buttonLabels[i]);
-                    var func = ''+editor.buttonLabels[i].replace(/ /g,'_')+'();';
+                    var func = ''+editor.buttonLabels[i].replace(/ /g,'_');
                     try
                     {
-                      console.log(func,editor.buttonLabels[i].replace(/ /g,'_'));
-                      editor[func]();
+                      //console.log(func,editor.buttonLabels[i].replace(/ /g,'_'));
+                      editor['menu_'+func]();
                     }
                     catch (e)
                     {
-                      alert('could not call '+func)
+                      alert('-could not call '+func)
                       console.log(e);
                     }
                   } else {
@@ -981,6 +1069,19 @@ img_canvas.addEventListener('drop', function(eve) {
           },
           false);
         //}
+        editor.area = document.createElement('textarea');
+        editor.area.addEventListener('keydown', function(eve) {editor.keydown(eve);} ,false);
+        editor.area.addEventListener('keyup', function(eve) {editor.keyup(eve);} ,false);
+        document.body.appendChild(editor.area);
+        editor.area.focus();
+        editor.area.style.opacity = '0.01';
+        editor.area.style.position = 'absolute';
+        editor.area.style.top = '0';
+        editor.area.style.width = '1px';
+        editor.area.style.height = '1px';
+        editor.area.style.border = '0';
+        editor.area.style.color = 'rgba(0,0,0,0.01)';
+        //editor.area.focus();
         //if (editormode) {
         editor.init();
         //} else { game.init(); }
