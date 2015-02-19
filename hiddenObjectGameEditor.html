@@ -46,6 +46,14 @@
         this.name = null;
         this.bounds = {x:_x,y:_y,w:0,h:0};
         /***/
+        this.setName = function( text) {
+          mediamanager.setText(this.name, text);//k.v
+        };
+        /***/
+        this.getName = function() {
+          return mediamanager.getText(this.name);
+        };
+        /***/
         this.setBounds = function (_x, _y, _w, _h) {
           this.bounds.x = _x;
           this.bounds.y = _y;
@@ -162,12 +170,12 @@
         /**
         Don't use this method for images, audios or videos,
         because those have to stay base64_encoded
-        @method getTextMedia
+        @method getText
         @since 2014-05-15
         @param _k the key
         @return the media value - always base64 decoded
         */
-        this.getTextMedia = function(_k) {
+        this.getText = function(_k) {
           for (var i = 0; i < this.medias.length; i++) {
             if (this.medias[i].key == _k) {
               //console.log('getMedia->'+atob(this.medias[i].value));
@@ -403,18 +411,18 @@
           return keys;
         },
         /**
-        use getTextMedia too get the decoded media value
-        @method setTextMedia
+        use getText too get the decoded media value
+        @method setText
         @since 2014-05-17
         @param _k the key
         @param _v the value
         */
-        setTextMedia : function(_k, _v) {
+        setText : function(_k, _v) {
           //type64=true|false would regulate de/encoding or not
           for (var i = 0; i < this.mediaLanguages.length; i++) {
-            if (this.mediaLanguages[i].getMedia(_k) == null) {
+            //if (this.mediaLanguages[i].getMedia(_k) == null) {
               this.mediaLanguages[i].setMedia(_k, _v, true);
-            }
+            //}
           }
         },
         /**
@@ -430,9 +438,9 @@
         setMedia : function(_k, _v) {
           //type64=true|false would regulate de/encoding or not
           for (var i = 0; i < this.mediaLanguages.length; i++) {
-            if (this.mediaLanguages[i].getMedia(_k) == null) {
+            //if (this.mediaLanguages[i].getMedia(_k) == null) {
               this.mediaLanguages[i].setMedia(_k, _v, false);
-            }
+            //}
           }
         },
         deleteMedia : function(_k) {
@@ -440,11 +448,13 @@
             this.mediaLanguages[i].deleteMedia(_k);
           }
         },
+        /***/
         getMedia : function(_k) {
           return this.getCurrentLanguage().getMedia(_k);
         },
-        getTextMedia : function(_k) {
-          return this.getCurrentLanguage().getTextMedia(_k);
+        /***/
+        getText : function(_k) {
+          return this.getCurrentLanguage().getText(_k);
         },
         /**
         @method load
@@ -465,7 +475,7 @@
         };
 
       };
-
+      var mediamanager = null;
       var editor = {};
       editor.game = new Game();
       editor.currentScene = null;
@@ -484,6 +494,7 @@
         editor.mediamanager = (new Game()).mediamanager
         //load the editor.mediamanager if available
         //locally or over xhr
+        mediamanager = editor.mediamanager;
         update = true;
         editor.area.focus();
         requestAnimationFrame(function() { editor.updateDraw();});
@@ -500,7 +511,7 @@
         if (keycode == 'enter' || keycode == 13) {
           //set the name of the currentObject, Scene or a dialogline
           //also the game.title
-
+          editor[editor.dialogMethod]();
         } else {
           console.log('keycode -> '+keycode);
         }
@@ -588,6 +599,7 @@
         btx.fillStyle = '#fff';
         btx.fillRect(0,0,cw,ch);
         var ch10 = ch/10;
+        var fts = 15; //font size
         btx.strokeStyle = '#999';
         //
         btx.strokeRect(1,1,cw-2,ch-2);//16:10
@@ -595,13 +607,19 @@
         btx.strokeRect(cw*1/12 + 1,1,cw*5/6-2,ch-2);
         //if (editor.currentScene != null)
         {
+          btx.font = fts+'px Sans-Serif';
           btx.strokeStyle = '#000';
+          btx.fillStyle = '#000';
           for (var i = 0; i < editor.game.objects.length; i++)
           {
             var obj = editor.game.objects[i];
             if (editor.currentObject == null || obj.uid != editor.currentObject.uid)
             {
               btx.strokeRect(obj.bounds.x * cw, obj.bounds.y * ch, obj.bounds.w * cw, obj.bounds.h * ch);
+              if (obj.name != null)
+              {
+                btx.fillText(obj.getName(), obj.bounds.x * cw + 5, fts + obj.bounds.y * ch);
+              }
             }
           }
           if (editor.currentObject != null)
@@ -609,7 +627,13 @@
             btx.strokeStyle = '#0cc';
             btx.strokeRect(editor.currentObject.bounds.x * cw, editor.currentObject.bounds.y * ch,
                 editor.currentObject.bounds.w * cw, editor.currentObject.bounds.h * ch);
+            btx.fillStyle = '#099';
+            if (editor.currentObject.name != null)
+            {
+              btx.fillText(editor.currentObject.getName() ,editor.currentObject.bounds.x * cw + 5, fts + editor.currentObject.bounds.y * ch);
+            }
           }
+
 
         }
         ctx.fillStyle = '#000';
@@ -622,7 +646,7 @@
           console.log('canvas.height >>>> canvas.width / 16 * 10');
           ctx.drawImage(bufferImg,0,(canvas.height-canvasHeight)/2,canvasWidth,canvasHeight);
         }
-        var fts = 20; //font size
+        fts = 20; //font size
         if (editor.menuMode)
         {
           ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -632,10 +656,10 @@
           var h = 50;
           ctx.fillStyle = '#999';
           ctx.fillRect(canvas.width*2/3+5, h-30, canvas.width/3-10, 1);
+          ctx.font = fts+'px Sans-Serif';
           for (var i = 0; i < editor.buttonLabels.length; i++ )
           {
             ctx.fillStyle = '#999';
-            ctx.font = fts+'px Sans-Serif';
             if (editor.buttonLabels[i] instanceof Array )
             {
               if (editor.buttonLabels[i-1] == editor.openButtonArray) {
@@ -667,23 +691,30 @@
             }
           }
         }
-        if (editor.dialog) {
-          ctx.font = fts+'px Sans-Serif';
-          ctx.fillStyle = '#fff';
-          ctx.fillRect(30,30,canvas.width-60, canvas.height/2-30);
-          ctx.fillStyle = '#000';
-          ctx.fillRect(35,35,canvas.width-70, 30);
-          ctx.fillStyle = '#fff';
-          if (editor.text == null || editor.text == '') {
-            ctx.fillText('enter text here', 40, 40+fts);
+        if (editor.dialogMethod != null) {
+          if (editor.currentDialog instanceof Array) {
+            for (var i = 0; i < editor.currentDialog.length; i++)
+            {
+
+            }
           } else {
-            ctx.fillText(editor.text, 40, 40+fts);
+            ctx.font = fts+'px Sans-Serif';
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(30,30,canvas.width-60, canvas.height/2-30);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(35,35,canvas.width-70, 30);
+            ctx.fillStyle = '#fff';
+            if (editor.text == null || editor.text == '') {
+              ctx.fillText('enter text here', 40, 40+fts);
+            } else {
+              ctx.fillText(editor.text, 40, 40+fts);
+            }
           }
         }
-
         update = false;
       };
-      editor.dialog = false;
+      editor.currentDialog = null;//string or array
+      editor.dialogMethod = null;
       editor.area = null;
       editor.text = null;
       /***/
@@ -701,28 +732,63 @@
         //show the dialog component
         //activate the hidden text area
         //
+        console.log(editor.currentObject);
         if (editor.currentObject == null) {
           return;
+        } else {
+          editor.currentDialog = editor.currentObject.getName();
+          editor.dialogMethod = 'objectSetName';
+          editor.text = editor.currentDialog;
+          //editor.text and editor.area.value will be set later
+          editor.area.focus();
         }
-        editor.dialog = true;
-        editor.text = editor.currentObject.name;
-        editor.area.focus();
+      };
+      /***/
+      editor.objectSetName = function() {
+        if (editor.currentObject.name == null)
+        {
+          editor.currentObject.name = editor.createUid();
+        }
+        editor.currentObject.setName( editor.text );
+        editor.currentDialog = null;
+        editor.dialogMethod = null;
+        editor.menuMode = false;
+        update = true;
       };
       /***/
       editor.object_delete = function() {
-
+        editor.game.deleteObject(editor.currentObject.uid);
+        editor.menuMode = false;
       };
       /***/
       editor.scene_set_name = function() {
-
+        if (editor.currentScene == null) {
+          return;
+        } else {
+          editor.currentDialog = editor.currentScene.name;
+          editor.dialogMethod = 'sceneSetName';
+          editor.text = editor.currentDialog;
+          //editor.text and editor.area.value will be set later
+          editor.area.focus();
+        }
       };
       /***/
+      editor.sceneSetName = function() {
+        editor.currentScene.name = editor.createUid();
+        editor.currentScene.setName( editor.text );
+        editor.currentDialog = null;
+        editor.dialogMethod = null;
+        editor.menuMode = false;
+        update = true;
+      }
+      /***/
       editor.scene_delete = function() {
-
+        editor.game.deleteScene(editor.currentScene.uid);
+        editor.menuMode = false;
       };
       /***/
       editor.scene_new = function() {
-
+        //editor.menuMode = false;
       };
       /***/
       editor.scene_switch_to = function() {
@@ -746,16 +812,21 @@
           editor.openButtonLabel = 'load';
           editor.mediamanager = (new Game()).mediamanager;
           editor.mediamanager.load(data['mediamanager']);
+          mediamanager = editor.mediamanager;
           uidCounter = data['uidCounter'];
           console.log(editor.game);
         }
+        editor.menuMode = false;
         update = true;
       };
       editor.game_save = function() {
+
         if (store != null)
         {
-          store.setItem('hogeditor',JSON.stringify({game: editor.game, mediamanager: editor.mediamanager, uidCounter: uidCounter}));
+          store.setItem('hogeditor',JSON.stringify({game: editor.game, mediamanager: mediamanager, uidCounter: uidCounter}));
         }
+        editor.menuMode = false;
+        update = true;
       };
       editor.handleDragOver = function(eve) {
         eve.stopPropagation();
