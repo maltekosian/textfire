@@ -2,11 +2,12 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8">
-  <meta name="Generator" content="EditPlus®">
-  <meta name="Author" content="">
+  <meta name="Generator" content="Malte Kosian">
+  <meta name="Author" content="Malte Kosian">
   <meta name="Keywords" content="">
   <meta name="Description" content="">
-  <title>Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>hidden Object Game Editor</title>
   <style>
   body {margin:0;background:#000;overflow:hidden;}
   </style>
@@ -499,11 +500,14 @@
         if (keycode == 'enter' || keycode == 13) {
           //set the name of the currentObject, Scene or a dialogline
           //also the game.title
+
         } else {
           console.log('keycode -> '+keycode);
         }
-        this.text = this.area.value;
-        this.update = true;
+
+        editor.text = editor.area.value;
+        console.log('editor.text->'+editor.text);
+        update = true;
       };
       /**
       */
@@ -612,10 +616,13 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         if (canvas.height < canvas.width / 16 * 10)
         {
+          console.log('canvas.height < canvas.width / 16 * 10');
           ctx.drawImage(bufferImg,(canvas.width-canvasWidth)/2,0,canvasWidth,canvasHeight);
         } else {
+          console.log('canvas.height >>>> canvas.width / 16 * 10');
           ctx.drawImage(bufferImg,0,(canvas.height-canvasHeight)/2,canvasWidth,canvasHeight);
         }
+        var fts = 20; //font size
         if (editor.menuMode)
         {
           ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -628,7 +635,7 @@
           for (var i = 0; i < editor.buttonLabels.length; i++ )
           {
             ctx.fillStyle = '#999';
-            ctx.font = '20px Sans-Serif';
+            ctx.font = fts+'px Sans-Serif';
             if (editor.buttonLabels[i] instanceof Array )
             {
               if (editor.buttonLabels[i-1] == editor.openButtonArray) {
@@ -660,11 +667,25 @@
             }
           }
         }
+        if (editor.dialog) {
+          ctx.font = fts+'px Sans-Serif';
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(30,30,canvas.width-60, canvas.height/2-30);
+          ctx.fillStyle = '#000';
+          ctx.fillRect(35,35,canvas.width-70, 30);
+          ctx.fillStyle = '#fff';
+          if (editor.text == null || editor.text == '') {
+            ctx.fillText('enter text here', 40, 40+fts);
+          } else {
+            ctx.fillText(editor.text, 40, 40+fts);
+          }
+        }
 
         update = false;
       };
+      editor.dialog = false;
       editor.area = null;
-      editor.text = '';
+      editor.text = null;
       /***/
       editor.showMenu = function(_ol) {
         editor.openButtonArray = _ol;
@@ -680,6 +701,12 @@
         //show the dialog component
         //activate the hidden text area
         //
+        if (editor.currentObject == null) {
+          return;
+        }
+        editor.dialog = true;
+        editor.text = editor.currentObject.name;
+        editor.area.focus();
       };
       /***/
       editor.object_delete = function() {
