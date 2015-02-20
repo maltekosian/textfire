@@ -1118,6 +1118,7 @@
     editor.currentObject = null;
     //editor.currentDialog = null;
     editor.uidMax = 5;
+    editor.dialogMethod = null;
     editor.menuMode = false;
     editor.mediamanager = (new Game()).mediamanager;
     editor.openButtonLabel = null;
@@ -1343,21 +1344,40 @@
     @method setQuest
     */
     editor.setQuest = function() {
-      var text = prompt('Enter the quest of the game.', game.quest==null?'':atob(game.quest));
-      game.quest = btoa(text);
+     // var text = prompt('Enter the quest of the game.', game.quest==null?'':atob(game.quest));
+      game.quest = btoa(area.value);      
+      //getElement('quest').innerHTML = atob(game.quest);      
+      area.blur();
+      editor.dialogMethod = null;
       update = true;
-      //getElement('quest').innerHTML = atob(game.quest);
       editor.saveGame();
+    };
+    /**
+    @method showQuestDialog
+    */
+    editor.showQuestDialog = function() {
+      area.value = atob(game.quest);
+      area.focus();
+      editor.dialogMethod = 'setQuest';
     };
     /**
     @method setTitle
     */
-    editor.setTitle = function() {
-      var text = prompt('Enter the game\'s title.', game.title==null?'':atob(game.title));
-      game.title = btoa(text);
-      //getElement('title').innerHTML = atob(game.title);
+    editor.setTitle = function() {      
+      game.title = btoa(area.value);
+      //getElement('title').innerHTML = atob(game.title);          
+      area.blur();
+      editor.dialogMethod = null;
       update = true;
       editor.saveGame();
+    };
+    /**
+    @method showTitleDialog
+    */
+    editor.showTitleDialog = function() {
+      area.value = atob(game.title);
+      area.focus();
+      editor.dialogMethod = 'setTitle';
     };
     /**
     a test and play method
@@ -1899,8 +1919,15 @@
       menuMode = false;
       update = true;
     };
+    var keyup = function(eve) {
+      if (gmode == 'editor') {
+          editor.keyup(eve);
+        } else {
+          //game.keyup(eve);
+        }
+    };
     /**
-    an editor method
+    an general method
     @method updateDraw
     */
     var updateDraw = function() {
@@ -2013,6 +2040,32 @@
         }
       }
       console.log('editor.draw->'+objects.length);
+    };
+    /**
+    @method keypress
+    */
+    editor.keypress = function(eve)  {
+    
+    };
+    /**
+    @method keyup
+    */
+    editor.keyup = function(eve)  {
+      var keycode = (typeof eve.key == 'undefined' ? eve.which : eve.key.toLowerCase());
+      console.log('keycode -> '+keycode);
+        //alert('keycode -> '+keycode);
+        //ctx.fillText('keycode -> '+(keycode), 5, 20);
+      if (keycode == 'enter' || keycode == 13) {
+          //set the name of the currentObject, Scene or a dialogline
+          //also the game.title
+          editor[editor.dialogMethod]();
+      } else {
+          console.log('keycode -> '+keycode);
+          //editor.area.focus();
+      }
+      //editor.text = area.value;
+      console.log('editor.text->'+area.value);
+      update = true;
     };
     /**
     @method mousePressed
@@ -2360,7 +2413,7 @@
           false);
       //adding invisible textarea
       area = createElement('textarea');
-      area.addEventListener('keyup',function(eve) {},true);
+      area.addEventListener('keyup',function(eve) { keyup(eve); },true);
       area.style.position = 'absolute';
       area.style.top = '-2px';
       area.style.left = '-2px';
@@ -2392,7 +2445,7 @@
       //request animation frame
       update = true;
       requestAnimationFrame(function() {updateDraw();} );
-    };
+    };    
 
     win.game = game;
     win.editor = editor;
@@ -2401,3 +2454,4 @@
   </script>
  </body>
 </html>
+
