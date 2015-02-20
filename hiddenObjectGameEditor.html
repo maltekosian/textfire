@@ -10,6 +10,10 @@
   <title>hidden Object Game Editor</title>
   <style>
   body {margin:0;background:#000;overflow:hidden;}
+  :-webkit-full-screen #canvas {
+    width: 100%;
+    height: 100%;
+  }
   </style>
  </head>
  <body id="body">
@@ -496,7 +500,7 @@
         //locally or over xhr
         mediamanager = editor.mediamanager;
         update = true;
-        editor.area.focus();
+        //editor.area.focus();
         requestAnimationFrame(function() { editor.updateDraw();});
       }
       editor.keydown = function(eve) {
@@ -514,6 +518,7 @@
           editor[editor.dialogMethod]();
         } else {
           console.log('keycode -> '+keycode);
+          //editor.area.focus();
         }
 
         editor.text = editor.area.value;
@@ -527,7 +532,10 @@
         {
           editor.draw();
           update = false;
-          editor.area.focus();
+          //if (editor.dialogMethod != null)
+          {
+             //editor.area.focus();
+          }
         }
         requestAnimationFrame(function() { editor.updateDraw();});
       };
@@ -581,6 +589,7 @@
       */
       editor.menu_close_menu = function() {
         editor.menuMode = false;
+        editor.area.blur();
         update = true;
       };
       /**
@@ -753,6 +762,7 @@
         editor.currentDialog = null;
         editor.dialogMethod = null;
         editor.menuMode = false;
+        editor.area.blur();
         update = true;
       };
       /***/
@@ -779,6 +789,7 @@
         editor.currentDialog = null;
         editor.dialogMethod = null;
         editor.menuMode = false;
+        editor.area.blur();
         update = true;
       }
       /***/
@@ -919,7 +930,7 @@ img_canvas.addEventListener('drop', function(eve) {
             {
               editor.currentObject.bounds.x = _x;
               editor.currentObject.bounds.y = _y;
-            } else if (editor.currentObject != null)
+            } else if (editor.currentObject != null && (mx<=px-0.025 || my<=py-0.042 || mx>=px+0.025 || my>=py+0.042))
             {
               if (_x < editor.currentObject.bounds.x)
               {
@@ -936,7 +947,7 @@ img_canvas.addEventListener('drop', function(eve) {
                 editor.currentObject.bounds.h = _y - editor.currentObject.bounds.y;
               }
             }
-            if (mouseTimer != null && (mx<=px-0.01 || my<=py-0.012 || mx>=px+0.01 || my>=py+0.012))
+            if (mouseTimer != null && (mx<=px-0.025 || my<=py-0.042 || mx>=px+0.025 || my>=py+0.042))
             {
               clearTimeout(mouseTimer);
               mouseTimer = null;
@@ -955,7 +966,7 @@ img_canvas.addEventListener('drop', function(eve) {
               clearTimeout(mouseTimer);
               mouseTimer = null;
             }
-            if ((mx>=px+0.01 && my>=py+0.012) && editor.currentObject != null)
+            if ((mx>=px+0.025 && my>=py+0.042) && editor.currentObject != null)
             {
               //place some code here
               if (_x < editor.currentObject.bounds.x)
@@ -997,6 +1008,9 @@ img_canvas.addEventListener('drop', function(eve) {
             if (mouseTimer != null)
             {
               clearTimeout(mouseTimer);
+              if ((Math.abs(mx-px) < 0.025 && Math.abs(my-py) < 0.042) && editor.currentObject != null) {
+                editor.currentObject = null;
+              }
               //mouseTimer = null;
               var h = 50;
               var x = _x*canvasWidth+((canvas.width-canvasWidth)/2);
@@ -1038,7 +1052,7 @@ img_canvas.addEventListener('drop', function(eve) {
                     }
                     catch (e)
                     {
-                      alert('-could not call '+func)
+                      alert('-could not call menu_'+func)
                       console.log(e);
                     }
                   } else {
@@ -1086,6 +1100,7 @@ img_canvas.addEventListener('drop', function(eve) {
         canvasWidth = window.innerWidth ;
         canvasHeight = window.innerHeight ;
         canvas = createElement('canvas');
+        canvas.setAttribute('id','canvas');
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
         canvas.style.width = canvasWidth+'px';
@@ -1171,7 +1186,7 @@ img_canvas.addEventListener('drop', function(eve) {
         editor.area.addEventListener('keydown', function(eve) {editor.keydown(eve);} ,false);
         editor.area.addEventListener('keyup', function(eve) {editor.keyup(eve);} ,false);
         document.body.appendChild(editor.area);
-        editor.area.focus();
+        //editor.area.focus();
         editor.area.style.opacity = '0.01';
         editor.area.style.position = 'absolute';
         editor.area.style.top = '0';
@@ -1183,6 +1198,15 @@ img_canvas.addEventListener('drop', function(eve) {
         //if (editormode) {
         editor.init();
         //} else { game.init(); }
+        if (canvas.requestFullscreen) {
+          canvas.requestFullscreen();
+        } else if (canvas.msRequestFullscreen) {
+          canvas.msRequestFullscreen();
+        } else if (canvas.mozRequestFullScreen) {
+          canvas.mozRequestFullScreen();
+        } else if (canvas.webkitRequestFullscreen) {
+          canvas.webkitRequestFullscreen();
+        }
       };
 
       window.createElement = function(_t) {return document.createElement(_t)};
