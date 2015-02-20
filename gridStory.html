@@ -1359,6 +1359,7 @@
       area.value = atob(game.quest);
       area.focus();
       editor.dialogMethod = 'setQuest';
+      update = true;
     };
     /**
     @method setTitle
@@ -1378,6 +1379,7 @@
       area.value = atob(game.title);
       area.focus();
       editor.dialogMethod = 'setTitle';
+      update = true;
     };
     /**
     a test and play method
@@ -2039,7 +2041,17 @@
           //}
         }
       }
-      console.log('editor.draw->'+objects.length);
+      //console.log('editor.draw->'+objects.length);
+      if (editor.dialogMethod != null) {
+        ctx.fillStyle = 'rgba(25,25,25,0.5)';
+        ctx.fillRect(0,0,cw,ch);
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillRect(0,0,cw,ch/2);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(fts * 0.2, fts * 1.5, cw-fts * 0.4,fts * 1.5);
+        ctx.fillStyle = '#fff';
+        ctx.fillText(area.value, fts * 0.3, fts * 2.65);
+      }
     };
     /**
     @method keypress
@@ -2428,8 +2440,8 @@
       var ele = null;
 
       editor.inputs = [];
-      editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'setTitle',pos:0.04});
-      editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'setQuest',pos:0.08});
+      editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'showTitleDialog',pos:0.04});
+      editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'showQuestDialog',pos:0.08});
       editor.inputs.push({name:'currentObject',text:'current object text',onclick:'setText',pos:0.92});
       editor.inputs.push({name:'order',text:'order number',onclick:'showOrderAndEventsPrompt',pos:0.96});
 
