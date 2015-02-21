@@ -912,7 +912,7 @@ img_canvas.addEventListener('drop', function(eve) {
             }
             if (!editor.objectMode)
             {
-              editor.currentObject = new GameObject(editor.createUid(), px, py);
+              editor.currentObject = new GameObject(1, px, py);
             }
 
           }
@@ -983,8 +983,13 @@ img_canvas.addEventListener('drop', function(eve) {
               } else {
                 editor.currentObject.bounds.h = _y - editor.currentObject.bounds.y;
               }
-              editor.game.objects.push(editor.currentObject);
-              //and add it to the objects array
+              if (editor.currentObject.uid == 1)
+              {
+                //only add a new object
+                editor.currentObject.uid = editor.createUid();
+                editor.game.objects.push(editor.currentObject);
+                //and add it to the objects array
+              }
 
               //current_object = null;
               editor.currentObject = null;
@@ -1008,7 +1013,7 @@ img_canvas.addEventListener('drop', function(eve) {
             if (mouseTimer != null)
             {
               clearTimeout(mouseTimer);
-              if ((Math.abs(mx-px) < 0.025 && Math.abs(my-py) < 0.042) && editor.currentObject != null) {
+              if (editor.currentObject != null && editor.currentObject.uid == 1) {
                 editor.currentObject = null;
               }
               //mouseTimer = null;
