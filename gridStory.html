@@ -1212,6 +1212,42 @@
       console.log(input,obj.order, code,atob(obj.event));
       editor.saveGame();
       getElement('prompt').style.display = 'none';
+    };
+    /**
+    an editor method
+    @method showTextDialog
+    */
+    editor.showTextDialog = function() {
+      if (editor.currentObject == null) {
+        return;
+      }
+      //
+      editor.dialogMethod = 'setText';
+      area.value = editor.currentObject.getText();
+      area.focus();
+      update = true;
+    };
+    /**
+    an editor method
+    
+    stores the game if store is available
+    if id and text is set this is an initial call
+    otherwise it is setting the text
+    if id is null and currentObject not set the text of the
+    currentObject
+    
+    @method setText
+    */
+    editor.setText = function() {
+      if (editor.currentObject == null) {
+        return;
+      }
+      editor.currentObject.setText(area.value);
+      console.log('set text for '+editor.currentObject.id+' '+area.value);
+      area.value = '';
+      editor.dialogMethod = null;
+      update = true;
+      editor.saveGame();
     }
     /**
     stores the game if store is available
@@ -1223,7 +1259,7 @@
     @param id id of the object
     @param text the text for the object
     */
-    editor.setText = function(_id,_text){
+    editor.initSetText = function(_id,_text){
       if (_id == null && _text == null && editor.currentObject != null)
       {
         _id = editor.currentObject.id;
@@ -1234,112 +1270,39 @@
         return;
       }
       var obj=game.getObject(_id);
+      
+      obj.setText(_text);
+      if (game.start == null)
+      {
+        game.start =_id;
+      } 
+      editor.saveGame();
+    };
+    /**
+    an editor method
+    @method setStartEnd
+    */
+    editor.setStartEnd = function() {
+      if (editor.currentObject != null) {
+        return;
+      }
+      var _id = editor.currentObject.id;
       if (editor.mode=='setstart') {
-        /*if (getElement('s_'+game.start)!=null) {
-          getElement('s_'+game.start).style.color = '#006';
-          getElement(game.start).className = 'grid-ready';
-        } else if (game.start!=null) {
-          getElement(game.start).className = 'grid-element';
-        }*/
         game.start = _id;
         obj.active = true;
         obj.visible = true;
         if (game.start == game.end) {
           game.end=null;
         }
-        /*getElement(_id).className = 'grid-start';
-        if (getElement('s_'+_id)!=null) {
-          getElement('s_'+_id).style.color = '#0c0';
-        }*/
         editor.mode = '';
-        return;
       }
       if (editor.mode=='setend') {
-        /*if (getElement('s_'+game.end)!=null) {
-          getElement('s_'+game.end).style.color = '#006';
-          getElement(game.end).className = 'grid-ready';
-        } else if (game.end!=null) {
-          getElement(game.end).className = 'grid-element';
-        }*/
         game.end = _id;
         if (game.start == game.end) {
           game.start=null;
         }
-        /*getElement(_id).className = 'grid-end';
-        if (getElement('s_'+_id)!=null) {
-          getElement('s_'+_id).style.color = '#c00';
-        }*/
         editor.mode = '';
-        return;
       }
-      console.log('set text for '+obj.id+' '+_text);
-      if (_text==null) {
-        if (obj.text==null) {
-          _text=prompt('What\'s up next?','');
-        } else {
-          _text=prompt('What\'s up next?',obj.getText());
-        }
-      }
-      obj.setText(_text);
-      if (game.start == null)
-      {
-        game.start =_id;
-        getElement(_id).className='grid-start';
-      } //else {
-
-      if (_id != game.start && _id != game.end) {
-        //getElement(_id).className='grid-ready';
-      } else if (_id == game.start) {
-        //getElement(_id).className='grid-start';
-      } else if (_id == game.end)
-      {
-        //getElement(_id).className='grid-end';
-      }
-
-      //}
-      /*
-      var ele = getElement('output');
-      var ele2 = getElement('s_'+obj.id);
-      if (ele2 == null) {
-        ele2 = createElement('span');
-        ele2.style.display='inline-block';
-        ele2.style.borderBottom='dotted 1px #999';
-        ele2.style.marginBottom = '2px';
-        ele2.setAttribute('id','s_'+obj.id);
-        var span = createElement('span');
-        span.style.cssFloat='left';
-        span.style.marginRight='1px';
-        span.style.display='inline-block';
-        span.style.minWidth='40px';
-        span.style.border = 'solid 1px #999';
-        span.setAttribute('id','ord_'+obj.id);
-        span.setAttribute('onclick','editor.showOrderAndEventsPrompt(\''+obj.id+'\');');
-        span.appendChild(createTextNode(obj.order));
-        ele2.appendChild(span);
-        span = createElement('span');
-        span.setAttribute('id','s_t_'+obj.id);
-        span.setAttribute('onclick', 'editor.showDependenciesPrompt(\''+obj.id+'\');');
-        span.appendChild(createTextNode(_text));
-        ele2.appendChild(span);
-        ele.appendChild(ele2);
-        ele.appendChild(createElement('br'));
-      } else {
-        ele2 = getElement('s_t_'+obj.id);
-        ele2.innerHTML = '';
-        ele2.appendChild(createTextNode(_text));
-        ele2 = getElement('ord_'+obj.id);
-        ele2.innerHTML = '';
-        ele2.appendChild(createTextNode(obj.order));
-      }
-      if (_id == game.start) {
-        ele2.style.color = '#0c0';
-      } else {
-        if (_id == game.end) {
-          ele2.style.color = '#c00';
-        } else {
-          ele2.style.color = '#006';
-        }
-      }*/
       editor.saveGame();
     };
     /**
@@ -2213,7 +2176,9 @@
     editor.mouseReleased = function(x, y) {
       if (pressed)
       {
-        if (editor.dialogMethod != null || editor.dialogMethod != '') {
+        if (editor.dialogMethod != null && editor.dialogMethod != '') {
+          clearTimeout(mouseTimer);
+          mouseTimer = null;
           //do not know if editor.dialogMethod is always set to null correctly
           return;
         }
@@ -2506,7 +2471,7 @@
         var obj = game.objects[i];
         if (obj.text != null && obj.text != '')
         {
-          editor.setText(obj.id, obj.getText());
+          editor.initSetText(obj.id, obj.getText());
         }
       }
       gmode = 'editor';
