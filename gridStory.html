@@ -1125,38 +1125,50 @@
     editor.openButtonArray = null;
     editor.buttonLabels = [{text:'set start',onclick:'setStart'},{text:'set end',onclick:'setEnd'},{text:'new game',onclick:'newGame'},{text:'play',onclick:'playGame'},{text:'dependencies',onclick:'showDependenciesPrompt'},{text:'close menu',onclick:'closeMenu'}];
     /**
-    calls a prompt
-    sets the order for the specified object by id
+    an editor method
+    calls a dialog prompt
+    will set the order for the specified object by id
     and updates the appearence of the editor's output
-    @method setOrder
+    @method showOrderDialog
     */
-    editor.setOrder = function(_obj_id) {
-      if (_obj_id == null && editor.currentObject != null)
-      {
-        _obj_id = editor.currentObject.id;
-      } else if (_obj_id == null && editor.currentObject == null)
+    editor.showOrderDialog = function() {
+      if (editor.currentObject == null)
       {
         return;
       }
-      var obj = game.getObject(_obj_id);
-      var input = prompt('Type in a value between 1 to '+(game.objects.length)+' or leave the input as it is', obj.order);
-      try
+      area.value = editor.currentObject.order;      
+      editor.inputs.order.text = 'Type in a value between 1 to '+(game.objects.length)+' or leave as it is.';
+      editor.dialogMethod = 'setOrder';
+      area.focus();
+      update = true;
+    };
+    /**
+    an editor method
+    sets the order value of the current selected object
+    @method setOrder
+    */
+    editor.setOrder = function() {
+      var obj = editor.currentObject;
+      var input = area.value;
+      /*try
       {
         input = parseInt(input);
       }
       catch (ex)
       {
-        alert ('Choose a valid value, please!')
+        area.value = 'Choose a valid value, please!';
+        update = true;
         return;
-      }
-      if (input < 0 || input > game.objects.length) {
-        alert ('Choose a valid value, please!');
+      }*/
+      if (isNaN(input) || input < 0 || input > game.objects.length) {
+        area.value = 'Choose a valid value, please!';
+        update = true;
         return;
       }
       obj.order = input;
-      //var ele = getElement('ord_'+obj.id);
-      //ele.innerHTML = '';
-      //ele.appendChild(createTextNode(obj.order));
+      editor.dialogMethod = null;
+      update = true;
+      area.blur();
       editor.saveGame();
     };
     /**
@@ -1874,6 +1886,24 @@
       getElement('prompt').style.display = 'none';
     };
     /**
+    @method showEvents
+    */
+    editor.showEvents = function() {
+    
+    };
+    /**
+    @method editEvent
+    */
+    editor.editEvent = function() {
+    
+    };
+    /**
+    @method addEvent
+    */
+    editor.addEvent = function() {
+    
+    };
+    /**
     @method setEvent
     */
     editor.setEvent = function(id) {
@@ -1968,13 +1998,14 @@
       }*/
       //game or editor
         console.log(ch,ch*0.95);
-        ctx.fillText(''+atob(game.title),0.02*cw,ch*editor.inputs[0].pos);
-        ctx.fillText(''+atob(game.quest),0.02*cw,ch*editor.inputs[1].pos);
+        ctx.fillText(''+atob(game.title),0.02*cw,ch*editor.inputs.title.pos);
+        ctx.fillText(''+atob(game.quest),0.02*cw,ch*editor.inputs.quest.pos);
         if (editor.currentObject != null)
         {
-          ctx.fillText(editor.currentObject.id+':',0.02*cw,ch*editor.inputs[2].pos);
-          ctx.fillText(''+atob(editor.currentObject.text),0.2*cw,ch*editor.inputs[2].pos);
-          ctx.fillText('order: '+editor.currentObject.order,0.02*cw,ch*editor.inputs[3].pos);
+          ctx.fillText(editor.currentObject.id+':',0.02*cw,ch*editor.inputs.objecttext.pos);
+          ctx.fillText(''+atob(editor.currentObject.text),0.2*cw,ch*editor.inputs.objecttext.pos);
+          ctx.fillText('order: '+editor.currentObject.order,0.02*cw,ch*editor.inputs.order.pos);
+          ctx.fillText('events: '+editor.inputs.event.text,0.02*cw,ch*editor.inputs.event.pos);
         }
         //begin of btx context
         btx.lineWidth = 0.025 * cw;
@@ -2043,12 +2074,32 @@
       }
       //console.log('editor.draw->'+objects.length);
       if (editor.dialogMethod != null) {
+        
         ctx.fillStyle = 'rgba(25,25,25,0.5)';
         ctx.fillRect(0,0,cw,ch);
         ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.fillRect(0,0,cw,ch/2);
         ctx.fillStyle = '#000';
         ctx.fillRect(fts * 0.2, fts * 1.5, cw-fts * 0.4,fts * 1.5);
+        var text = 'bla bla dialog';
+        switch (editor.dialogMethod) {
+          case 'setOrder':
+          text = editor.inputs.order.text;
+          break;
+          case 'setTitle':
+          text = editor.inputs.title.text;
+          break;
+          case 'setQuest':
+          text = editor.inputs.quest.text;
+          break;
+          case 'setText':
+          text = editor.inputs.objecttext.text;
+          break;
+          default:
+          break;
+        }
+        ctx.fillText(text, fts * 0.2, fts * 1.15);
+        
         ctx.fillStyle = '#fff';
         ctx.fillText(area.value, fts * 0.3, fts * 2.65);
       }
@@ -2162,6 +2213,10 @@
     editor.mouseReleased = function(x, y) {
       if (pressed)
       {
+        if (editor.dialogMethod != null || editor.dialogMethod != '') {
+          //do not know if editor.dialogMethod is always set to null correctly
+          return;
+        }
         if (!menuMode)
         {
           if (mouseTimer != null)
@@ -2177,7 +2232,7 @@
             var cw = canvas.width;
             var fts = 0.035;
             //console.log(editor.inputs,fts);
-            for (var i = 0; i < editor.inputs.length; i++)
+            for (var i in editor.inputs)
             {
               console.log('e.in', fts + editor.inputs[i].pos,y,editor.inputs[i].pos,'puts');
               if (y > (editor.inputs[i].pos - fts) && y < (editor.inputs[i].pos))
@@ -2439,11 +2494,12 @@
       //adding invisible textarea
       var ele = null;
 
-      editor.inputs = [];
-      editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'showTitleDialog',pos:0.04});
-      editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'showQuestDialog',pos:0.08});
-      editor.inputs.push({name:'currentObject',text:'current object text',onclick:'setText',pos:0.92});
-      editor.inputs.push({name:'order',text:'order number',onclick:'showOrderAndEventsPrompt',pos:0.96});
+      editor.inputs = {};
+      editor.inputs.title = {text:'Edit the title.',onclick:'showTitleDialog',pos:0.04};
+      editor.inputs.quest = {text:'Edit the quest of the level.',onclick:'showQuestDialog',pos:0.08};
+      editor.inputs.objecttext = {text:'Current object text.',onclick:'showTextDialog',pos:0.91};
+      editor.inputs.order = {text:'Order number:',onclick:'showOrderDialog',pos:0.95};
+      editor.inputs.event = {text:'Edit or add events.',onclick:'showEvents',pos:0.99};
 
       for (var i = 0; i < game.objects.length; i++)
       {
