@@ -261,6 +261,8 @@
     //so the quest will be validated in the end of the level/game
     Game.prototype.quest = null;
     Game.prototype.over = false;
+    Game.prototype.menuMode = false;
+    Game.prototype.mousetime = null;
     /**
     @method getObject
     @param id the id of the object
@@ -339,13 +341,15 @@
     @param y the y coordinate in 0 to 1 .
     */
     Game.prototype.mousePressed = function(x,y) {
+      console.log(pressed);
       if (!pressed)
       {
         pressed = true;
         var obj = null;
+        var yo = y * canvas.height / canvas.width;
         for (var i = 0; i < game.objects.length; i++) {
           obj = game.objects[i];
-          if (obj.pointHits(x,y) && obj.active) {
+          if (obj.pointHits(x,yo) && obj.active) {
             game.current = obj;
           }
         }
@@ -353,6 +357,9 @@
         py = y;
         mx = x;
         my = y;
+        if (game.current == null) {
+          this.mousetime = setTimeout(function() { game.showMenu(); }, 1000);
+        }
         update = true;
       }
     };
@@ -367,8 +374,9 @@
       {
         if (game.current != null)
         {
+          var yo = y * canvas.height / canvas.width;
           game.current.x += x-game.current.x;
-          game.current.y += y-game.current.y;
+          game.current.y += yo-game.current.y;
           update = true;
         }
       }
@@ -382,49 +390,58 @@
     Game.prototype.mouseReleased = function(x,y) {
       if (pressed)
       {
+        console.log(x,y);
+        if (!game.menuMode) {         
         //game.menumode false|true
-        if (!game.over) {
-          if (game.current != null && game.start != null && (
-              (game.current.id != game.start &&
-              game.getObject(game.start).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)) ||
-              (game.end != null && game.current.id == game.start &&
-              game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2))
-             ))
-          {
-            if (game.current.id == game.start &&
-               game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)
-               )
+          if (game.mousetime != null) {
+            clearTimeout(game.mousetime);
+            game.mousetime = null;
+          }
+          if (!game.over) {
+            if (game.current != null && game.start != null && (
+                (game.current.id != game.start &&
+                game.getObject(game.start).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)) ||
+                (game.end != null && game.current.id == game.start &&
+                game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2))
+               ))
             {
-              game.current = game.getObject(game.end);
+              if (game.current.id == game.start &&
+                 game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)
+                 )
+              {
+                game.current = game.getObject(game.end);
+              }
+              if (game.order.indexOf(game.current.id) < 0) {
+                game.order.push(game.current.id);
+              }
+              game.current.active = false;
+              game.current.visible = false;
+              if (game.current.events != null) {
+                game.current.getEvent();
+              }
+              if (game.current.id == game.end) {
+                game.over = true;
+              }
+            } else if (game.current != null && game.current.id == game.start &&
+                       game.getObject(game.start).pointHits(game.current.ox+game.current.w/2, game.current.oy+game.current.h/2)
+                      )
+            {
+              if (game.order.indexOf(game.current.id) < 0) {
+                game.order.push(game.current.id);
+              }
+              if (game.current.events != null) {
+                game.current.getEvent();
+              }
+            } else if (game.current != null)
+            {
+              game.current.x = game.current.ox;
+              game.current.y = game.current.oy;
             }
-            if (game.order.indexOf(game.current.id) < 0) {
-              game.order.push(game.current.id);
-            }
-            game.current.active = false;
-            game.current.visible = false;
-            if (game.current.events != null) {
-              game.current.getEvent();
-            }
-            if (game.current.id == game.end) {
-              game.over = true;
-            }
-          } else if (game.current != null && game.current.id == game.start &&
-                     game.getObject(game.start).pointHits(game.current.ox+game.current.w/2, game.current.oy+game.current.h/2)
-                    )
-          {
-            if (game.order.indexOf(game.current.id) < 0) {
-              game.order.push(game.current.id);
-            }
-            if (game.current.events != null) {
-              game.current.getEvent();
-            }
-          } else if (game.current != null)
-          {
-            game.current.x = game.current.ox;
-            game.current.y = game.current.oy;
+          } else {
+
           }
         } else {
-
+          //M E N U M O D E
         }
         px = 0;
         py = 0;
@@ -456,7 +473,7 @@
         }
       }
       game.over = false;
-      if ('ontouchstart' in window)
+      /*if ('ontouchstart' in window)
       {
         console.log('using touch');
         canvas.addEventListener('touchstart',
@@ -507,10 +524,10 @@
         game.mouseReleased(eve.pageX/canvas.width,
           eve.pageY/canvas.width);
       },
-      false);
+      false);*/
 
       update = true;
-      requestAnimationFrame(function() { game.updateGraphics(); });
+      //requestAnimationFrame(function() { game.updateGraphics(); });
     };
     /***/
     Game.prototype.updateGraphics = function() {
@@ -724,13 +741,17 @@
         }
       }
     };
+    Game.prototype.showMenu = function() {
+      game.menuMode = true;
+      update = true;
+    }
     /**
     @method draw
     */
     Game.prototype.draw = function() {
       var cw = canvas.width;
       var ch = canvas.height;
-      ctx.fillStyle = '#eee';
+      ctx.fillStyle = '#f8faff';
       ctx.fillRect(0,0,cw,ch);
       ctx.fillStyle = '#000';
       var fts = Math.round(0.035*cw);
@@ -739,8 +760,8 @@
       var obj = null;
       if (game.over)
       {
-        ctx.fillText(''+atob(game.title),0.02*cw,(0.01*cw+fts)*1);
-        ctx.fillText('statistics:',0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,(0.01*ch+fts)*1);
+        ctx.fillText('statistics:',0.02*cw,(0.01*ch+fts)*2);
         var missed = objects.length - game.order.length;
         if (missed > 0)
         {
@@ -763,7 +784,7 @@
           }
           //hasMissed
           for (var j = 0; j < ctext.length; j++) {
-            ctx.fillText(ctext[j],0.02*cw,(0.01*cw+fts)*(4+j));
+            ctx.fillText(ctext[j],0.02*cw,(0.01*ch+fts)*(4+j));
           }
         } else {
           for (var i = 0; i < game.order.length; i++) {
@@ -774,13 +795,14 @@
             } else {
               ctx.fillStyle = '#c00';
             }
-            ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(3+i));
+            ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*ch+fts)*(3+i));
           }
           //isSmaller
         }
       } else {
-        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
-        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        //game play
+        ctx.fillText(''+atob(game.title),0.02*cw,ch/3*2+0.01*ch+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,ch/3*2+(0.01*ch+fts)*2);
         //begin of btx context
         ctx.lineWidth = 0.025 * cw;
         for (var i = 0; i < objects.length; i++)
@@ -820,20 +842,27 @@
         ctx.fillStyle = '#000';
         var fts = Math.round(0.035*cw);
         ctx.font = fts+'px Sans-Serif';
-        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
-        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,ch/3*2+0.01*ch+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,ch/3*2+(0.01*ch+fts)*2);
         if (game.current != null) {
-          ctx.fillText(''+game.current.getText(),0.02*cw,(0.01*cw+fts)*3);
+          ctx.fillText(''+game.current.getText(),0.02*cw,ch/3*2+(0.01*ch+fts)*3);
         } else if (game.order.length > 0) {
           var j = 0;
           for (var i = game.order.length - 1; i >= (game.order.length > 2 ? game.order.length-3 : 0); i--) {
             ctx.fillText(''+game.getObject(game.order[i]).getText(),0.02*cw,
-                    (0.01*cw+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
+                   ch/3*2+(0.01*ch+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
             j++;
           }
           if (game.currentText!= null) {
-            ctx.fillText(''+game.currentText,0.02*cw,(0.01*cw+fts)*6.25);
+            ctx.fillText(''+game.currentText,0.02*cw,ch/3*2+(0.01*ch+fts)*6.25);
           }
+        }
+        //menumode
+        if (game.menuMode) {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(0,0,cw, ch);
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillRect(cw/2,0,cw/2, ch);
         }
       }
     };
@@ -1279,33 +1308,6 @@
       editor.saveGame();
     };
     /**
-    an editor method
-    @method setStartEnd
-    */
-    editor.setStartEnd = function() {
-      if (editor.currentObject != null) {
-        return;
-      }
-      var _id = editor.currentObject.id;
-      if (editor.mode=='setstart') {
-        game.start = _id;
-        obj.active = true;
-        obj.visible = true;
-        if (game.start == game.end) {
-          game.end=null;
-        }
-        editor.mode = '';
-      }
-      if (editor.mode=='setend') {
-        game.end = _id;
-        if (game.start == game.end) {
-          game.start=null;
-        }
-        editor.mode = '';
-      }
-      editor.saveGame();
-    };
-    /**
     @method saveGame
     */
     editor.saveGame = function() {
@@ -1364,6 +1366,7 @@
       editor.saveGame();
       editor.oldGame = game;
       //new game instance
+      /*
       game = editor.loadGame();
       win.canvas = getElement('canvas');
       if (canvas == null) {
@@ -1377,7 +1380,7 @@
       w > 420 ? w = 420: w = w;
       //replace this once if everything will be canvas based including the editor
       canvas.width = w < h ? w : h;
-      canvas.height = w < h ? w : h;
+      canvas.height = h;
       canvas.style.width = canvas.width+'px';
       canvas.style.height = canvas.height+'px';
       win.ctx = canvas.getContext('2d');
@@ -1385,10 +1388,13 @@
       canvas.style.left=0;
       canvas.style.top=0;
       canvas.style.background='rgba(255,255,255,0.75)';
-      getElement('playbutton').value='stop';
-      getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
+      //getElement('playbutton').value='stop';
+      //getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
       body.appendChild(canvas);
+      */
       game.init();
+      gmode = 'game';
+      update = true;
     };
     /**
     stop the play test
@@ -1423,9 +1429,7 @@
       {
         for (var j = 0; j < 4; j++)
         {
-          ele = getElement('o_'+i+'_'+j);
-          ele.className = 'grid-element';
-          game.objects.push(new GameObject(ele.id, null) );
+          game.objects.push(new GameObject('o_'+i+'_'+j, null) );
         }
       }
       getElement('output').innerHTML = '';
@@ -1867,10 +1871,12 @@
     
     };
     /**
+    an editor method
+    might save the game
     @method setEvent
     */
-    editor.setEvent = function(id) {
-      var obj = game.getObject(id);
+    editor.setEvent = function() {
+      var obj = editor.currentObject;
       var code = prompt('add some event code: showObject, hideObject, showText', obj.event==null?'':atob(obj.event) );
       //editor.showPrompt(obj);
       if (code != '')
@@ -1881,38 +1887,53 @@
       }
     };
     /**
-    @method setEnd
+    an editor method
+    saves the game
+    @method setStart
     */
     editor.setStart = function() {
       if (editor.currentObject == null)
       {
-        alert('Select an object first.');
+        //alert('Select an object first.');
         menuMode = false;
         update = true;
         return;
       }
       //alert('The next click will set the start object.');
-      editor.mode='setstart';
-      editor.setText(editor.currentObject.id);
+      game.start = editor.currentObject.id;
+      editor.currentObject.active = true;
+      editor.currentObject.visible = true;
+      if (game.start == game.end) {
+        game.end=null;
+      }
       menuMode = false;
       update = true;
+      editor.saveGame();
     };
     /**
+    an editor method
+    savea the game
     @method setEnd
     */
     editor.setEnd = function() {
       if (editor.currentObject == null)
       {
-        alert('Select an object first.');
+        //alert('Select an object first.');
         menuMode = false;
         update = true;
         return;
       }
-      //alert('The next click will set the end object.');
-      editor.mode='setend';
-      editor.setText(editor.currentObject.id);
+      game.end = editor.currentObject.id;
+      if (game.start == game.end) {
+        var obj = editor.game.getObject(game.start);
+        obj.active = false;
+        obj.visible = false;
+        game.start = null;
+      }
+      editor.mode = '';
       menuMode = false;
       update = true;
+      editor.saveGame();
     };
     var keyup = function(eve) {
       if (gmode == 'editor') {
@@ -2020,7 +2041,8 @@
         ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.fillRect(cw/2,0,cw/2,ch);
         ctx.fillStyle = '#000';
-        var h = fts * 1.5;
+        ch = canvas.height;
+        var h = ch / 25;
         for (var i = 0; i < editor.buttonLabels.length; i++) {
           /*if (editor.buttonLabels[i] instanceof Array) {
             for (var j = 0; j < editor.buttonLabels[i].length; j++) {
@@ -2031,40 +2053,46 @@
           } else {*/
             ctx.fillText(editor.buttonLabels[i].text, cw / 2 + 0.03 * cw, h);
             ctx.fillRect(cw / 2 + 0.025 * cw, h + fts * 0.1, cw / 2 - 0.05 * cw, 1);
-            h += fts * 1.5;
+            h += ch / 25;
           //}
         }
       }
       //console.log('editor.draw->'+objects.length);
       if (editor.dialogMethod != null) {
-        
-        ctx.fillStyle = 'rgba(25,25,25,0.5)';
-        ctx.fillRect(0,0,cw,ch);
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-        ctx.fillRect(0,0,cw,ch/2);
-        ctx.fillStyle = '#000';
-        ctx.fillRect(fts * 0.2, fts * 1.5, cw-fts * 0.4,fts * 1.5);
-        var text = 'bla bla dialog';
-        switch (editor.dialogMethod) {
-          case 'setOrder':
-          text = editor.inputs.order.text;
-          break;
-          case 'setTitle':
-          text = editor.inputs.title.text;
-          break;
-          case 'setQuest':
-          text = editor.inputs.quest.text;
-          break;
-          case 'setText':
-          text = editor.inputs.objecttext.text;
-          break;
-          default:
-          break;
+        if (editor.dialogMethod == 'events') {
+          ctx.fillStyle = 'rgba(25,25,25,0.5)';
+          ctx.fillRect(0,0,cw,ch);
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillRect(0,0,cw,ch);
+        } else {
+          ctx.fillStyle = 'rgba(25,25,25,0.5)';
+          ctx.fillRect(0,0,cw,ch);
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillRect(0,0,cw,ch/2);
+          ctx.fillStyle = '#000';
+          ctx.fillRect(fts * 0.2, fts * 1.5, cw-fts * 0.4,fts * 1.5);
+          var text = 'bla bla dialog';
+          switch (editor.dialogMethod) {
+            case 'setOrder':
+            text = editor.inputs.order.text;
+            break;
+            case 'setTitle':
+            text = editor.inputs.title.text;
+            break;
+            case 'setQuest':
+            text = editor.inputs.quest.text;
+            break;
+            case 'setText':
+            text = editor.inputs.objecttext.text;
+            break;
+            default:
+            break;
+          }
+          ctx.fillText(text, fts * 0.2, fts * 1.15);
+          
+          ctx.fillStyle = '#fff';
+          ctx.fillText(area.value, fts * 0.3, fts * 2.65);
         }
-        ctx.fillText(text, fts * 0.2, fts * 1.15);
-        
-        ctx.fillStyle = '#fff';
-        ctx.fillText(area.value, fts * 0.3, fts * 2.65);
       }
     };
     /**
@@ -2120,11 +2148,6 @@
               }
             , 1000);
           }
-          /*
-          if (!editor.objectMode)
-          {
-            editor.currentObject = new GameObject(editor.createUid(), px, py);
-          }*/
         }
         update = true;
       }
@@ -2211,7 +2234,7 @@
             //edit object if is Hit
             //object text and order edit
             console.log(x+' '+y+'~'+game.objects.length);
-            var yo = (y - 0.125)* canvas.height / bufferImg.height;
+            var yo = (y - 0.125) * canvas.height / bufferImg.height;
             var obj = null;
             for (var i = 0; i < game.objects.length; i++)
             {
@@ -2238,20 +2261,20 @@
             mouseTimer = null;
           } else {
             //menu here
-            var fts = 0.035;
-            var h = 0;//fts * 1.2;
+            var fts = 0.039;
+            var h = 0.001;//fts * 1.2;
             //console.log(x,y,editor.buttonLabels);
             for (var i = 0; i < editor.buttonLabels.length; i++)
             {
               //missing array here!
-              console.log((h)+', '+y+', '+(h + fts * 1.2));
-              if (x>0.5 && y > h  && y < (h + fts * 1.2))
+              console.log((h)+', '+y+', '+(h + fts));
+              if (x > 0.5 && y > h && y < (h + fts))
               {
-                console.log(editor.buttonLabels[i]);
+                console.log('clicked menu ->'+editor.buttonLabels[i]);
                 editor[editor.buttonLabels[i].onclick]();
                 //menuMode = false;
               }
-              h += fts * 1.2;
+              h += 1 / 25;
             }
             //menu ends
             //menuMode = false;
@@ -2332,7 +2355,7 @@
       var h = window.innerHeight;
       //test
       w > 420 ? w = 420: w = w;
-      h > 560 ? h = 560: h = h;
+      //h > 560 ? h = 560: h = h;
       //replace this once if everything will be canvas based including the editor
       canvas.width = w;//w < h ? w : h;
       canvas.height = h;//w < h ? w : h;
