@@ -85,16 +85,16 @@
  -->
  <!--
  BUGS:
- game.order must be reintialized after one play
- adding to order only once and NOT is if a object is only clicked(except the start object)
+ game.order must be reintialized after one play ??? TEST
+ adding object.order to order only once (except the start object) ??? TEST
  TODOS:
- -> find a way to edit the evaluation tool, dependicies and the reporting output
-    2 smaler 1 -> you made something in the wrong order
-    2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
-    2 missed -> you did not do something (like leaving without key)
-    2. define and detect cases -> show message - may loop to begining (rebirth after death)
+ make events' input cnavas based
+ make dependencies' input canvas based
 
+ WORKING ON
  make the complete tool canvas based
+ 
+ FUTURE TODOS
  build in uidcounter
  enable levels (transform game to level)
  enable level to level methods -> what will be the advanced features?
@@ -102,7 +102,13 @@
  build in mediamanager
  images, audios, translator
  object sizing and position
+ 
  DONE
+ fixed -> find a way to edit the evaluation tool, dependicies and the reporting output
+    2 smaler 1 -> you made something in the wrong order
+    2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
+    2 missed -> you did not do something (like leaving without key)
+    2. define and detect cases -> show message - may loop to begining (rebirth after death REQUIRES LEVEL)
  fixed evaluation on game.over for cases isSmaller and hasMissed
  fixed evaluation 1. game.over message and statistic evaluation
  fixed what to reveal next with showEvent code -> showObject, hideObject, showText(a message)
