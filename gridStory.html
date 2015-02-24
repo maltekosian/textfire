@@ -419,7 +419,7 @@
       if (pressed)
       {
         console.log(x,y);
-        if (!game.menuMode) {         
+        if (!game.menuMode) {
         //game.menumode false|true
           if (game.mousetime != null) {
             clearTimeout(game.mousetime);
@@ -1149,7 +1149,7 @@
       {
         return;
       }
-      area.value = editor.currentObject.order;      
+      area.value = editor.currentObject.order;
       editor.inputs.order.text = 'Type in a value between 1 to '+(game.objects.length)+' or leave as it is.';
       editor.dialogMethod = 'setOrder';
       area.focus();
@@ -1236,19 +1236,19 @@
       }
       //
       editor.dialogMethod = 'setText';
-      area.value = editor.currentObject.getText();
+      area.value = editor.currentObject.getText() != null ? editor.currentObject.getText() : '';
       area.focus();
       update = true;
     };
     /**
     an editor method
-    
+
     stores the game if store is available
     if id and text is set this is an initial call
     otherwise it is setting the text
     if id is null and currentObject not set the text of the
     currentObject
-    
+
     @method setText
     */
     editor.setText = function() {
@@ -1283,12 +1283,12 @@
         return;
       }
       var obj=game.getObject(_id);
-      
+
       obj.setText(_text);
       if (game.start == null)
       {
         game.start =_id;
-      } 
+      }
       editor.saveGame();
     };
     /**
@@ -1840,19 +1840,24 @@
     @method showEvents
     */
     editor.showEvents = function() {
-    
+      if (editor.currentObject == null)
+      {
+        return;
+      }
+      editor.dialogMethod = 'events';
+      update = true;
     };
     /**
     @method editEvent
     */
     editor.editEvent = function() {
-    
+
     };
     /**
     @method addEvent
     */
     editor.addEvent = function() {
-    
+
     };
     /**
     an editor method
@@ -2048,6 +2053,24 @@
           ctx.fillRect(0,0,cw,ch);
           ctx.fillStyle = 'rgba(255,255,255,0.85)';
           ctx.fillRect(0,0,cw,ch);
+          ctx.fillStyle = '#000';
+          ctx.fillText(editor.inputs.event.text, fts * 0.2, fts * 1.15);
+          var events = editor.currentObject.events;
+          for (var i = 0; i < events.length; i++)
+          {
+            ctx.fillText(events[i].method, fts * 0.3, fts * 2.65 + (fts * 2.65) * i);
+            for (var j = 0; j < events[i].values.length; j++)
+            {
+              if (events[i].method == 'showText')
+              {
+                ctx.fillText(atob(events[i].values[j]), fts* 0.3 + j * cw * 0.3, fts * 2.65 + fts * 1.325 + (fts * 2.65) * i);
+              } else {
+                ctx.fillText(events[i].values[j], fts* 0.3 + j * cw * 0.3, fts * 2.65 + fts * 1.325 + (fts * 2.65) * i);
+              }
+            }
+          }
+          ctx.fillText('add event', fts * 0.2, fts * 0.5 + fts * 2.65 + (fts * 2.65) * events.length);
+
         } else {
           ctx.fillStyle = 'rgba(25,25,25,0.5)';
           ctx.fillRect(0,0,cw,ch);
@@ -2073,7 +2096,7 @@
             break;
           }
           ctx.fillText(text, fts * 0.2, fts * 1.15);
-          
+
           ctx.fillStyle = '#fff';
           ctx.fillText(area.value, fts * 0.3, fts * 2.65);
         }
@@ -2469,9 +2492,9 @@
       editor.inputs = {};
       editor.inputs.title = {text:'Edit the title.',onclick:'showTitleDialog',pos:0.04};
       editor.inputs.quest = {text:'Edit the quest of the level.',onclick:'showQuestDialog',pos:0.08};
-      editor.inputs.objecttext = {text:'Current object text.',onclick:'showTextDialog',pos:0.91};
-      editor.inputs.order = {text:'Order number:',onclick:'showOrderDialog',pos:0.95};
-      editor.inputs.event = {text:'Edit or add events.',onclick:'showEvents',pos:0.99};
+      editor.inputs.objecttext = {text:'Current object text.',onclick:'showTextDialog',pos:0.905};
+      editor.inputs.order = {text:'Order number:',onclick:'showOrderDialog',pos:0.945};
+      editor.inputs.event = {text:'Edit or add events.',onclick:'showEvents',pos:0.985};
 
       for (var i = 0; i < game.objects.length; i++)
       {
