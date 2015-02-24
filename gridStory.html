@@ -87,10 +87,13 @@
  BUGS:
 
  TODOS:
- -> find a way to edit the evaluation tool, dependicies and the reporting output
-    2 smaler 1 -> you made something in the wrong order
+ make events' input canvas based
+ make dependencies' input canvas based
 
+ WORKING ON
  make the complete tool canvas based
+
+ FUTURE TODOS
  build in uidcounter
  enable levels (transform game to level)
  enable level to level methods -> what will be the advanced features?
@@ -98,9 +101,15 @@
  build in mediamanager
  images, audios, translator
  object sizing and position
+
  DONE
- ?FIX? game.order must be reintialized after one play
- ?FIX? adding to order only once and NOT is if a object is only clicked(except the start object)
+ fixed -> find a way to edit the evaluation tool, dependicies and the reporting output
+    2 smaler 1 -> you made something in the wrong order
+    2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
+    2 missed -> you did not do something (like leaving without key)
+    2. define and detect cases -> show message - may loop to begining (rebirth after death REQUIRES LEVEL)
+ ?FIX? game.order must be reintialized after one play ??? TEST
+ ?FIX? adding to order only once and NOT is if a object is only clicked(except the start object) ??? TEST
  fixed 2 out of 16 -> the length is way to short  (you left to early look for missed definitions)
  fixed 2 missed -> you did not do something (like leaving without key)
  fixed 2. define and detect cases -> show message - may loop to begining (rebirth after death)
@@ -261,6 +270,8 @@
     //so the quest will be validated in the end of the level/game
     Game.prototype.quest = null;
     Game.prototype.over = false;
+    Game.prototype.menuMode = false;
+    Game.prototype.mousetime = null;
     /**
     @method getObject
     @param id the id of the object
@@ -290,17 +301,36 @@
       //game.currentText = null;
     };
     /**
-    hide the Object complete on visible false
-    otherwise it is deactivated
+    hide the Object complete
+    it is deactivated and invisble
     @method hideObject
     @param id the id of the object
-    @param visible
     */
-    Game.prototype.hideObject = function(id,visible) {
+    Game.prototype.hideObject = function(id) {
       var obj = this.getObject(id);
-      obj.visible = visible;
+      obj.visible = false;
       obj.active = false;
       //game.currentText = null;
+    };
+    /**
+    make the object visible
+    the object will stay active or deactivated
+    @method makeVisible
+    @param id the id of the object
+    */
+    Game.prototype.makeVisible = function(id) {
+      var obj = this.getObject(id);
+      obj.visible = true;
+    };
+    /**
+    the object is invisible
+    but it will stay active or deactivated
+    @method makeInvisible
+    @param id the id of the object
+    */
+    Game.prototype.makeInvisible = function(id) {
+      var obj = this.getObject(id);
+      obj.visible = true;
     };
     /**
     display the given text
@@ -339,13 +369,15 @@
     @param y the y coordinate in 0 to 1 .
     */
     Game.prototype.mousePressed = function(x,y) {
+      console.log(pressed);
       if (!pressed)
       {
         pressed = true;
         var obj = null;
+        var yo = y * canvas.height / canvas.width;
         for (var i = 0; i < game.objects.length; i++) {
           obj = game.objects[i];
-          if (obj.pointHits(x,y) && obj.active) {
+          if (obj.pointHits(x,yo) && obj.active) {
             game.current = obj;
           }
         }
@@ -353,6 +385,9 @@
         py = y;
         mx = x;
         my = y;
+        if (game.current == null) {
+          this.mousetime = setTimeout(function() { game.showMenu(); }, 1000);
+        }
         update = true;
       }
     };
@@ -367,8 +402,9 @@
       {
         if (game.current != null)
         {
+          var yo = y * canvas.height / canvas.width;
           game.current.x += x-game.current.x;
-          game.current.y += y-game.current.y;
+          game.current.y += yo-game.current.y;
           update = true;
         }
       }
@@ -382,49 +418,58 @@
     Game.prototype.mouseReleased = function(x,y) {
       if (pressed)
       {
+        console.log(x,y);
+        if (!game.menuMode) {
         //game.menumode false|true
-        if (!game.over) {
-          if (game.current != null && game.start != null && (
-              (game.current.id != game.start &&
-              game.getObject(game.start).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)) ||
-              (game.end != null && game.current.id == game.start &&
-              game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2))
-             ))
-          {
-            if (game.current.id == game.start &&
-               game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)
-               )
+          if (game.mousetime != null) {
+            clearTimeout(game.mousetime);
+            game.mousetime = null;
+          }
+          if (!game.over) {
+            if (game.current != null && game.start != null && (
+                (game.current.id != game.start &&
+                game.getObject(game.start).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)) ||
+                (game.end != null && game.current.id == game.start &&
+                game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2))
+               ))
             {
-              game.current = game.getObject(game.end);
+              if (game.current.id == game.start &&
+                 game.getObject(game.end).pointHits(game.current.x+game.current.w/2, game.current.y+game.current.h/2)
+                 )
+              {
+                game.current = game.getObject(game.end);
+              }
+              if (game.order.indexOf(game.current.id) < 0) {
+                game.order.push(game.current.id);
+              }
+              game.current.active = false;
+              game.current.visible = false;
+              if (game.current.events != null) {
+                game.current.getEvent();
+              }
+              if (game.current.id == game.end) {
+                game.over = true;
+              }
+            } else if (game.current != null && game.current.id == game.start &&
+                       game.getObject(game.start).pointHits(game.current.ox+game.current.w/2, game.current.oy+game.current.h/2)
+                      )
+            {
+              if (game.order.indexOf(game.current.id) < 0) {
+                game.order.push(game.current.id);
+              }
+              if (game.current.events != null) {
+                game.current.getEvent();
+              }
+            } else if (game.current != null)
+            {
+              game.current.x = game.current.ox;
+              game.current.y = game.current.oy;
             }
-            if (game.order.indexOf(game.current.id) < 0) {
-              game.order.push(game.current.id);
-            }
-            game.current.active = false;
-            game.current.visible = false;
-            if (game.current.events != null) {
-              game.current.getEvent();
-            }
-            if (game.current.id == game.end) {
-              game.over = true;
-            }
-          } else if (game.current != null && game.current.id == game.start &&
-                     game.getObject(game.start).pointHits(game.current.ox+game.current.w/2, game.current.oy+game.current.h/2)
-                    )
-          {
-            if (game.order.indexOf(game.current.id) < 0) {
-              game.order.push(game.current.id);
-            }
-            if (game.current.events != null) {
-              game.current.getEvent();
-            }
-          } else if (game.current != null)
-          {
-            game.current.x = game.current.ox;
-            game.current.y = game.current.oy;
+          } else {
+
           }
         } else {
-
+          //M E N U M O D E
         }
         px = 0;
         py = 0;
@@ -456,7 +501,7 @@
         }
       }
       game.over = false;
-      if ('ontouchstart' in window)
+      /*if ('ontouchstart' in window)
       {
         console.log('using touch');
         canvas.addEventListener('touchstart',
@@ -507,10 +552,10 @@
         game.mouseReleased(eve.pageX/canvas.width,
           eve.pageY/canvas.width);
       },
-      false);
+      false);*/
 
       update = true;
-      requestAnimationFrame(function() { game.updateGraphics(); });
+      //requestAnimationFrame(function() { game.updateGraphics(); });
     };
     /***/
     Game.prototype.updateGraphics = function() {
@@ -724,13 +769,17 @@
         }
       }
     };
+    Game.prototype.showMenu = function() {
+      game.menuMode = true;
+      update = true;
+    }
     /**
     @method draw
     */
     Game.prototype.draw = function() {
       var cw = canvas.width;
       var ch = canvas.height;
-      ctx.fillStyle = '#eee';
+      ctx.fillStyle = '#f8faff';
       ctx.fillRect(0,0,cw,ch);
       ctx.fillStyle = '#000';
       var fts = Math.round(0.035*cw);
@@ -739,8 +788,8 @@
       var obj = null;
       if (game.over)
       {
-        ctx.fillText(''+atob(game.title),0.02*cw,(0.01*cw+fts)*1);
-        ctx.fillText('statistics:',0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,(0.01*ch+fts)*1);
+        ctx.fillText('statistics:',0.02*cw,(0.01*ch+fts)*2);
         var missed = objects.length - game.order.length;
         if (missed > 0)
         {
@@ -763,7 +812,7 @@
           }
           //hasMissed
           for (var j = 0; j < ctext.length; j++) {
-            ctx.fillText(ctext[j],0.02*cw,(0.01*cw+fts)*(4+j));
+            ctx.fillText(ctext[j],0.02*cw,(0.01*ch+fts)*(4+j));
           }
         } else {
           for (var i = 0; i < game.order.length; i++) {
@@ -774,13 +823,14 @@
             } else {
               ctx.fillStyle = '#c00';
             }
-            ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*cw+fts)*(3+i));
+            ctx.fillText(obj.id+' '+obj.order,0.02*cw,(0.01*ch+fts)*(3+i));
           }
           //isSmaller
         }
       } else {
-        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
-        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        //game play
+        ctx.fillText(''+atob(game.title),0.02*cw,ch/3*2+0.01*ch+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,ch/3*2+(0.01*ch+fts)*2);
         //begin of btx context
         ctx.lineWidth = 0.025 * cw;
         for (var i = 0; i < objects.length; i++)
@@ -820,20 +870,27 @@
         ctx.fillStyle = '#000';
         var fts = Math.round(0.035*cw);
         ctx.font = fts+'px Sans-Serif';
-        ctx.fillText(''+atob(game.title),0.02*cw,0.01*cw+fts);
-        ctx.fillText(''+atob(game.quest),0.02*cw,(0.01*cw+fts)*2);
+        ctx.fillText(''+atob(game.title),0.02*cw,ch/3*2+0.01*ch+fts);
+        ctx.fillText(''+atob(game.quest),0.02*cw,ch/3*2+(0.01*ch+fts)*2);
         if (game.current != null) {
-          ctx.fillText(''+game.current.getText(),0.02*cw,(0.01*cw+fts)*3);
+          ctx.fillText(''+game.current.getText(),0.02*cw,ch/3*2+(0.01*ch+fts)*3);
         } else if (game.order.length > 0) {
           var j = 0;
           for (var i = game.order.length - 1; i >= (game.order.length > 2 ? game.order.length-3 : 0); i--) {
             ctx.fillText(''+game.getObject(game.order[i]).getText(),0.02*cw,
-                    (0.01*cw+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
+                   ch/3*2+(0.01*ch+fts)*((game.order.length > 2 ? 3 : game.order.length)+(2-j)));
             j++;
           }
           if (game.currentText!= null) {
-            ctx.fillText(''+game.currentText,0.02*cw,(0.01*cw+fts)*6.25);
+            ctx.fillText(''+game.currentText,0.02*cw,ch/3*2+(0.01*ch+fts)*6.25);
           }
+        }
+        //menumode
+        if (game.menuMode) {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(0,0,cw, ch);
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillRect(cw/2,0,cw/2, ch);
         }
       }
     };
@@ -853,50 +910,6 @@
     var mouseTimer = null;
     var canvas = null;
     var ctx = null;
-    /*
-    short for game.showObject (Game.prototype.showObject)
-    a scriptable function
-    @method showObject
-    @param id
-    /
-    win.showObject = function (id) {
-      game.showObject(id);
-    }
-    /
-    short for game.hideObject (Game.prototype.hideObject)
-    a scriptable function
-    @method hideObject
-    @param id
-    /
-    win.hideObject = function (id) {
-      game.hideObject(id);
-    }
-    /
-    short for game.showText (Game.prototype.showText)
-    a scriptable function
-    @method showText
-    @param id
-    /
-    win.showText = function (text) {
-      game.showText(text);
-    }
-    /
-    short for game.isSmaller
-    @method isSmaller
-    @param a
-    @param b
-    /
-    win.isSmaller = function (a, b) {
-      game.isSmaller(a, b);
-    }
-    /
-    short for game.hasMissed
-    @method hasMissed
-    @param a
-    /
-    win.hasMissed = function (a) {
-      game.hasMissed(a);
-    }*/
     /**
     short for document.getElement
     @method getElement
@@ -1125,38 +1138,50 @@
     editor.openButtonArray = null;
     editor.buttonLabels = [{text:'set start',onclick:'setStart'},{text:'set end',onclick:'setEnd'},{text:'new game',onclick:'newGame'},{text:'play',onclick:'playGame'},{text:'dependencies',onclick:'showDependenciesPrompt'},{text:'close menu',onclick:'closeMenu'}];
     /**
-    calls a prompt
-    sets the order for the specified object by id
+    an editor method
+    calls a dialog prompt
+    will set the order for the specified object by id
     and updates the appearence of the editor's output
-    @method setOrder
+    @method showOrderDialog
     */
-    editor.setOrder = function(_obj_id) {
-      if (_obj_id == null && editor.currentObject != null)
-      {
-        _obj_id = editor.currentObject.id;
-      } else if (_obj_id == null && editor.currentObject == null)
+    editor.showOrderDialog = function() {
+      if (editor.currentObject == null)
       {
         return;
       }
-      var obj = game.getObject(_obj_id);
-      var input = prompt('Type in a value between 1 to '+(game.objects.length)+' or leave the input as it is', obj.order);
-      try
+      area.value = editor.currentObject.order;
+      editor.inputs.order.text = 'Type in a value between 1 to '+(game.objects.length)+' or leave as it is.';
+      editor.dialogMethod = 'setOrder';
+      area.focus();
+      update = true;
+    };
+    /**
+    an editor method
+    sets the order value of the current selected object
+    @method setOrder
+    */
+    editor.setOrder = function() {
+      var obj = editor.currentObject;
+      var input = area.value;
+      /*try
       {
         input = parseInt(input);
       }
       catch (ex)
       {
-        alert ('Choose a valid value, please!')
+        area.value = 'Choose a valid value, please!';
+        update = true;
         return;
-      }
-      if (input < 0 || input > game.objects.length) {
-        alert ('Choose a valid value, please!');
+      }*/
+      if (isNaN(input) || input < 0 || input > game.objects.length) {
+        area.value = 'Choose a valid value, please!';
+        update = true;
         return;
       }
       obj.order = input;
-      //var ele = getElement('ord_'+obj.id);
-      //ele.innerHTML = '';
-      //ele.appendChild(createTextNode(obj.order));
+      editor.dialogMethod = null;
+      update = true;
+      area.blur();
       editor.saveGame();
     };
     /**
@@ -1200,6 +1225,42 @@
       console.log(input,obj.order, code,atob(obj.event));
       editor.saveGame();
       getElement('prompt').style.display = 'none';
+    };
+    /**
+    an editor method
+    @method showTextDialog
+    */
+    editor.showTextDialog = function() {
+      if (editor.currentObject == null) {
+        return;
+      }
+      //
+      editor.dialogMethod = 'setText';
+      area.value = editor.currentObject.getText() != null ? editor.currentObject.getText() : '';
+      area.focus();
+      update = true;
+    };
+    /**
+    an editor method
+
+    stores the game if store is available
+    if id and text is set this is an initial call
+    otherwise it is setting the text
+    if id is null and currentObject not set the text of the
+    currentObject
+
+    @method setText
+    */
+    editor.setText = function() {
+      if (editor.currentObject == null) {
+        return;
+      }
+      editor.currentObject.setText(area.value);
+      console.log('set text for '+editor.currentObject.id+' '+area.value);
+      area.value = '';
+      editor.dialogMethod = null;
+      update = true;
+      editor.saveGame();
     }
     /**
     stores the game if store is available
@@ -1211,7 +1272,7 @@
     @param id id of the object
     @param text the text for the object
     */
-    editor.setText = function(_id,_text){
+    editor.initSetText = function(_id,_text){
       if (_id == null && _text == null && editor.currentObject != null)
       {
         _id = editor.currentObject.id;
@@ -1222,112 +1283,12 @@
         return;
       }
       var obj=game.getObject(_id);
-      if (editor.mode=='setstart') {
-        /*if (getElement('s_'+game.start)!=null) {
-          getElement('s_'+game.start).style.color = '#006';
-          getElement(game.start).className = 'grid-ready';
-        } else if (game.start!=null) {
-          getElement(game.start).className = 'grid-element';
-        }*/
-        game.start = _id;
-        obj.active = true;
-        obj.visible = true;
-        if (game.start == game.end) {
-          game.end=null;
-        }
-        /*getElement(_id).className = 'grid-start';
-        if (getElement('s_'+_id)!=null) {
-          getElement('s_'+_id).style.color = '#0c0';
-        }*/
-        editor.mode = '';
-        return;
-      }
-      if (editor.mode=='setend') {
-        /*if (getElement('s_'+game.end)!=null) {
-          getElement('s_'+game.end).style.color = '#006';
-          getElement(game.end).className = 'grid-ready';
-        } else if (game.end!=null) {
-          getElement(game.end).className = 'grid-element';
-        }*/
-        game.end = _id;
-        if (game.start == game.end) {
-          game.start=null;
-        }
-        /*getElement(_id).className = 'grid-end';
-        if (getElement('s_'+_id)!=null) {
-          getElement('s_'+_id).style.color = '#c00';
-        }*/
-        editor.mode = '';
-        return;
-      }
-      console.log('set text for '+obj.id+' '+_text);
-      if (_text==null) {
-        if (obj.text==null) {
-          _text=prompt('What\'s up next?','');
-        } else {
-          _text=prompt('What\'s up next?',obj.getText());
-        }
-      }
+
       obj.setText(_text);
       if (game.start == null)
       {
         game.start =_id;
-        getElement(_id).className='grid-start';
-      } //else {
-
-      if (_id != game.start && _id != game.end) {
-        //getElement(_id).className='grid-ready';
-      } else if (_id == game.start) {
-        //getElement(_id).className='grid-start';
-      } else if (_id == game.end)
-      {
-        //getElement(_id).className='grid-end';
       }
-
-      //}
-      /*
-      var ele = getElement('output');
-      var ele2 = getElement('s_'+obj.id);
-      if (ele2 == null) {
-        ele2 = createElement('span');
-        ele2.style.display='inline-block';
-        ele2.style.borderBottom='dotted 1px #999';
-        ele2.style.marginBottom = '2px';
-        ele2.setAttribute('id','s_'+obj.id);
-        var span = createElement('span');
-        span.style.cssFloat='left';
-        span.style.marginRight='1px';
-        span.style.display='inline-block';
-        span.style.minWidth='40px';
-        span.style.border = 'solid 1px #999';
-        span.setAttribute('id','ord_'+obj.id);
-        span.setAttribute('onclick','editor.showOrderAndEventsPrompt(\''+obj.id+'\');');
-        span.appendChild(createTextNode(obj.order));
-        ele2.appendChild(span);
-        span = createElement('span');
-        span.setAttribute('id','s_t_'+obj.id);
-        span.setAttribute('onclick', 'editor.showDependenciesPrompt(\''+obj.id+'\');');
-        span.appendChild(createTextNode(_text));
-        ele2.appendChild(span);
-        ele.appendChild(ele2);
-        ele.appendChild(createElement('br'));
-      } else {
-        ele2 = getElement('s_t_'+obj.id);
-        ele2.innerHTML = '';
-        ele2.appendChild(createTextNode(_text));
-        ele2 = getElement('ord_'+obj.id);
-        ele2.innerHTML = '';
-        ele2.appendChild(createTextNode(obj.order));
-      }
-      if (_id == game.start) {
-        ele2.style.color = '#0c0';
-      } else {
-        if (_id == game.end) {
-          ele2.style.color = '#c00';
-        } else {
-          ele2.style.color = '#006';
-        }
-      }*/
       editor.saveGame();
     };
     /**
@@ -1345,8 +1306,8 @@
     */
     editor.setQuest = function() {
      // var text = prompt('Enter the quest of the game.', game.quest==null?'':atob(game.quest));
-      game.quest = btoa(area.value);      
-      //getElement('quest').innerHTML = atob(game.quest);      
+      game.quest = btoa(area.value);
+      //getElement('quest').innerHTML = atob(game.quest);
       area.blur();
       editor.dialogMethod = null;
       update = true;
@@ -1364,9 +1325,9 @@
     /**
     @method setTitle
     */
-    editor.setTitle = function() {      
+    editor.setTitle = function() {
       game.title = btoa(area.value);
-      //getElement('title').innerHTML = atob(game.title);          
+      //getElement('title').innerHTML = atob(game.title);
       area.blur();
       editor.dialogMethod = null;
       update = true;
@@ -1389,6 +1350,7 @@
       editor.saveGame();
       editor.oldGame = game;
       //new game instance
+      /*
       game = editor.loadGame();
       win.canvas = getElement('canvas');
       if (canvas == null) {
@@ -1402,7 +1364,7 @@
       w > 420 ? w = 420: w = w;
       //replace this once if everything will be canvas based including the editor
       canvas.width = w < h ? w : h;
-      canvas.height = w < h ? w : h;
+      canvas.height = h;
       canvas.style.width = canvas.width+'px';
       canvas.style.height = canvas.height+'px';
       win.ctx = canvas.getContext('2d');
@@ -1410,10 +1372,13 @@
       canvas.style.left=0;
       canvas.style.top=0;
       canvas.style.background='rgba(255,255,255,0.75)';
-      getElement('playbutton').value='stop';
-      getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
+      //getElement('playbutton').value='stop';
+      //getElement('playbutton').setAttribute('onclick' , 'editor.stopGame();');
       body.appendChild(canvas);
+      */
       game.init();
+      gmode = 'game';
+      update = true;
     };
     /**
     stop the play test
@@ -1448,9 +1413,7 @@
       {
         for (var j = 0; j < 4; j++)
         {
-          ele = getElement('o_'+i+'_'+j);
-          ele.className = 'grid-element';
-          game.objects.push(new GameObject(ele.id, null) );
+          game.objects.push(new GameObject('o_'+i+'_'+j, null) );
         }
       }
       getElement('output').innerHTML = '';
@@ -1874,10 +1837,35 @@
       getElement('prompt').style.display = 'none';
     };
     /**
+    @method showEvents
+    */
+    editor.showEvents = function() {
+      if (editor.currentObject == null)
+      {
+        return;
+      }
+      editor.dialogMethod = 'events';
+      update = true;
+    };
+    /**
+    @method editEvent
+    */
+    editor.editEvent = function() {
+
+    };
+    /**
+    @method addEvent
+    */
+    editor.addEvent = function() {
+
+    };
+    /**
+    an editor method
+    might save the game
     @method setEvent
     */
-    editor.setEvent = function(id) {
-      var obj = game.getObject(id);
+    editor.setEvent = function() {
+      var obj = editor.currentObject;
       var code = prompt('add some event code: showObject, hideObject, showText', obj.event==null?'':atob(obj.event) );
       //editor.showPrompt(obj);
       if (code != '')
@@ -1888,38 +1876,53 @@
       }
     };
     /**
-    @method setEnd
+    an editor method
+    saves the game
+    @method setStart
     */
     editor.setStart = function() {
       if (editor.currentObject == null)
       {
-        alert('Select an object first.');
+        //alert('Select an object first.');
         menuMode = false;
         update = true;
         return;
       }
       //alert('The next click will set the start object.');
-      editor.mode='setstart';
-      editor.setText(editor.currentObject.id);
+      game.start = editor.currentObject.id;
+      editor.currentObject.active = true;
+      editor.currentObject.visible = true;
+      if (game.start == game.end) {
+        game.end=null;
+      }
       menuMode = false;
       update = true;
+      editor.saveGame();
     };
     /**
+    an editor method
+    savea the game
     @method setEnd
     */
     editor.setEnd = function() {
       if (editor.currentObject == null)
       {
-        alert('Select an object first.');
+        //alert('Select an object first.');
         menuMode = false;
         update = true;
         return;
       }
-      //alert('The next click will set the end object.');
-      editor.mode='setend';
-      editor.setText(editor.currentObject.id);
+      game.end = editor.currentObject.id;
+      if (game.start == game.end) {
+        var obj = editor.game.getObject(game.start);
+        obj.active = false;
+        obj.visible = false;
+        game.start = null;
+      }
+      editor.mode = '';
       menuMode = false;
       update = true;
+      editor.saveGame();
     };
     var keyup = function(eve) {
       if (gmode == 'editor') {
@@ -1968,13 +1971,14 @@
       }*/
       //game or editor
         console.log(ch,ch*0.95);
-        ctx.fillText(''+atob(game.title),0.02*cw,ch*editor.inputs[0].pos);
-        ctx.fillText(''+atob(game.quest),0.02*cw,ch*editor.inputs[1].pos);
+        ctx.fillText(''+atob(game.title),0.02*cw,ch*editor.inputs.title.pos);
+        ctx.fillText(''+atob(game.quest),0.02*cw,ch*editor.inputs.quest.pos);
         if (editor.currentObject != null)
         {
-          ctx.fillText(editor.currentObject.id+':',0.02*cw,ch*editor.inputs[2].pos);
-          ctx.fillText(''+atob(editor.currentObject.text),0.2*cw,ch*editor.inputs[2].pos);
-          ctx.fillText('order: '+editor.currentObject.order,0.02*cw,ch*editor.inputs[3].pos);
+          ctx.fillText(editor.currentObject.id+':',0.02*cw,ch*editor.inputs.objecttext.pos);
+          ctx.fillText(''+atob(editor.currentObject.text),0.2*cw,ch*editor.inputs.objecttext.pos);
+          ctx.fillText('order: '+editor.currentObject.order,0.02*cw,ch*editor.inputs.order.pos);
+          ctx.fillText('events: '+editor.inputs.event.text,0.02*cw,ch*editor.inputs.event.pos);
         }
         //begin of btx context
         btx.lineWidth = 0.025 * cw;
@@ -2026,7 +2030,8 @@
         ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.fillRect(cw/2,0,cw/2,ch);
         ctx.fillStyle = '#000';
-        var h = fts * 1.5;
+        ch = canvas.height;
+        var h = ch / 25;
         for (var i = 0; i < editor.buttonLabels.length; i++) {
           /*if (editor.buttonLabels[i] instanceof Array) {
             for (var j = 0; j < editor.buttonLabels[i].length; j++) {
@@ -2037,27 +2042,71 @@
           } else {*/
             ctx.fillText(editor.buttonLabels[i].text, cw / 2 + 0.03 * cw, h);
             ctx.fillRect(cw / 2 + 0.025 * cw, h + fts * 0.1, cw / 2 - 0.05 * cw, 1);
-            h += fts * 1.5;
+            h += ch / 25;
           //}
         }
       }
       //console.log('editor.draw->'+objects.length);
       if (editor.dialogMethod != null) {
-        ctx.fillStyle = 'rgba(25,25,25,0.5)';
-        ctx.fillRect(0,0,cw,ch);
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-        ctx.fillRect(0,0,cw,ch/2);
-        ctx.fillStyle = '#000';
-        ctx.fillRect(fts * 0.2, fts * 1.5, cw-fts * 0.4,fts * 1.5);
-        ctx.fillStyle = '#fff';
-        ctx.fillText(area.value, fts * 0.3, fts * 2.65);
+        if (editor.dialogMethod == 'events') {
+          ctx.fillStyle = 'rgba(25,25,25,0.5)';
+          ctx.fillRect(0,0,cw,ch);
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillRect(0,0,cw,ch);
+          ctx.fillStyle = '#000';
+          ctx.fillText(editor.inputs.event.text, fts * 0.2, fts * 1.15);
+          var events = editor.currentObject.events;
+          for (var i = 0; i < events.length; i++)
+          {
+            ctx.fillText(events[i].method, fts * 0.3, fts * 2.65 + (fts * 2.65) * i);
+            for (var j = 0; j < events[i].values.length; j++)
+            {
+              if (events[i].method == 'showText')
+              {
+                ctx.fillText(atob(events[i].values[j]), fts* 0.3 + j * cw * 0.3, fts * 2.65 + fts * 1.325 + (fts * 2.65) * i);
+              } else {
+                ctx.fillText(events[i].values[j], fts* 0.3 + j * cw * 0.3, fts * 2.65 + fts * 1.325 + (fts * 2.65) * i);
+              }
+            }
+          }
+          ctx.fillText('add event', fts * 0.2, fts * 0.5 + fts * 2.65 + (fts * 2.65) * events.length);
+
+        } else {
+          ctx.fillStyle = 'rgba(25,25,25,0.5)';
+          ctx.fillRect(0,0,cw,ch);
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
+          ctx.fillRect(0,0,cw,ch/2);
+          ctx.fillStyle = '#000';
+          ctx.fillRect(fts * 0.2, fts * 1.5, cw-fts * 0.4,fts * 1.5);
+          var text = 'bla bla dialog';
+          switch (editor.dialogMethod) {
+            case 'setOrder':
+            text = editor.inputs.order.text;
+            break;
+            case 'setTitle':
+            text = editor.inputs.title.text;
+            break;
+            case 'setQuest':
+            text = editor.inputs.quest.text;
+            break;
+            case 'setText':
+            text = editor.inputs.objecttext.text;
+            break;
+            default:
+            break;
+          }
+          ctx.fillText(text, fts * 0.2, fts * 1.15);
+
+          ctx.fillStyle = '#fff';
+          ctx.fillText(area.value, fts * 0.3, fts * 2.65);
+        }
       }
     };
     /**
     @method keypress
     */
     editor.keypress = function(eve)  {
-    
+
     };
     /**
     @method keyup
@@ -2106,11 +2155,6 @@
               }
             , 1000);
           }
-          /*
-          if (!editor.objectMode)
-          {
-            editor.currentObject = new GameObject(editor.createUid(), px, py);
-          }*/
         }
         update = true;
       }
@@ -2162,6 +2206,12 @@
     editor.mouseReleased = function(x, y) {
       if (pressed)
       {
+        if (editor.dialogMethod != null && editor.dialogMethod != '') {
+          clearTimeout(mouseTimer);
+          mouseTimer = null;
+          //do not know if editor.dialogMethod is always set to null correctly
+          return;
+        }
         if (!menuMode)
         {
           if (mouseTimer != null)
@@ -2177,7 +2227,7 @@
             var cw = canvas.width;
             var fts = 0.035;
             //console.log(editor.inputs,fts);
-            for (var i = 0; i < editor.inputs.length; i++)
+            for (var i in editor.inputs)
             {
               console.log('e.in', fts + editor.inputs[i].pos,y,editor.inputs[i].pos,'puts');
               if (y > (editor.inputs[i].pos - fts) && y < (editor.inputs[i].pos))
@@ -2191,7 +2241,7 @@
             //edit object if is Hit
             //object text and order edit
             console.log(x+' '+y+'~'+game.objects.length);
-            var yo = (y - 0.125)* canvas.height / bufferImg.height;
+            var yo = (y - 0.125) * canvas.height / bufferImg.height;
             var obj = null;
             for (var i = 0; i < game.objects.length; i++)
             {
@@ -2218,20 +2268,20 @@
             mouseTimer = null;
           } else {
             //menu here
-            var fts = 0.035;
-            var h = 0;//fts * 1.2;
+            var fts = 0.039;
+            var h = 0.001;//fts * 1.2;
             //console.log(x,y,editor.buttonLabels);
             for (var i = 0; i < editor.buttonLabels.length; i++)
             {
               //missing array here!
-              console.log((h)+', '+y+', '+(h + fts * 1.2));
-              if (x>0.5 && y > h  && y < (h + fts * 1.2))
+              console.log((h)+', '+y+', '+(h + fts));
+              if (x > 0.5 && y > h && y < (h + fts))
               {
-                console.log(editor.buttonLabels[i]);
+                console.log('clicked menu ->'+editor.buttonLabels[i]);
                 editor[editor.buttonLabels[i].onclick]();
                 //menuMode = false;
               }
-              h += fts * 1.2;
+              h += 1 / 25;
             }
             //menu ends
             //menuMode = false;
@@ -2312,7 +2362,7 @@
       var h = window.innerHeight;
       //test
       w > 420 ? w = 420: w = w;
-      h > 560 ? h = 560: h = h;
+      //h > 560 ? h = 560: h = h;
       //replace this once if everything will be canvas based including the editor
       canvas.width = w;//w < h ? w : h;
       canvas.height = h;//w < h ? w : h;
@@ -2439,25 +2489,26 @@
       //adding invisible textarea
       var ele = null;
 
-      editor.inputs = [];
-      editor.inputs.push({name:'title',text:game.title==null?'click to edit title.':atob(game.title),onclick:'showTitleDialog',pos:0.04});
-      editor.inputs.push({name:'quest',text:game.quest==null?'click and enter quest.':atob(game.quest),onclick:'showQuestDialog',pos:0.08});
-      editor.inputs.push({name:'currentObject',text:'current object text',onclick:'setText',pos:0.92});
-      editor.inputs.push({name:'order',text:'order number',onclick:'showOrderAndEventsPrompt',pos:0.96});
+      editor.inputs = {};
+      editor.inputs.title = {text:'Edit the title.',onclick:'showTitleDialog',pos:0.04};
+      editor.inputs.quest = {text:'Edit the quest of the level.',onclick:'showQuestDialog',pos:0.08};
+      editor.inputs.objecttext = {text:'Current object text.',onclick:'showTextDialog',pos:0.905};
+      editor.inputs.order = {text:'Order number:',onclick:'showOrderDialog',pos:0.945};
+      editor.inputs.event = {text:'Edit or add events.',onclick:'showEvents',pos:0.985};
 
       for (var i = 0; i < game.objects.length; i++)
       {
         var obj = game.objects[i];
         if (obj.text != null && obj.text != '')
         {
-          editor.setText(obj.id, obj.getText());
+          editor.initSetText(obj.id, obj.getText());
         }
       }
       gmode = 'editor';
       //request animation frame
       update = true;
       requestAnimationFrame(function() {updateDraw();} );
-    };    
+    };
 
     win.game = game;
     win.editor = editor;
