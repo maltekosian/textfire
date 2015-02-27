@@ -2054,22 +2054,24 @@
           ctx.fillStyle = 'rgba(255,255,255,0.85)';
           ctx.fillRect(0,0,cw,ch);
           ctx.fillStyle = '#000';
-          ctx.fillText(editor.inputs.event.text, fts * 0.2, fts * 1.15);
+          ctx.fillText(editor.inputs.event.text, fts * 0.2, ch * 0.03);
+          ctx.fillRect(0,ch * 0.035,cw,1)
           var events = editor.currentObject.events;
           for (var i = 0; i < events.length; i++)
           {
-            ctx.fillText(events[i].method, fts * 0.3, fts * 2.65 + (fts * 2.65) * i);
+            ctx.fillText(events[i].method, fts * 0.3, ch * 0.07 + (ch * 0.075) * i);
             for (var j = 0; j < events[i].values.length; j++)
             {
               if (events[i].method == 'showText')
               {
-                ctx.fillText(atob(events[i].values[j]), fts* 0.3 + j * cw * 0.3, fts * 2.65 + fts * 1.325 + (fts * 2.65) * i);
+                ctx.fillText(atob(events[i].values[j]), fts* 0.3 + j * cw * 0.3, ch * 0.1 + (ch * 0.075) * i);
               } else {
-                ctx.fillText(events[i].values[j], fts* 0.3 + j * cw * 0.3, fts * 2.65 + fts * 1.325 + (fts * 2.65) * i);
+                ctx.fillText(events[i].values[j], fts* 0.3 + j * cw * 0.3, ch * 0.1 + (ch * 0.075) * i);
               }
             }
+            ctx.fillRect(0,ch * 0.11 + (ch * 0.075) * i,cw,1)
           }
-          ctx.fillText('add event', fts * 0.2, fts * 0.5 + fts * 2.65 + (fts * 2.65) * events.length);
+          ctx.fillText('add event', fts * 0.2, ch * 0.07 + (ch * 0.075) * events.length);
 
         } else {
           ctx.fillStyle = 'rgba(25,25,25,0.5)';
@@ -2091,6 +2093,12 @@
             break;
             case 'setText':
             text = editor.inputs.objecttext.text;
+            break;
+            case 'editEvent':
+            text = 'edit an event';
+            break;
+            case 'addEvent':
+            text = 'add a new event: showObject(id), hideObject(id), showText(\'a text\')';
             break;
             default:
             break;
@@ -2210,6 +2218,24 @@
           clearTimeout(mouseTimer);
           mouseTimer = null;
           //do not know if editor.dialogMethod is always set to null correctly
+          if (editor.dialogMethod == 'events') {
+            var ch = canvas.height;
+            var events = editor.currentObject.events;
+            for (var i = 0; i < events.length; i++)
+            {
+              if (y > (0.04 + (0.075) * i) && y < (0.11 + (0.075) * i) ) {
+                //11,185,26
+                console.log(y, 'edit', i);
+                editor.dialogMethod = 'editEvent';
+                update = true;  
+              }
+            }
+            if (y > (0.04 + (0.075) * events.length) && y < (0.085 + (0.075) * events.length)) {
+              editor.dialogMethod = 'addEvent';
+              console.log(y, 'addEvent');
+              update = true;
+            } 
+          }
           return;
         }
         if (!menuMode)
@@ -2241,7 +2267,7 @@
             //edit object if is Hit
             //object text and order edit
             console.log(x+' '+y+'~'+game.objects.length);
-            var yo = (y - 0.125) * canvas.height / bufferImg.height;
+            var yo = (y - 0.15) * canvas.height / bufferImg.height;
             var obj = null;
             for (var i = 0; i < game.objects.length; i++)
             {
