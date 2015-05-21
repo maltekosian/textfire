@@ -2267,7 +2267,8 @@
             //edit object if is Hit
             //object text and order edit
             console.log(x+' '+y+'~'+game.objects.length);
-            var yo = (y - 0.15) * canvas.height / bufferImg.height;
+            var yo = (y * canvas.height - (canvas.height-canvas.width)/2 )/ bufferImg.height;
+            alert(yo);
             var obj = null;
             for (var i = 0; i < game.objects.length; i++)
             {
@@ -2543,4 +2544,3 @@
   </script>
  </body>
 </html>
-
