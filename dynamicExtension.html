@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title> new document </title>
+  <meta name="generator" content="dynamicExtension" />
+  <meta name="author" content="malte kosian" />
+  <meta name="keywords" content="dynamicExtension" />
+  <meta name="description" content="dynamic extension method for javascript" />
+  <title>dynamical extend js</title>
+  <style>
+  </style>
+ </head>
+ <body>  
+  <script>
+    var game = {};
+    function addFunction() {
+      var value = document.getElementById('funcName').value;
+      //definition of new function after init method
+      game[value] = new Function(document.getElementById('funcStatement').value); 
+      printFunctions();
+    };
+    function printFunctions() {
+      var output = document.getElementById('output');
+      output.innerHTML = '';
+      for (var key in game) {
+        output.appendChild(document.createTextNode(key));
+        output.appendChild(document.createElement('br'));
+        document.getElementById('funcName').value = key;
+        document.getElementById('funcStatement').value = game[key].toString();
+      }
+    };
+    function callFunction() {
+      //call any method
+      game[document.getElementById('funcName').value]();
+    };
+    function init() {
+      //definition during initialzation
+      game['test'] = function() {alert('test');};
+      printFunctions();
+    };
+  </script>
+  <input id="funcName" type="text" placeholder="the function name" /><br>
+  <textarea id="funcStatement" type="text" placeholder="the function body aka statement" ></textarea><br>
+  <button onclick="addFunction()">add</button><br>
+  <button onclick="callFunction()">call</button><br>
+  available methods:<br>
+  <div id="output"></div>
+  <script>
+    window.onload = function() {
+      setTimeout( init, 100);
+    };
+  </script>
+ </body>
+</html>

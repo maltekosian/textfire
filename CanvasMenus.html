@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>CanvasMenus</title>
+  <style>
+    body {background: #000; margin:0; overflow: hidden;}
+    canvas {background: #f99;}
+  </style>
+ </head>
+ <body>
+  <canvas id="canvas"></canvas>
+  <script>
+    var canvas = document.getElementById('canvas');
+    canvas.width = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
+    canvas.height = canvas.width;
+    canvas.style.width = canvas.width+'px';
+    canvas.style.height = canvas.width+'px';
+    var ctx = canvas.getContext('2d');
+    var drawmethod = [];
+    var buttons = [];
+
+    function showSelect(name, buttons) {
+      //name => value
+      for (var i = 0; i < buttons.length; i++) {
+        //select buttons need a value
+      }
+    };
+
+    function showPrompt(name, elements) {
+      //close
+
+      for (var i = 0; i < elements.length; i++) {
+        //inputs, selects, radio-buttons, (checkboxes) or buttons
+      }
+      //done
+    };
+
+    function showMenu(buttons) {
+      //close
+
+      for (var i = 0; i < buttons.length; i++) {
+      
+      }
+    };
+
+    var update = true;
+
+    function updateDraw() {
+      if (update) {
+        draw();
+      }
+      requestAnimationFrame(function(){ updateDraw(); });
+    };
+
+    function draw() {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0,0, canvas.width, canvas.height);
+      //draw the normal content here
+      ctx.fillStyle = '#000';
+      if (drawmethod.length > 0) {
+        
+        if (drawmethod.indexOf('menu') >= 0) {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(0,0, canvas.width, canvas.height);
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(canvas.width*0.5, 0, canvas.width*0.5, canvas.height);
+        }
+        if (drawmethod.indexOf('prompt') >= 0) {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(0,0, canvas.width, canvas.height);
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(canvas.width*0.1, canvas.height*0.05, canvas.width*0.8, canvas.height*0.9);
+        }
+        if (drawmethod.indexOf('select') >= 0) {
+          ctx.fillStyle = 'rgba(0,0,0,0.5)';
+          ctx.fillRect(0,0, canvas.width, canvas.height);
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(canvas.width*0.2, canvas.height*0.15, canvas.width*0.6, canvas.height*0.7);
+        }
+      }
+      update = false;
+    };
+
+    function init() {
+      clearTimeout(timer);
+      timer = null;
+      //mouse Eventlisteners and touch
+
+      //d
+      drawmethod = ['menu'];
+      update = true;
+      requestAnimationFrame(function(){ updateDraw(); });
+    };
+    
+    var timer = null;
+
+    window.onload = function() {
+      timer = setTimeout(init, 100);
+    };
+
+  </script>
+ </body>
+</html>

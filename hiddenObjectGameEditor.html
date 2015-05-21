@@ -2,13 +2,18 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8">
-  <meta name="Generator" content="EditPlus®">
-  <meta name="Author" content="">
+  <meta name="Generator" content="Malte Kosian">
+  <meta name="Author" content="Malte Kosian">
   <meta name="Keywords" content="">
   <meta name="Description" content="">
-  <title>Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>hidden Object Game Editor</title>
   <style>
   body {margin:0;background:#000;overflow:hidden;}
+  :-webkit-full-screen #canvas {
+    width: 100%;
+    height: 100%;
+  }
   </style>
  </head>
  <body id="body">
@@ -24,7 +29,7 @@
    */
     (
     function() {
-      var GameButton = function(_n) {
+      /*var GameButton = function(_n) {
         this.name = _n;
         this.over = false;
         this.bounds = {x:0,y:0,w:0,h:0};
@@ -39,11 +44,19 @@
                   this.bounds.x + this.bounds.w >= _x && this.bounds.y + this.bounds.h >= _y);
         };
         this.onClick = function() {};
-      };
+      };*/
       var GameObject = function(_uid, _x, _y) {
         this.uid = _uid;
         this.name = null;
         this.bounds = {x:_x,y:_y,w:0,h:0};
+        /***/
+        this.setName = function( text) {
+          mediamanager.setText(this.name, text);//k.v
+        };
+        /***/
+        this.getName = function() {
+          return mediamanager.getText(this.name);
+        };
         /***/
         this.setBounds = function (_x, _y, _w, _h) {
           this.bounds.x = _x;
@@ -59,7 +72,10 @@
                   this.bounds.x + this.bounds.w >= _x && this.bounds.y + this.bounds.h >= _y);
         };
         this.load = function(_data) {
-
+          for (var key in _data)
+          {
+            this[key] = _data[key];
+          }
         };
         //obsolete?
         this.store = function() {
@@ -158,12 +174,12 @@
         /**
         Don't use this method for images, audios or videos,
         because those have to stay base64_encoded
-        @method getTextMedia
+        @method getText
         @since 2014-05-15
         @param _k the key
         @return the media value - always base64 decoded
         */
-        this.getTextMedia = function(_k) {
+        this.getText = function(_k) {
           for (var i = 0; i < this.medias.length; i++) {
             if (this.medias[i].key == _k) {
               //console.log('getMedia->'+atob(this.medias[i].value));
@@ -249,7 +265,30 @@
           {
             switch (key)
             {
-            case '': break;
+            case 'objects':
+              for (var i = 0; i < _data[key].length; i++)
+              {
+                var obj = new GameObject();
+                obj.load(_data[key][i]);
+                this[key].push(obj);
+              }
+            break;
+            case 'scenes':
+              for (var i = 0; i < _data[key].length; i++)
+              {
+                var scene = new GameScene();
+                scene.load(_data[key][i]);
+                this[key].push(scene);
+              }
+            break;
+            case 'dialogs':
+              for (var i = 0; i < _data[key].length; i++)
+              {
+                var dia = new GameDialog();
+                dia.load(_data[key][i]);
+                this[key].push(dia);
+              }
+            break;
             default: this[key] = _data[key];
             }
           }
@@ -376,18 +415,18 @@
           return keys;
         },
         /**
-        use getTextMedia too get the decoded media value
-        @method setTextMedia
+        use getText too get the decoded media value
+        @method setText
         @since 2014-05-17
         @param _k the key
         @param _v the value
         */
-        setTextMedia : function(_k, _v) {
+        setText : function(_k, _v) {
           //type64=true|false would regulate de/encoding or not
           for (var i = 0; i < this.mediaLanguages.length; i++) {
-            if (this.mediaLanguages[i].getMedia(_k) == null) {
+            //if (this.mediaLanguages[i].getMedia(_k) == null) {
               this.mediaLanguages[i].setMedia(_k, _v, true);
-            }
+            //}
           }
         },
         /**
@@ -403,9 +442,9 @@
         setMedia : function(_k, _v) {
           //type64=true|false would regulate de/encoding or not
           for (var i = 0; i < this.mediaLanguages.length; i++) {
-            if (this.mediaLanguages[i].getMedia(_k) == null) {
+            //if (this.mediaLanguages[i].getMedia(_k) == null) {
               this.mediaLanguages[i].setMedia(_k, _v, false);
-            }
+            //}
           }
         },
         deleteMedia : function(_k) {
@@ -413,11 +452,13 @@
             this.mediaLanguages[i].deleteMedia(_k);
           }
         },
+        /***/
         getMedia : function(_k) {
           return this.getCurrentLanguage().getMedia(_k);
         },
-        getTextMedia : function(_k) {
-          return this.getCurrentLanguage().getTextMedia(_k);
+        /***/
+        getText : function(_k) {
+          return this.getCurrentLanguage().getText(_k);
         },
         /**
         @method load
@@ -438,7 +479,7 @@
         };
 
       };
-
+      var mediamanager = null;
       var editor = {};
       editor.game = new Game();
       editor.currentScene = null;
@@ -457,15 +498,44 @@
         editor.mediamanager = (new Game()).mediamanager
         //load the editor.mediamanager if available
         //locally or over xhr
+        mediamanager = editor.mediamanager;
         update = true;
+        //editor.area.focus();
         requestAnimationFrame(function() { editor.updateDraw();});
       }
+      editor.keydown = function(eve) {
+
+      };
+      editor.keyup = function(eve) {
+        //console.log(eve);
+        var keycode = (typeof eve.key == 'undefined' ? eve.which : eve.key.toLowerCase());
+        console.log('keycode -> '+keycode);
+        //alert('keycode -> '+keycode);
+        //ctx.fillText('keycode -> '+(keycode), 5, 20);
+        if (keycode == 'enter' || keycode == 13) {
+          //set the name of the currentObject, Scene or a dialogline
+          //also the game.title
+          editor[editor.dialogMethod]();
+        } else {
+          console.log('keycode -> '+keycode);
+          //editor.area.focus();
+        }
+
+        editor.text = editor.area.value;
+        console.log('editor.text->'+editor.text);
+        update = true;
+      };
       /**
       */
       editor.updateDraw = function() {
         if (update)
         {
           editor.draw();
+          update = false;
+          //if (editor.dialogMethod != null)
+          {
+             //editor.area.focus();
+          }
         }
         requestAnimationFrame(function() { editor.updateDraw();});
       };
@@ -517,8 +587,9 @@
       /**
 
       */
-      editor.close_menu = function() {
+      editor.menu_close_menu = function() {
         editor.menuMode = false;
+        editor.area.blur();
         update = true;
       };
       /**
@@ -537,6 +608,7 @@
         btx.fillStyle = '#fff';
         btx.fillRect(0,0,cw,ch);
         var ch10 = ch/10;
+        var fts = 15; //font size
         btx.strokeStyle = '#999';
         //
         btx.strokeRect(1,1,cw-2,ch-2);//16:10
@@ -544,13 +616,19 @@
         btx.strokeRect(cw*1/12 + 1,1,cw*5/6-2,ch-2);
         //if (editor.currentScene != null)
         {
+          btx.font = fts+'px Sans-Serif';
           btx.strokeStyle = '#000';
+          btx.fillStyle = '#000';
           for (var i = 0; i < editor.game.objects.length; i++)
           {
             var obj = editor.game.objects[i];
             if (editor.currentObject == null || obj.uid != editor.currentObject.uid)
             {
               btx.strokeRect(obj.bounds.x * cw, obj.bounds.y * ch, obj.bounds.w * cw, obj.bounds.h * ch);
+              if (obj.name != null)
+              {
+                btx.fillText(obj.getName(), obj.bounds.x * cw + 5, fts + obj.bounds.y * ch);
+              }
             }
           }
           if (editor.currentObject != null)
@@ -558,17 +636,26 @@
             btx.strokeStyle = '#0cc';
             btx.strokeRect(editor.currentObject.bounds.x * cw, editor.currentObject.bounds.y * ch,
                 editor.currentObject.bounds.w * cw, editor.currentObject.bounds.h * ch);
+            btx.fillStyle = '#099';
+            if (editor.currentObject.name != null)
+            {
+              btx.fillText(editor.currentObject.getName() ,editor.currentObject.bounds.x * cw + 5, fts + editor.currentObject.bounds.y * ch);
+            }
           }
+
 
         }
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         if (canvas.height < canvas.width / 16 * 10)
         {
+          console.log('canvas.height < canvas.width / 16 * 10');
           ctx.drawImage(bufferImg,(canvas.width-canvasWidth)/2,0,canvasWidth,canvasHeight);
         } else {
+          console.log('canvas.height >>>> canvas.width / 16 * 10');
           ctx.drawImage(bufferImg,0,(canvas.height-canvasHeight)/2,canvasWidth,canvasHeight);
         }
+        fts = 20; //font size
         if (editor.menuMode)
         {
           ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -578,10 +665,10 @@
           var h = 50;
           ctx.fillStyle = '#999';
           ctx.fillRect(canvas.width*2/3+5, h-30, canvas.width/3-10, 1);
+          ctx.font = fts+'px Sans-Serif';
           for (var i = 0; i < editor.buttonLabels.length; i++ )
           {
             ctx.fillStyle = '#999';
-            ctx.font = '20px Sans-Serif';
             if (editor.buttonLabels[i] instanceof Array )
             {
               if (editor.buttonLabels[i-1] == editor.openButtonArray) {
@@ -613,34 +700,144 @@
             }
           }
         }
+        if (editor.dialogMethod != null) {
+          if (editor.currentDialog instanceof Array) {
+            for (var i = 0; i < editor.currentDialog.length; i++)
+            {
 
+            }
+          } else {
+            ctx.font = fts+'px Sans-Serif';
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(30,30,canvas.width-60, canvas.height/2-30);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(35,35,canvas.width-70, 30);
+            ctx.fillStyle = '#fff';
+            if (editor.text == null || editor.text == '') {
+              ctx.fillText('enter text here', 40, 40+fts);
+            } else {
+              ctx.fillText(editor.text, 40, 40+fts);
+            }
+          }
+        }
         update = false;
       };
+      editor.currentDialog = null;//string or array
+      editor.dialogMethod = null;
+      editor.area = null;
+      editor.text = null;
+      /***/
       editor.showMenu = function(_ol) {
         editor.openButtonArray = _ol;
         editor.openButtonLabel = null;
       };
+      editor.menu_game = function() {};
+      editor.menu_object = function() {};
+      editor.menu_scene = function() {};
+      editor.menu_object = function() {};
+      editor.menu_preferences = function() {};
+      /***/
+      editor.object_set_name = function() {
+        //show the dialog component
+        //activate the hidden text area
+        //
+        console.log(editor.currentObject);
+        if (editor.currentObject == null) {
+          return;
+        } else {
+          editor.currentDialog = editor.currentObject.getName();
+          editor.dialogMethod = 'objectSetName';
+          editor.text = editor.currentDialog;
+          //editor.text and editor.area.value will be set later
+          editor.area.focus();
+        }
+      };
+      /***/
+      editor.objectSetName = function() {
+        if (editor.currentObject.name == null)
+        {
+          editor.currentObject.name = editor.createUid();
+        }
+        editor.currentObject.setName( editor.text );
+        editor.currentDialog = null;
+        editor.dialogMethod = null;
+        editor.menuMode = false;
+        editor.area.blur();
+        update = true;
+      };
+      /***/
+      editor.object_delete = function() {
+        editor.game.deleteObject(editor.currentObject.uid);
+        editor.menuMode = false;
+      };
+      /***/
+      editor.scene_set_name = function() {
+        if (editor.currentScene == null) {
+          return;
+        } else {
+          editor.currentDialog = editor.currentScene.name;
+          editor.dialogMethod = 'sceneSetName';
+          editor.text = editor.currentDialog;
+          //editor.text and editor.area.value will be set later
+          editor.area.focus();
+        }
+      };
+      /***/
+      editor.sceneSetName = function() {
+        editor.currentScene.name = editor.createUid();
+        editor.currentScene.setName( editor.text );
+        editor.currentDialog = null;
+        editor.dialogMethod = null;
+        editor.menuMode = false;
+        editor.area.blur();
+        update = true;
+      }
+      /***/
+      editor.scene_delete = function() {
+        editor.game.deleteScene(editor.currentScene.uid);
+        editor.menuMode = false;
+      };
+      /***/
+      editor.scene_new = function() {
+        //editor.menuMode = false;
+      };
+      /***/
+      editor.scene_switch_to = function() {
+
+      };
+      /***/
+      editor.game_set_title = function() {
+
+      };
+      /***/
       editor.game_load = function() {
         if (store != null)
         {
           var data = JSON.parse(store.getItem('hogeditor'));
-          for (var key in data['editor'])
+          /*for (var key in data['editor'])
           {
             editor[key]=data['editor'][key];
-          }
+          }*/
           editor.game = new Game();
-          editor.game.load(data['editor']['game']);
+          editor.game.load(data['game']);
           editor.openButtonLabel = 'load';
           editor.mediamanager = (new Game()).mediamanager;
-          editor.mediamanager.load(data['editor']['mediamanager']);
+          editor.mediamanager.load(data['mediamanager']);
+          mediamanager = editor.mediamanager;
           uidCounter = data['uidCounter'];
+          console.log(editor.game);
         }
+        editor.menuMode = false;
+        update = true;
       };
       editor.game_save = function() {
+
         if (store != null)
         {
-          store.setItem('hogeditor',JSON.stringify({editor: editor, uidCounter: uidCounter}));
+          store.setItem('hogeditor',JSON.stringify({game: editor.game, mediamanager: mediamanager, uidCounter: uidCounter}));
         }
+        editor.menuMode = false;
+        update = true;
       };
       editor.handleDragOver = function(eve) {
         eve.stopPropagation();
@@ -650,9 +847,9 @@
 /*
   // Setup the dnd listeners.
 img_canvas.addEventListener('dragover', function(eve) {editor.handleDragOver(eve)}, false);
-img_canvas.addEventListener('drop', function(eve) { 
+img_canvas.addEventListener('drop', function(eve) {
     editor.media_upload(eve); }, false);*/
-      /** 
+      /**
       */
       editor.media_upload = function (eve) {
         eve.stopPropagation();
@@ -662,7 +859,7 @@ img_canvas.addEventListener('drop', function(eve) {
           files = eve.dataTransfer.files;
         }
         var f = files[0];
-        if (!(f.type.match('image.*') ) ) 
+        if (!(f.type.match('image.*') ) )
         {
           return;
         }
@@ -676,7 +873,7 @@ img_canvas.addEventListener('drop', function(eve) {
         })(f);
         reader.readAsDataURL(f);
       };
-      /** 
+      /**
       */
       editor.media_input = function (_media) {
         console.log(' -> '+_media);
@@ -715,7 +912,7 @@ img_canvas.addEventListener('drop', function(eve) {
             }
             if (!editor.objectMode)
             {
-              editor.currentObject = new GameObject(editor.createUid(), px, py);
+              editor.currentObject = new GameObject(1, px, py);
             }
 
           }
@@ -733,7 +930,7 @@ img_canvas.addEventListener('drop', function(eve) {
             {
               editor.currentObject.bounds.x = _x;
               editor.currentObject.bounds.y = _y;
-            } else if (editor.currentObject != null)
+            } else if (editor.currentObject != null && (mx<=px-0.025 || my<=py-0.042 || mx>=px+0.025 || my>=py+0.042))
             {
               if (_x < editor.currentObject.bounds.x)
               {
@@ -750,7 +947,7 @@ img_canvas.addEventListener('drop', function(eve) {
                 editor.currentObject.bounds.h = _y - editor.currentObject.bounds.y;
               }
             }
-            if (mouseTimer != null && (mx<=px-0.01 || my<=py-0.012 || mx>=px+0.01 || my>=py+0.012))
+            if (mouseTimer != null && (mx<=px-0.025 || my<=py-0.042 || mx>=px+0.025 || my>=py+0.042))
             {
               clearTimeout(mouseTimer);
               mouseTimer = null;
@@ -769,7 +966,7 @@ img_canvas.addEventListener('drop', function(eve) {
               clearTimeout(mouseTimer);
               mouseTimer = null;
             }
-            if ((mx>=px+0.01 && my>=py+0.012) && editor.currentObject != null)
+            if ((mx>=px+0.025 && my>=py+0.042) && editor.currentObject != null)
             {
               //place some code here
               if (_x < editor.currentObject.bounds.x)
@@ -786,8 +983,13 @@ img_canvas.addEventListener('drop', function(eve) {
               } else {
                 editor.currentObject.bounds.h = _y - editor.currentObject.bounds.y;
               }
-              editor.game.objects.push(editor.currentObject);
-              //and add it to the objects array
+              if (editor.currentObject.uid == 1)
+              {
+                //only add a new object
+                editor.currentObject.uid = editor.createUid();
+                editor.game.objects.push(editor.currentObject);
+                //and add it to the objects array
+              }
 
               //current_object = null;
               editor.currentObject = null;
@@ -811,6 +1013,9 @@ img_canvas.addEventListener('drop', function(eve) {
             if (mouseTimer != null)
             {
               clearTimeout(mouseTimer);
+              if (editor.currentObject != null && editor.currentObject.uid == 1) {
+                editor.currentObject = null;
+              }
               //mouseTimer = null;
               var h = 50;
               var x = _x*canvasWidth+((canvas.width-canvasWidth)/2);
@@ -825,14 +1030,15 @@ img_canvas.addEventListener('drop', function(eve) {
                   {
                     if(canvas.width*2/3+15 < x && h-30 < y && x < canvas.width-20 && y < h) {
                       editor.openButtonLabel = editor.buttonLabels[i][j];
-                      var func = new Function('editor','editor.'+editor.buttonLabels[i-1].replace(/ /g,'_')+'_'+editor.buttonLabels[i][j].replace(/ /g,'_')+'();');
+                      var func = editor.buttonLabels[i-1].replace(/ /g,'_')+'_'+editor.buttonLabels[i][j].replace(/ /g,'_');
                       try
                       {
-                        console.log(func, editor.openButtonArray, editor.openButtonLabel);
-                        func(editor);
+                        //console.log(func, editor.openButtonArray, editor.openButtonLabel);
+                        editor[func]();
                       }
                       catch (e)
                       {
+                        alert('+could not call '+func);
                         console.log(e);
                       }
                     }
@@ -843,19 +1049,19 @@ img_canvas.addEventListener('drop', function(eve) {
                   //alert((canvas.width*2/3+10)+' , '+(h-30)+' , '+(canvas.width-10)+' , '+h);
                   if(canvas.width*2/3+10 < x && h-30 < y && x < canvas.width-10 && y < h) {
                     editor.showMenu(editor.buttonLabels[i]);
-                    var func = new Function('editor','editor.'+editor.buttonLabels[i].replace(/ /g,'_')+'();');
+                    var func = ''+editor.buttonLabels[i].replace(/ /g,'_');
                     try
                     {
-                      console.log(func,editor.buttonLabels[i].replace(/ /g,'_'));
-                      func(editor);
+                      //console.log(func,editor.buttonLabels[i].replace(/ /g,'_'));
+                      editor['menu_'+func]();
                     }
                     catch (e)
                     {
+                      alert('-could not call menu_'+func)
                       console.log(e);
                     }
                   } else {
                     //mouseTimer = null;
-
                   }
                   h += 35;
                 }
@@ -899,6 +1105,7 @@ img_canvas.addEventListener('drop', function(eve) {
         canvasWidth = window.innerWidth ;
         canvasHeight = window.innerHeight ;
         canvas = createElement('canvas');
+        canvas.setAttribute('id','canvas');
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
         canvas.style.width = canvasWidth+'px';
@@ -980,9 +1187,31 @@ img_canvas.addEventListener('drop', function(eve) {
           },
           false);
         //}
+        editor.area = document.createElement('textarea');
+        editor.area.addEventListener('keydown', function(eve) {editor.keydown(eve);} ,false);
+        editor.area.addEventListener('keyup', function(eve) {editor.keyup(eve);} ,false);
+        document.body.appendChild(editor.area);
+        //editor.area.focus();
+        editor.area.style.opacity = '0.01';
+        editor.area.style.position = 'absolute';
+        editor.area.style.top = '0';
+        editor.area.style.width = '1px';
+        editor.area.style.height = '1px';
+        editor.area.style.border = '0';
+        editor.area.style.color = 'rgba(0,0,0,0.01)';
+        //editor.area.focus();
         //if (editormode) {
         editor.init();
         //} else { game.init(); }
+        if (canvas.requestFullscreen) {
+          canvas.requestFullscreen();
+        } else if (canvas.msRequestFullscreen) {
+          canvas.msRequestFullscreen();
+        } else if (canvas.mozRequestFullScreen) {
+          canvas.mozRequestFullScreen();
+        } else if (canvas.webkitRequestFullscreen) {
+          canvas.webkitRequestFullscreen();
+        }
       };
 
       window.createElement = function(_t) {return document.createElement(_t)};
