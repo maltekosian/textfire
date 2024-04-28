@@ -1,0 +1,24 @@
+package com.hogventure.basic;
+
+import java.util.ArrayList;
+
+/**
+ * @author aquila
+ * slide
+	-dialogs
+	-title
+	-backgroundImage
+	x ambientMusic
+	x objects
+	x plugin
+ */
+public class Slide {
+	ArrayList<SlideDialog>dialogs;
+	String title;
+	String backgroundImage;
+	String uid;
+	String ambientMusicRef;
+	ArrayList<SlideObject>objects;
+	ArrayList<SlideObject>hiddenObjects;
+	SlidePlugin plugin;
+}

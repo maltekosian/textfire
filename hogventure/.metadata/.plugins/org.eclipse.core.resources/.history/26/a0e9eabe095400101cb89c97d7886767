@@ -1,0 +1,16 @@
+/**
+ * 
+ */
+package com.hogventure.basic;
+
+/**
+ * @author aquila
+ *
+ */
+public class SlideText 
+	implements Dumpable
+{
+	String uid;
+	String targetUid;
+	String text;
+}

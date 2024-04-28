@@ -1,0 +1,45 @@
+Join the help
+
+If you build an application, one of the basic problems will getting the start up 
+right. You should always imagine, what a untrained user is willing to do first.
+Maybe he won't login, although this seems to be necessary for an online 
+application. Here is the simple solution, make it possible to work offline, 
+too.*
+
+*a simple solution that is not so simple by the way.
+
+The problem of the right 'start up' process is caused by your evil knowledge 
+about what a user should be able to do with this application. So you know how to 
+organize the application, input of title here, preferences, metadata, chat, 
+teammates, overview, gloabal anlyzation, test environment, painting tool for 
+backgrounds, objects, animations - an endless list for somebody who is new.
+
+You should give him help. That is why you integrated the help button. Seriously
+writing the help is part of the documentation. Never forget, you must start the 
+documentation process before you start the coding process. The first lines of 
+you code should be documentation commentary. Don't care about the licence or 
+other stupid questions. You see, this is another start up problem, isn't it?
+
+Don't be shy to rewrite your code and reuse it over and over again. Reuse the 
+doumentation and fix it over and over. Try to explain what to do first and why. 
+This will answer most of the questions a user may have. 
+And for your own sacrifice/saints, this will help you to detect bugs and 
+misstakes and provide the better code.**
+
+**Over 70% of code should be comentary documentation. Over 80% of a project like 
+a game is documentation. In anyway this includes the production of music, art, 
+graphic assets, code, communiction, the plan. A good plan helps you to build a 
+good business.
+
+Instead of starting with two buttons like 'login' and 'offline', your 
+application should start with a sentence like: 
+<div style="border: 1px #999 solid; margin: 10px; box-shadow: 3px 3px 3px #999; 
+padding: 8px; width: 80%; text-align: center;">
+<br />Hello user! <br /><br />Choose to <br /><span>'Login'</span><br /> or <br 
+/><a href="http://hogventure.com/beastlyBoars/index.html"><span>'create an 
+offline project'</span></a><br />
+to start building a new game.<br /><br /></div>
+
+A nice welcome message gives trust and makes the user feel comfortable.
+
+So don't be shy join the help and create a path for the new beginners.

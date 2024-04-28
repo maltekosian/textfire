@@ -1,0 +1,1229 @@
+-- phpMyAdmin SQL Dump
+-- version 2.8.2.4
+-- http://www.phpmyadmin.net
+-- 
+-- Host: localhost:3306
+-- Erstellungszeit: 23. Februar 2013 um 19:38
+-- Server Version: 5.0.95
+-- PHP-Version: 5.2.6
+-- 
+-- Datenbank: `funkfishDB`
+-- 
+DROP DATABASE `funkfishDB`;
+CREATE DATABASE `funkfishDB` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `funkfishDB`;
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `barbarian`
+-- 
+
+DROP TABLE IF EXISTS `barbarian`;
+CREATE TABLE IF NOT EXISTS `barbarian` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `datum` datetime NOT NULL default '0000-00-00 00:00:00',
+  `language` varchar(10) NOT NULL default 'en',
+  `title` varchar(255) NOT NULL default '',
+  `subtitle` text,
+  `contenttext` text NOT NULL,
+  `keyword` varchar(255) NOT NULL default '',
+  `id_author` int(14) NOT NULL default '0',
+  `flag` tinyint(2) NOT NULL default '0',
+  `history` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `datum` (`datum`,`id_author`),
+  KEY `language` (`language`),
+  KEY `flag` (`flag`),
+  KEY `history` (`history`),
+  KEY `keyword` (`keyword`),
+  FULLTEXT KEY `title` (`title`,`subtitle`,`contenttext`)
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
+
+-- 
+-- Daten für Tabelle `barbarian`
+-- 
+
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `barbariancomment`
+-- 
+
+DROP TABLE IF EXISTS `barbariancomment`;
+CREATE TABLE IF NOT EXISTS `barbariancomment` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `datum` datetime NOT NULL default '0000-00-00 00:00:00',
+  `id_entry` int(14) unsigned NOT NULL default '0',
+  `language` char(3) NOT NULL default 'en',
+  `title` varchar(255) default NULL,
+  `text` text NOT NULL,
+  `id_author` int(14) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  KEY `datum` (`datum`,`id_entry`,`language`,`id_author`),
+  FULLTEXT KEY `title` (`title`,`text`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+-- 
+-- Daten für Tabelle `barbariancomment`
+-- 
+
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `barbariansession`
+-- 
+
+DROP TABLE IF EXISTS `barbariansession`;
+CREATE TABLE IF NOT EXISTS `barbariansession` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `id_user` int(14) NOT NULL default '0',
+  `time` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+-- 
+-- Daten für Tabelle `barbariansession`
+-- 
+
+INSERT INTO `barbariansession` (`id`, `id_user`, `time`) VALUES (2, 5, '0000-00-00 00:00:00');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `barbarianusers`
+-- 
+
+DROP TABLE IF EXISTS `barbarianusers`;
+CREATE TABLE IF NOT EXISTS `barbarianusers` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `datum` date NOT NULL default '0000-00-00',
+  `nickname` varchar(25) NOT NULL default '',
+  `password` varchar(25) NOT NULL default '',
+  `email` varchar(255) NOT NULL default '',
+  `comment` tinyint(1) NOT NULL default '1',
+  `edit` tinyint(1) NOT NULL default '0',
+  `protect` tinyint(1) NOT NULL default '0',
+  `close` tinyint(1) NOT NULL default '0',
+  `delete` char(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `nickname` (`nickname`),
+  KEY `datum` (`datum`),
+  KEY `datum_2` (`datum`)
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+-- 
+-- Daten für Tabelle `barbarianusers`
+-- 
+
+INSERT INTO `barbarianusers` (`id`, `datum`, `nickname`, `password`, `email`, `comment`, `edit`, `protect`, `close`, `delete`) VALUES (5, '2000-06-20', 'malte_kosian', 'unilever', 'malte.kosian@dailylama.net', 1, 1, 1, 1, '1');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `bliggi`
+-- 
+
+DROP TABLE IF EXISTS `bliggi`;
+CREATE TABLE IF NOT EXISTS `bliggi` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `datum` datetime NOT NULL default '0000-00-00 00:00:00',
+  `language` varchar(10) NOT NULL default 'en',
+  `title` varchar(255) NOT NULL default '',
+  `subtitle` text,
+  `contenttext` text NOT NULL,
+  `keyword` varchar(255) NOT NULL default '',
+  `id_author` int(14) NOT NULL default '0',
+  `flag` tinyint(2) NOT NULL default '0',
+  `history` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `datum` (`datum`,`id_author`),
+  KEY `language` (`language`),
+  KEY `flag` (`flag`),
+  KEY `history` (`history`),
+  KEY `keyword` (`keyword`),
+  FULLTEXT KEY `title` (`title`,`subtitle`,`contenttext`)
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
+
+-- 
+-- Daten für Tabelle `bliggi`
+-- 
+
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (2, '2005-05-12 21:52:40', 'en', 'wellcome to [k]bliggi[/k]', 'the standard homepage is called "hhome". Bliggi is a mix between a single user blog and a multiuser wiki system.', 'This software is build to be a mixture between classical blog software and a wiki. For better search behavour use the calendar, the lexical index or the search-tool.[br][br]\r\nThis software allows to browse via index, wiki like links, via calendar. You may configurate the software for[br] \r\nopen use [br]\r\n- anybody can edit and insert new entries and comments[br] \r\nhalfopen [br]\r\n-  users must login to edit and insert entries, but can make comments without.[br]\r\nand closed[br]\r\n- users allways have to login.[br]\r\nYou may manage the rights of users. Somebody is able to edit and insert, somebody else just can edit. Users may also become "admins". Admins are allowed to delete, close or finalize(protect) entries and comments.', 'hhome', 2, 10, 1);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (3, '2005-05-12 23:48:41', 'en', 'bliggi software', 'about the bliggi software, which is written by the funkfish project.[br]See [url]www.funkfish.net[ur/]www.funkfish.net[/url]', 'bliggi is anartifical word mixed up by the words blog(blogger.com) and wiki(wikipedia.org).\r\nThis software could be used by one or more people. [br]As you like it ...', 'bliggi', 2, 10, 1);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (4, '2005-05-15 14:04:43', 'en', 'a mission is landed', 'a possible introduction sequenz to krawall', 'We see a devastated, reddish glowing landscape.  Nothing moves more, except some fooling smoke clouds.  It is more duster, darkly, smoggy and with security of everything - deadly poisoned. [br][br]\r\nA small blue light appears, wanders, becomes increasingly larger and in its light forms oneself a shape. [br]\r\nA rat.[br]\r\nYou, the rat.[br]\r\nIn your Headdisplay appear numbers, which confirm the assumption that this environment is a little bit contaminated.  The time you still remains, is TEN minutes, before you die.  You must hurry. What were your orders?  There a voice from that already announces itself to headphone:  "Here is your commander! You have not completely 10 minutes remaining." [br]\r\n As if you would not know that![br]\r\n "Breath completely calmly.  Look for the leftovers of the last expedition.  Dress yourself in an intact space suit.  We are with you.  We count on you."[br][br]', 'mission landed', 2, 0, 1);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (6, '2005-05-18 22:01:58', 'de', 'Die Mission ist gelandet', 'Zeitliche Zuordnung: [k]Dunkelste Vorzeiten[/k], wenn nicht sogar noch fr?her.', 'Wir sehen eine verw?stete, r?tlich glimmende Landschaft. Nichts regt sich mehr, ausser einigen waberenden Rauchschwaden. Es ist duster, dunkel, stickig und mit Sicherheit alles t?dlich vergiftet.\r [br]  [br] \rEin kleines blaues Licht erscheint, wandert umher, wird zunehmend gr?sser und in seinem Schein formt sich eine Gestalt. [br] \rEine Ratte. [br] \rDu, die Ratte. [br] \r [br] \rIn deinem Headdisplay erscheine Ziffern, die die Vermutung best?tigen, dass diese Umgebung ein wenig verseucht ist. Die Zeit die dir noch verbleibt, sind ZEHN Minuten, bevor du stirbst. Du musst dich beeilen. Wie war noch dein Auftrag? Da meldet sich schon eine Stimme aus dem Kopfh?rer: [br] \r"Hier spricht ihr Kommander! Ihnen bleiben nicht ganz 10 Minuten." [br] \rAls wenn du das nicht w?sstest! [br] \r"Atmen sie ganz ruhig. Suchen sie die ?berbleibsel der letzten Expedition. Ziehen sie einen intakten Raumanzug ?ber. Wir sind bei ihnen. Wir z?hlen auf sie." [br]', 'Mission gelandet', 2, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (7, '2005-05-18 22:16:53', 'de', 'Dunkelste Vorzeiten', 'Einer der fr?hen [k]Zeitabschnitte des Zweiten Zeitalter[/k]s, vergleichbar dem Karbon, Trias, Jura, Devon ...', 'Die dunkelsten Vorzeiten sind die  am schlechtesten zu erfassenden Zeiten. Weder gibt es authentische Berichte noch Legenden aus den nachfolgenden Zeiten des Zweiten Zeitalters selbst , noch l?sst es sich vom dritten Zeitalter aus mit der [k]Teleskoptechnik[/k] beobachten.[br][br]Das Einzige, was im [k]ZZ[/k] vermutet wird, ist das es sehr dunkel war. Es herrschte also "ewige" Nacht.', 'Dunkelste Vorzeiten', 2, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (9, '2005-05-18 23:34:57', 'de', 'Zeitabschnitte des Zweiten Zeitalter', '', '', 'Zeitabschnitte des Zweiten Zeitalter', 2, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (13, '2005-05-26 18:41:41', 'de', 'a mission is landed', 'Maybe this is early "second ages". The so called "darkest age" or even earlier?', 'We see a devastated, reddish glowing landscape.  Nothing moves more, except some fooling smoke clouds.  It is more duster, darkly, smoggy and with security of everything - deadly poisoned. [br][br]\rA small blue light appears, wanders, becomes increasingly larger and in its light forms oneself a shape. [br]\rA rat.[br]\rYou, the rat.[br]\rIn your Headdisplay appear numbers, which confirm the assumption that this environment is a little bit contaminated.  The time you still remains, is TEN minutes, before you die.  You must hurry. What were your orders?  There a voice from that already announces itself to headphone:  "Here is your commander! You have not completely 10 minutes remaining." [br]\r As if you would not know that![br]\r "Breath completely calmly.  Look for the leftovers of the last expedition.  Dress yourself in an intact space suit.  We are with you.  We count on you."[br][br]', 'mission landed', 2, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (14, '2005-05-26 19:00:13', 'de', '(er)', '(er),(sie) oder (es). Eine von mir vermutete geschlechtsspezifische Zuordnung.', '"Er" ,"Sie" oder "Es". ?ber das eigene Geschlecht ?u?ert sich HMA nicht. \rDas scheint im [k]DZ[/k] ebenso ?blich zu sein wie im [k]ZZ[/k]. [br]\rWenn ich also [k]hier und da[/k]  geschlechtsspeziefisch Zuordnungen treffe, so hat das im Allgemeinen weniger mit dem wahren Geschlecht der Person zu tun,\rals mit der Tatsache, dass es den Lesefluss und meine ?bersetzungsbem?hungen st?ren w?rde.[br]\rEine Ausnahme bilden die [k]D?monen[/k]. Bei ihnen ist die Geschlechtszugeh?rigkeit explizit und eindeutig.', '(er)', 2, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (15, '2005-05-26 19:11:32', 'de', 'Welt', '"Die Welt"', 'unsere Welt: Die Erde, unser Heimatplanet. Es gibt nur diesen Einen. [br]\rDie Welt: Die bessere Zeitung des Springerverlages.[br]\rDie Welten des [k]EZ[/k], [k]ZZ[/k], [k]DZ[/k] unterscheiden sich von einander sehr.[br]\rDie Welt des EZ ist eine Welt wie die unsere. Zeit, Raum und Lebenumst?nde, sogar die Bewohner entsprechen zu 100 Prozent unserer Welt. Die Abweichungen, so es den welche gibt sind marginal.[br]\rIm DZ sind Zeit und Raum vertauscht. Man lebt in der Zeit, trifft sich hier oder dort .\rAlles im allen ist des mehr verwirrend als erhellend.[br]\r?ber das [k]Zweite Zeitalter[/k] ?u?ere ich mich an dieser Stelle erst gar nicht.', 'Welt', 2, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (16, '2005-05-26 23:41:44', 'en', 'introduction', '', '', 'hhome', 4, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (17, '2005-05-26 23:59:02', 'de', 'Zweites Zeitalter', '', '', 'zz', 1, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (18, '2005-06-19 21:34:32', 'de', 'dz', 'Das Dritte Zeitalter', 'Heimat von HMA. Zeitalter scheint hier weniger passend, als vielmehr ein Ortsbegriff wie "Heimat". Dem zu Folge w?re auch statt des Begriffs "Drittes Zeitalter" soetwas wie Dritte Heimat angemessen. Im DZ nimmt die Zeit die gleiche pysikalische Stellung ein, wie bei uns der Raum. Trifft man sich dort um 12Uhr, so ist damit "in der N?he von" gemeint, und nicht etwa ...! Wie soll man das nur ordentlich beschreiben?', 'dz', 2, 0, 0);
+INSERT INTO `bliggi` (`id`, `datum`, `language`, `title`, `subtitle`, `contenttext`, `keyword`, `id_author`, `flag`, `history`) VALUES (12, '2005-05-26 18:15:52', 'de', 'Einleitung', '', 'Es geschehen seltsame Dinge im Internet. Gerüchte, Halbwahrheiten und Wahrheiten, verschwiegene und offenbare, die keiner von uns zur Kenntnis nehmen mag, kusieren in diesem neuen Medium. Banale Erinnerungen tummeln sich neben neuesten Nachrichten, phantastische Geschichten mischen sich unvoreingenommen mit neuesten, wissentschaftlichen Erkenntnissen. Das Internet hat uns unerwartet ein neues Fenster, eine neue Tür, eine neue Sicht auf unserer Welt eröffnet. Ach was sage ich, nicht nur eine Tür, Türen sind es, Tore sogar. Aber nicht nur das: auf den Straßen des Internets tauschen wir uns weltweit aus.<br />\r\nWeltenweit wäre freilich genauer, denn seit geraumer Zeit, ich muss es gestehen und kann es doch selbst kaum glauben, stehe ich im Kontakt mit einem Wesen aus einer anderen Welt.<br /><br />\r\nÜber das Internet, und technisch vermag ich es nicht zu erklären, erhalten ich von Zeit zu Zeit neueste Nachrichten aus dem Dritten Zeitalter. Im wesentlichen, so wurde mir erklärt, befasst man sich dort mit der Erforschung des Zweiten Zeitalters. Das Zweite Zeitalter sei eine überaus interessanten Materie zur Erforschung und reich an Geschichten. Tatsächlich ist es auch das einzigste, was man  dort im DZ durch die Teleskope sehen kann.<br />\r\nEs scheint aber so, dass ein ungewöhnlicher Ausnahmefehler des Teleskops es dem Wesen, HMA von Namen, ermöglicht, sein Teleskop mit unserem Internet zu verbinden. So erhielt ich anfangs EMails von HMA, von denen ich zunächst dachte, es sei zwar bemerkenswert merkwürdige, doch unerwünschte Werbung. Schon auf die zweite EMail antwortete ich. Es war das Jahr 1997.<br /><br />\r\nWie ich von HMA nach einiger Zeit erfahren hatte, dachte (er) zunächst, unsere Welt sei das lange vermisste EZ. Eine Tatsache die ich mehr als beunruhigend empfand. Freilich führte eine Diskussion mit anderen Wesen aus dem DZ HMA zu der Erkenntnis, das unsere Welt lediglich möglicherweise und auch nur vielleicht das gesuchte EZ sein könne. Diese Erkenntnis vermochte mich allerdings nur ein Wenig zu beruhigen, aber immerhin, es schläft sich wieder besser und man gewöhnt sich an Alles.<br /><br />\r\nHMA und ich vereinbarten also weiterhin in Kontakt mit einander zu bleiben, was sich durchaus als nicht immer einfach erwies und ich holte von ihm die Erlaubnis ein, "die Erkenntnisse des DZ über das Weltgeschehen des ZZ, mit besonderen Augenmerk auf die Enstehung von Letzteren", hier im Internet zu veröffentlichen.<br /><br />\r\nIch denke, es wird Sie interessieren.\r\n<br /><br />\r\nVorsicht:<br />\r\nWenn Sie diese Seiten lesen, betreten Sie die Welt des Zweiten Zeitalters.', 'hhome', 4, 10, 0);
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `bliggicomment`
+-- 
+
+DROP TABLE IF EXISTS `bliggicomment`;
+CREATE TABLE IF NOT EXISTS `bliggicomment` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `datum` datetime NOT NULL default '0000-00-00 00:00:00',
+  `id_entry` int(14) unsigned NOT NULL default '0',
+  `language` char(3) NOT NULL default 'en',
+  `title` varchar(255) default NULL,
+  `text` text NOT NULL,
+  `id_author` int(14) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  KEY `datum` (`datum`,`id_entry`,`language`,`id_author`),
+  FULLTEXT KEY `title` (`title`,`text`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+-- 
+-- Daten für Tabelle `bliggicomment`
+-- 
+
+INSERT INTO `bliggicomment` (`id`, `datum`, `id_entry`, `language`, `title`, `text`, `id_author`) VALUES (1, '2005-05-19 01:03:01', 7, 'de', 'Vorzeiten', 'Neben den Dunkelsten, gibt es nat?rlich auch die Dunkleren und Dunklen, sowie die Grauen Vorzeiten. Vorzeiten bezeichnen dabei die Zeitabschnitte welche mit der Pr?historie, bis inklusive Jungsteinzeit, vergleichbar sind.\r\nLetzte Abschnitte der Vorzeiten sind die N?heren Vorzeiten.', 1);
+INSERT INTO `bliggicomment` (`id`, `datum`, `id_entry`, `language`, `title`, `text`, `id_author`) VALUES (2, '2005-05-19 01:15:11', 3, 'de', 'werden wir ersetzen', 'Hier wird etwas zum "funkfish"-Projekt stehen.', 1);
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `bliggisession`
+-- 
+
+DROP TABLE IF EXISTS `bliggisession`;
+CREATE TABLE IF NOT EXISTS `bliggisession` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `id_user` int(14) NOT NULL default '0',
+  `time` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+-- 
+-- Daten für Tabelle `bliggisession`
+-- 
+
+INSERT INTO `bliggisession` (`id`, `id_user`, `time`) VALUES (1, 2, '0000-00-00 00:00:00');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `bliggiusers`
+-- 
+
+DROP TABLE IF EXISTS `bliggiusers`;
+CREATE TABLE IF NOT EXISTS `bliggiusers` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `datum` date NOT NULL default '0000-00-00',
+  `nickname` varchar(25) NOT NULL default '',
+  `password` varchar(25) NOT NULL default '',
+  `email` varchar(255) NOT NULL default '',
+  `comment` tinyint(1) NOT NULL default '1',
+  `edit` tinyint(1) NOT NULL default '0',
+  `protect` tinyint(1) NOT NULL default '0',
+  `close` tinyint(1) NOT NULL default '0',
+  `delete` char(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `nickname` (`nickname`),
+  KEY `datum` (`datum`),
+  KEY `datum_2` (`datum`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+-- 
+-- Daten für Tabelle `bliggiusers`
+-- 
+
+INSERT INTO `bliggiusers` (`id`, `datum`, `nickname`, `password`, `email`, `comment`, `edit`, `protect`, `close`, `delete`) VALUES (1, '0000-00-00', 'Anno Nym', 'none', 'webmaster@luckyrats.com', 1, 0, 0, 0, '0');
+INSERT INTO `bliggiusers` (`id`, `datum`, `nickname`, `password`, `email`, `comment`, `edit`, `protect`, `close`, `delete`) VALUES (2, '2005-05-26', 'HMA', 'web49#mk', 'malte.kosian@dailylama.net', 1, 0, 0, 0, '0');
+INSERT INTO `bliggiusers` (`id`, `datum`, `nickname`, `password`, `email`, `comment`, `edit`, `protect`, `close`, `delete`) VALUES (4, '2005-05-26', 'M.Kosian', 'sunlicht', 'malte.kosian@dailylama.net', 1, 0, 0, 0, '0');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `blog`
+-- 
+
+DROP TABLE IF EXISTS `blog`;
+CREATE TABLE IF NOT EXISTS `blog` (
+  `id` int(14) NOT NULL default '0',
+  `title` varchar(255) NOT NULL default '',
+  `text` text NOT NULL,
+  `datum` date NOT NULL default '0000-00-00',
+  PRIMARY KEY  (`id`),
+  KEY `datum` (`datum`),
+  FULLTEXT KEY `title` (`title`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- 
+-- Daten für Tabelle `blog`
+-- 
+
+INSERT INTO `blog` (`id`, `title`, `text`, `datum`) VALUES (0, 'Alles wird anders...', '[img]image/personal.jpg[limg]...alles wird neu und leider nicht immer gut. Nachdem Lucas Arts "Full Throttle 2" und "Sam&Max:Freelance Police"  eingestellt hat, ist auch Tim Schafers [URi]http://www.doublefine.com[URt][/URi]"Psychonauts"[UR/] von Streichungen bedroht, Microsoft sei dank. Hoffentlich wird das Spiel trozdem erscheinen. Leider werde ich mir dann eine XBox kaufen m?ssen!?[br][br]Auch diese Seite steht jetzt im Umbau und alles wird gut? Das Dailylama wird erst einmal vorl?ufig gestrichen, aber es kommt wieder. Sp?testens im Spiel.[br][br]F?r das Spiel selbst plane ich eine neue Multiplayer-f?hige Testversion, die im Wesentlichen mehr Test als Version sein wird. Keine Sorge die Demo wird auch erweitert. F?r eine gewisse Insel ("DANGER...Property of Lukas") schreibe ich die Szenarien Mix''n Sam und Volltrottel. Das muss sein.[br]Auch ich muss mal meiner Meinung Ausdruck verleihen.[br][br][img]image/boeserHase.jpg[rimg] Im ersteren Szenario benutzt eine wei?er Hase einen braunen Hund in Trenchcoat mit diversen Gegenst?nden wie Messer Pfanne und Herd, Stabmixer, daher der Name, und Katze. Im zweiten Teil wird der Hase auf einem Motorad in die Zirkusarena   gefahren und h?pft dabei die ganze Zeit auf und ab. Der Hase hat so oft wie m?glich an den Autobahnschildern kleben zu bleiben. In der Arena angelangt, darf der Fahrer dann den Hasen ?berfahren. Schafft er das 100 mal, gibt es eine Waschmaschine, aus heiterem Himmel ![br][br]Was das ganze soll? Fragt L.A. oder MS. Ich weiss es nicht. Es ist klassische amerikanische "!Action".[br]', '2004-03-31');
+INSERT INTO `blog` (`id`, `title`, `text`, `datum`) VALUES (1, 'noch mehr Kleinigkeiten', '[img]/story/images/palme_1.jpg[limg]Wie man vieleicht bemerkt hat, habe ich zwischenzeitlich die Frontseite geschrottet. Sie war nahe zu blank. Mit anderen Worten es geht voran! Es wird gearbeitet.Leider weiniger im Bereich der Webseite als bei dem Spiel und auch hier sind noch keine Fortschritte nach Au?en sichtbar. Aber daf?r pr?sentiere ich euch einige ?berlegungen zum Interface...[br][br][br][br] [img]image/spiele/interface.jpg[rimg]', '2004-09-18');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `dailylama`
+-- 
+
+DROP TABLE IF EXISTS `dailylama`;
+CREATE TABLE IF NOT EXISTS `dailylama` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `lama` text NOT NULL,
+  `image` varchar(100) default 'image/lama.gif',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=72 DEFAULT CHARSET=latin1 AUTO_INCREMENT=72 ;
+
+-- 
+-- Daten für Tabelle `dailylama`
+-- 
+
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (1, 'Seit ihr die Kunden<BR>Von Hasen und Hunden,<BR>Von Papagein und Eulen?<BR>Nun h?ret: Falsch verbunden!<BR>Ist das nicht zum Heulen? ', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (2, 'Mach Montags blau und du hast Dienstags Kopfschmerzen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (3, 'Das wei? ich doch, ich wei?, doch ich wei? das.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (4, 'Ein Mann im Schnee macht noch lange keinen Schneemann.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (5, 'Lieber heiter Tr?bsal blasen, als tr?be Eiterblasen', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (6, 'Viele Bemerkungen sind nicht aus der besten Luft gegriffen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (7, 'Ich stehe zu meinem Gesicht!<BR>Lieber mannigfaltig, als einf?ltig.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (8, 'Solange es Haare gibt, liegen sich die Menschen in denselben.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (9, 'Wenn ich frei sei, dann bin ich frei,<BR>wenn ich im Mai sei, dann bin ich im Mai,<BR>wenn es vorbei sei, dann sag ich Schlu?, aus, Ende, PFUI.', 'lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (10, 'Du hasst eine Frage, dann stelle sie nicht!', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (11, 'Es gibt keine ?berfl?ssigen Fragen,<BR>nur fl?ssige Antworten.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (12, 'Manchmal hilft nur noch: Z?hne hoch und den Kopf zusammenbei?en.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (13, 'Der schl?ft gut, der nicht wei?, da? er schlecht schl?ft.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (14, 'Bienen und Hasen,<BR>Gr?n ist der Rasen,<BR>...<BR>Verdammt, ich hab es vergessen,<BR>Gehen wir essen?', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (15, 'Eine Kopfschmerztablette beseitigt deine Kopfschmerzen.<BR>Ein Tablett auf deinen F??en bereitet deinen F??en Schmerzen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (16, 'Wer s?ndigt, schl?ft nicht.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (17, 'Habe die Stirn, sie zu runzeln.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (18, 'Wer schoss ihn ?ber seinen eigenen Haufen?', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (19, 'Ein billiger Witz kann dir teuer zu stehen kommen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (20, 'Freiwild, Freibier und Freiheit haben viel gemein. Sie sind begehrt und werden gejagdt.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (21, 'Wir wissen immer mehr, doch das wissen wir nicht.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (22, 'Also, nicht vergessen: Seit flink wie Heuschrecken, z?h wie Heidschnucken, schlaflos in Si?ttel.', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (23, 'Zeit ist nichts Magisches. man hat sie oder hat sie auch nicht.', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (24, 'Letzte ?nderung:<BR>\r\n?ndere das Letzte!', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (25, 'Zeit ist eine lange Weile und doch zu kurz.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (26, 'Er wusste genau, was er erwartete.<BR>Wusste er auch was ihn erwartete?', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (27, 'Schlag es nicht!<BR>Schlag es nach<BR>...<BR>bei Shakespeare', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (28, 'Gott sei es gegeben,<BR>Gott sei es genommen,<BR>die Frage ist,<BR>wer hat es bekommen?', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (29, '&#187;chinesisch:&#171;<BR>es wal eine ?bellaschung,<br>und ihl wulde lasch ?bel.', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (30, 'Es darf kein ?u?erstes geben, zu dem wir nicht entschlossen w?ren, und keine Lauer, auf der wir nicht l?gen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (31, 'Es leichter ist, den Mund zu halten als eine Rede.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (32, 'Also, sprach Zahnarzt Thustra : Alles im Leben geht nat?rlich, auch die Z?hne ...', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (33, 'Es hat so gut wie fast keinen Sinn, die Stirn zu fletschen oder die Z?hne zu runzeln.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (34, 'Die Moral wird immer gro?geschrieben<BR>...<BR>auch aus steuerlichen Gr?nden.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (35, 'Heute ist heute<BR>...<BR>an anderen Tagen auch.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (36, 'Man darf im Leben weder sich noch Verdacht erregen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (37, 'Man soll die Anl?sse feiern, wie sie fallen.<BR>Und nun eine traurige Nachricht. Witwe Bolte ist tot.<BR>...<BR>Juhu, it''s Partytime.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (38, 'Niemand hat keine Sorgen, aber wer ist schon niemand?', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (39, 'Man soll den Scheffel nicht ins helle Licht stellen, aber im Dunklen stolpert man dar?ber.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (40, 'Man f?llt mit dem Haus nicht aus der T?r, man trehte sie ein.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (41, 'Du blendest mich mit deiner Finsternis,<BR>verdunkelst mir den Tag,<BR>und es ist ein fauler Kompromiss,<BR>da? ich dich wirklich mag.<BR>Da sage noch einer, Liebe mache blind.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (42, 'Nicht alles, was dir lieb und teuer, ist mit Recht auch billig.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (43, 'In der H?he ist die Luft d?nne, in der Tiefe sind viele Dicke.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (44, 'F?ngst du''s einmal auf, h?rst du''s dir nie wieder an.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (45, 'Widerstand ist zweckfrei.<BR>Sie werden senil.<BR>Aber nicht heute.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (46, 'Schwarzer Humor kommt nicht nur aus Schwarzafrika. Er kommt auch aus England, der T?rkei, Dunkeldeutschland ...', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (47, 'Nicht jeder ist helle, der sich h?utet.<BR>Nicht jeder Fisch hat Schuppen in den Haaren.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (48, 'Was du morgen kannst besorgen, das verschiebe nicht auf heute.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (49, 'Manchmal lehne ich mich v?llig an, manchmal auch ab.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (50, 'Weder vergie?e Gel?chter, noch halte dir den Bauch vor Tr?nen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (51, 'Ein Schaf ist ein Schaf,<BR>eine Blume ist eine Blume,<BR>ich bin, was ich bin,<BR>welches Schweindel h?tten Sie gern?', 'lama_quizz.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (52, 'Es ist immer so sch?n, denn entweder ist der Himmel blau oder ich.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (53, 'Das Br?tchen ist dumm,<BR>die Brotkante ist stumm,<BR>Schwarzpulver macht bumm.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (54, 'Was du morgen kannst verschieben, das besorge nicht auf heute.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (55, 'Gucke ruhig dumm aus der W?sche,<BR>glotze wie ein Auto,<BR>doch fahre nicht gegen einen Baum.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (56, 'Wer selten Sorgen hat, hat nicht unbedingt jeden Tag Freude.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (57, 'Sag nicht Omm, sage Cheese, und besorg mir welchen.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (58, 'Keine Nachricht ist eine gute Nachricht.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (59, 'Wer an einem Freitag den 13ten durch einen Unfall stirbt, hat Pech gehabt.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (60, 'Gestern war ein Tag, morgen ist schon wieder einer.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (61, 'Wer tief sch?rft, stapelt selten hoch.', NULL);
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (62, '&#187;Du brauchst dich nicht zu sch?men!<br />Du wei?t doch, niemand ist perfekt.<br />Ach, ?brigens, wie nennt man dich?&#171;<br />\r\n&#187;&...niemand#171;', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (63, 'Ach, welch schweres Los ist der Sieg ...<br />\r\nund wie bitter s?? schmeckt die Glorie der Niederlage.', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (64, '&#187;Sinn oder Unsinn, das ist meine Frage, Wunschbrunnen! Verdammt wo bleiben die Boxer?&#171;<br />(King Rocky)', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (65, 'Manche Dinge fallen einfach schwer, was wohl oder ?bel daran liegt, da? sie schwerlci einfach sind.', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (66, 'Was ist?<br />\r\nNichts ist, Nichts war und Nichts wird sein!<br />Nichts hat Bestand, daf?r stehe ich ein!', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (68, 'Tut ein Dichter verdichten,<br />ein Nichter gar vernichten?<br /> <br />\r\nNichtigkeiten werden hier ausgetauscht,<br />Dichtunge erhaltet ihr dort dr?ben!', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (69, 'Eine kleine Silbe nur,<br />\r\ndoch so gravierend ihre Folgen.', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (70, 'Das Nichts ist nicht Nichts,<br />doch um so gr??er ist seine F?lle.', 'image/lama.gif');
+INSERT INTO `dailylama` (`id`, `lama`, `image`) VALUES (71, 'Das Nichts ist Leere und doch,<br />das Nichts ist gef?lt mit der Welten tausend,<br /> ...,tausendundeins,<br />\r\n...,tausendundzwei,<br />\r\n...,tausendunddrei,<br />\r\n...', 'image/lama.gif');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `forum_postings`
+-- 
+
+DROP TABLE IF EXISTS `forum_postings`;
+CREATE TABLE IF NOT EXISTS `forum_postings` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `id_topic` bigint(20) NOT NULL default '0',
+  `post` text NOT NULL,
+  `id_player` bigint(20) NOT NULL default '0',
+  `datum` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=latin1 AUTO_INCREMENT=33 ;
+
+-- 
+-- Daten für Tabelle `forum_postings`
+-- 
+
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (1, 1, 'Heute hat es einige Updates gegeben. Die beiden Applets Battle und Hellway sind noch nicht wieder online, und werden sie wahrscheinlich auch nicht.\r<BR>Sollte ich sie doch noch einmal einstellen, dann nur in ver?nderter Form, auf jeden Fall mit einer Highscoreliste.\r<BR>Ich hoffe euch gef?llt die Seite.\r<BR>\r<BR> <IMG SRC=''image/smilies/pencil.gif'' BORDER=0> <IMG SRC=''image/smilies/rose.gif'' BORDER=0><BR>', 2, '2002-10-19 15:53:25');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (2, 2, ' Hallo,\r<BR>ich m?chte hier das Team unserer Seite vorstellen:\r<BR>Lieschen Mueller:\r<BR>Sie zeichnet die Figuren, und hilft mir bei der Programmierung.\r<BR>Malte Kosian, das bin ich. Ich schreibe die Geschichten, den Framework f?r das Java-Programm und warte die Seite, wenn das Lieschen nicht macht.\r<BR>Das Doedels Projekt existiert schon l?nger, vor allen Dingen schon die Bem?hingen kleine Programme aus und ?ber die Doedelwelt zu schreiben. Zun?chst sind die Geschichten, die Zeichnungen und die Figuren nebenbei entstanden. Inzwischen sind sie ein fester, eigener Bestandteil der Seite.\r<BR>Die Applets(Java-Spiele) habe ich mangels Qualit?t, sie gen?gten meinen eigenen Anspr?chen nicht mehr, zur Zeit von der Seite genommen.\r<BR>Die Geschichten stammen alle aus der Doedelswelt. Meine Erz?hlweise sollte dabei fragmentarisch, lexikalisch bleiben.\r<BR>Das liegt an unserem gemeinsamen Interesse f?r Arch??logie. Vermutlich begr?ndet das auch das Genre der Geschichten.\r<BR>Ciao*Rincewind(Malte)<BR>', 5, '2002-10-20 20:29:51');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (3, 3, '... in Vorbereitung: <BR>\r\n<BR><B>?ber den Wolken.</B>\r\n<BR>Eine Geschichte ?ber die Freiheit, das Fliegen und ?ber Arbeitsverh?ltnisse zu Zeiten Gunfrieds. \r\n<BR>\r\n<BR><B>Le Petit Rat</B>\r\n<BR>In dieser Geschichte entdeckt die kleine Ratte die Kerkerdimensionen und die D?monen. \r\n<BR>\r\n<BR><B>Auch du ...?</B>\r\n<BR>Mord und Totschlag, Widerstand und Molchemord. ?ber einen Tyrannen auf einer fremden Insel zu Zeiten von Hammeln.\r\n<BR><BR>', 5, '2002-11-14 19:05:24');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (4, 4, 'Hey Rincwind, \r<BR>ich muss erstmal sagen, dass ich die Idee irgendwie cool finde (bin n'' discworld-fan:-) - allerdings g?be''s eventuell noch n'' paar Sachen, die man machen k?nnte um des'' ganze zug?nglicher zu machen ... so w?r''s z.b. bestimmt kein Fehler, die Seite hier auch auf Englisch zu machen - dann h?ttest du bestimmt mehr Besucher ... \r<BR>Hast du eigendlich vor des'' Spiel selber auch n'' bisschen discworld-m??ig zu machen (des'' w?re echt super - und mal was'' neues weil''s so was'' bis jetzt (so weit ich wei?) nicht gibt:-), oder soll''s nur eines der vielen Strategie spiel werden, das wegen Sachen wie Warcraft 2, Siedler, Age of Empires (bzw. Nachfolgeversion), usw, usw. eh nicht wirklich gespielt wird (allein aus dem Grund dass da die Grafik eh viel besser ist). Das vielleicht noch n'' bisschen RPG reinkommt finde ich sehr gut!<IMG SRC=''image/smilies/thumbsup.gif'' BORDER=0> Wenn''s was'' discworld-m??iges werden soll, dann  w?rde ich mich bereiterkl?ren dir zu helfen - wenn du willst ...  <IMG SRC=''image/smilies/propeller.gif'' BORDER=0>\r<BR>Also mach weiter so - ich find des'' ganze echt cool (die Seite hier ist echt lustig ... :-) \r<BR>signed by \r<BR>DER TOD \r<BR>\r<BR>ps: nur zur Info: ich hatte  mir die Beta mal runtergeladen - auf windows 2000 (fat 32) hat''s nicht getan (hab'' aber auch nicht gro? rumprobiert ...) <BR>', 8, '2002-12-12 12:42:37');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (5, 4, 'Hai,\r\n<BR>_Tod <IMG SRC=''image/smilies/tombstone.gif'' BORDER=0>, vielen Dank f?r dein Hilfs-Angebot. Gerne werde ich es insbesondere f?r die Englisch?bersetzungen in Anspruch nehmen.\r\n<BR>\r\n<BR>Ich denke. da? es in Sachen witzig&fantasy etwas schwieriger wird, als ein allgemeiner Text.\r\n<BR> <IMG SRC=''image/smilies/pushpin.gif'' BORDER=0>\r\n<BR>Die  <i>"beta"-Version</i> auf sourgeforge ist noch im Zustand einer pre-alpha! Es kommt also erst noch einige Alpha Versionen, bevor die beta kommt.\r\n<BR>Es soll auf keinen Fall ein reines Strategie-Spiel werden. RPG-Anteile werden integriert. Auf dieser Engine werden sich auch Adventure realisieren lassen Die Graphik sieht eher so aus, wie du sie in den Geschichten vorfindest. \r\n<BR> <IMG SRC=''image/smilies/pushpin.gif'' BORDER=0>\r\n<BR>Werde am Wochenmal ein Screenshot von der pre-alpha unter [...] (ferner liefen) reinstellen.\r\n<BR> <IMG SRC=''image/smilies/pushpin.gif'' BORDER=0>\r\n<BR>liefen die start.exe files bei dir nicht? Hast du kein Java installiert(die neuste von Sun)? Ist der Path gesetzt?\r\n<BR>\r\n<BR>   <IMG SRC=''image/smilies/wizard.gif'' BORDER=0>\r\n<BR>Rincewind \r\n<BR><BR>', 5, '2002-12-13 20:01:36');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (6, 4, 'Moin Rincewind, \r<BR>erm ... start.exe files? Ich hab''s per Suchmaschiene durchgesucht, aber keine start.exe files gefunden - oder meintest du die "doedels.exe", bzw. die "anitest.exe"? Des'' anitest.exe tut bei mir - wenn ich aber des'' doedels.exe ausf?hre, dann meint dos blablablaerrorblablabla ... Achja -  des'' Java hab'' ich ?brigens installiert - daran liegts net (au?erdem tat des'' anitest ja ...) \r<BR>Nat?rlich ist Witzig&Fantasy schwer - hab'' auch nicht unbedingt witzig gemeint, sondern eher ... naja - erm ... irgendwie verr?ckt - wenn du erahnen kannst, was ich meine ... \r<BR>Achja, und nochmal ne'' Frage zum Spiel: planst du, dass die Figuren (doedels, oder was'' da auch immer rumkreucht) Stufen haben werden? Des'' w?r'' glaub'' auch noch mal was'' cooles ... :-) \r<BR>Ahja, zum Thema helfen: freue mich helfen zu k?nnen ... sonst wird meine Sense noch stumpf ...  <IMG SRC=''image/smilies/party.gif'' BORDER=0>... kannst mir dazu ja mal genauer was'' zukommen lassen ... \r<BR>\r<BR>with a skull-smile, \r<BR>DER TOD  <IMG SRC=''image/smilies/tombstone.gif'' BORDER=0><BR>', 8, '2002-12-14 14:08:07');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (7, 2, 'Hai <IMG SRC=''image/smilies/wizard.gif'' BORDER=0>,\r<BR>also die Applets sind wieder da, wenn auch nur zu Testzwecken! Spielt sie bitte recht h?ufig, damit ich sehe, ob der Server und die Punkteauswertung l?uft.\r<BR>\r<BR>Danke im Vorraus f?r euere Hilfe.\r<BR>\r<BR>Ciao*Rincewind<BR>', 5, '2003-04-01 22:02:36');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (8, 1, 'Momentan scheint das Login fehlerhaft zu sein.\r<BR>Zwischenzeitlich scheint die Session verloren zu gehen, obwohl sie weiterlebt. Der Login wird nur nicht auf den Folgeseiten angezeigt. \r<BR> <IMG SRC=''image/smilies/raincloud.gif'' BORDER=0> <IMG SRC=''image/smilies/moon.gif'' BORDER=0>\r<BR>Das ganze sollte eingehend getestet werden!\r<BR>\r<BR>Ich melde mich hier wieder, wenn es richtig geht.<BR>', 5, '2003-06-16 12:22:34');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (10, 1, '<IMG SRC=''image/smilies/chef.gif'' BORDER=0>\r<BR>Dieser Fehler wiederf?hrt nur dem Mozilla. Der Browser erneuert die Seiten nicht zuverl?ssig. Sollte der Fehler mit irgendeinem anderen Browser geschehen, bitte hier bescheidgeben und die Browsereinstellungen mitteilen. \r<BR>Workaround:\r<BR>Reload des Browsers dr?cken.\r<BR> <IMG SRC=''image/smilies/umbrella.gif'' BORDER=0> <IMG SRC=''image/smilies/wizard.gif'' BORDER=0><BR>', 5, '2003-06-16 12:40:12');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (11, 1, 'Der  oben beschriebene Fehler scheint jetzt g?nzlich behoben.<BR>', 5, '2003-06-16 19:58:23');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (12, 1, '<IMG SRC=''image/smilies/conicalhat.gif'' BORDER=0>\r<BR>Und noch eine weitere Mitteilung in Sachen Bugs:\r<BR><IMG SRC=''image/smilies/lifepreserver.gif'' BORDER=0>\r<BR><B>Behoben ist der Bug, da? die letzte Forummitteilung nicht angezeigt wird</B>.\r<BR>\r<BR>Rincewind<BR>', 5, '2003-06-16 20:06:28');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (13, 5, '... sind erw?nscht und k?nnen bitte jederzeit hier angeh?ngt werden.\r<BR>Es w?re zum Beispiel immer gut zu wissen, wenn die Applets nicht gehen oder die Highscores nicht funktionieren oder aber die Session verloren geht.\r<BR>\r<BR>Euer Rincewind<BR>', 5, '2003-06-16 20:09:35');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (18, 9, 'Einiges ?ber Krawall und das Spiel:[br][URi]http://www.doedels.de/index.php?str=12&day=31&mon=12&year=2003[/URi]die Figuren[UR/][br][URi]http://www.doedels.de/index.php?str=12&day=30&mon=12&year=2003[/URi]Zeitlinie Krawall[UR/][br][URi]http://www.doedels.de/index.php?str=12&day=29&mon=12&year=2003[/URi]globale Story[UR/][br][URi]http://www.doedels.de/index.php?str=12&day=28&mon=12&year=2003[/URi]user interface[UR/][br][URi]http://www.doedels.de/index.php?str=12&day=26&mon=12&year=2003[/URi]Kampfsystem[UR/][br][include]story/documents/description_1.inc[/include]    [URi]http://www.doedels.de/index.php?str=12&day=1&mon=1&year=2004[/URi][UR/]', 81, '2004-01-06 22:51:40');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (16, 8, 'Bisher habe ich noch keine Person des Monats f?r Januar. Ich hinke offentsichtlich meinen Zielen etwas hinterher. Hilfe ist [b]immer[/b] erw?nscht.[br][br]Mein kleiner Beitrag zu den heiligen drei K?nigen. Ein Entwurf f?r einen Animationsfilm namens "King Rocky". Es ist/war der erste K?nig von ?Drecksloch?.[br]Hier der komplette Entwurf:[br] [br][include]story/documents/rocky_entwurf.inc[/include]Bisher habe ich noch keine Person des Monats f?r Januar. Ich hincke offentsichtlich meinen Zielen etwas hinterher. Hilfe ist [b]immer[/b] erw?nscht.[br][br]Mein kleiner Beitrag zu den heiligen drei K?nigen. Ein Entwurf f?r einen Animationsfilm namens "King Rocky". Es ist/war der erste K?nig von ?Drecksloch?.[br]Hier der komplette Entwurf:[br] [br][include]story/documents/rocky_entwurf.inc[/include]', 81, '2004-01-06 20:59:21');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (21, 11, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/description_5.inc[/include] ', 81, '2004-01-06 23:20:33');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (20, 10, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/description_2.inc[/include]', 81, '2004-01-06 23:16:16');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (22, 12, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/global_story.inc[/include]', 81, '2004-01-06 23:21:42');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (23, 13, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/description_5.inc[/include]', 81, '2004-01-06 23:22:00');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (24, 14, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/description_2.inc[/include]', 81, '2004-01-06 23:22:32');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (25, 15, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/description_4.inc[/include]', 81, '2004-01-06 23:23:40');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (26, 16, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/description_1.inc[/include]', 81, '2004-01-06 23:24:17');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (27, 17, '[URi]http://www.doedels.de/index.php?str=2[/URi]zur?ck[UR/]\r[br][include]story/documents/description_3.inc[/include]', 81, '2004-01-06 23:24:45');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (28, 18, 'Am 6.ten-6.ten ist D-Day, der Tag der Landung.\r[br][br]Der in der Normandie j?hrt sich Heuer zum 60.sten Male. Deswegen hofe ich bishierhin etwas besonderes fertig zu haben.', 81, '2004-01-06 23:39:04');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (29, 19, '[p][img]story/images/ironic_black/ironic_islands_2.gif[limg][br]Heute m?chte ich einige Neuigkeiten ?ber das Spiel loswerden:[br]Au?er der Insel Krawall wird es Dungeons, den Mahlstrom und die ?Ironischen Insel? als Handlungsorte geben.[br][br][br][br][/p][br][p][img]story/images/ironic_black/doedel_ratte.gif[rimg][br]Die ironischen Inseln werden von Doedeln und Ratten bev?lkert, wie auch Krawall.[br]Doedel auf den ironischen Inseln sind meistens dunkelh?utig, die Ratten hingegen haben wei?es Fell und rote Augen. [br]Nebenan sieht man sie in der landestypischen Tracht. [br]Die Inseln exportieren Oliven, Wein und ihre festen Vorstellungen. Diese Grunds?tze sind es, die ihr ganzes Leben regulieren. Deswegen beten Doedel und Ratte allt?glich zu ihren G?ttern und erflehen Erl?sung vom insularen Leid.[br][/p] ', 81, '2004-01-08 23:15:01');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (30, 7, '[p][img]story/images/krawall_mini.gif[limg][br]Eine kleine ?bersichtskarte der Insel von Krawall.[br]Oben lieg der Ort ?Blumenwiese?, links ?Pleasekeepsilence?, der ?rtliche Schweinez?chterverband. Rechts ist die Ortschaft ?der Wald? und unten sieht man ?Fischerdorf?.[br]In der Mitte symbolisiert durch seinen Tempel liegt [b]S.N.C[/b].[br]Von hier wird jede Expedition beginnen.[br][br][br][/p]', 81, '2004-01-08 23:32:52');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (31, 20, '[img]story/images/schuettelbier_atelier.jpg[/img][br]Ein Einblick in W.Schuettelbiers Atelier. ', 81, '2004-01-08 23:37:45');
+INSERT INTO `forum_postings` (`id`, `id_topic`, `post`, `id_player`, `datum`) VALUES (32, 21, '[img]story/images/houseinthedark.jpg[limg][br]Dieses nette Bild zeigt in welcher Qualit?t zuk?nftig die Hintergr?nde f?r das Spiel erstellt werden. Hierzu ?berarbeite ich alle bereits vorhandenen Hintergr?nde, die doch etwas grobpixelig sind und alle  Einrichtungsgegenst?nde und Figuren. Dieses Motiv ?Lonesome House In The Dark? kann man sich hier in zwei Gr??en herunterladen:[br]&nbsp;&nbsp;[URi]downloads/lonesomeHouseInTheDark_8x6.zip[/URi]&nbsp;800 x 600&nbsp;[UR/][br]&nbsp;&nbsp;[URi]downloads/lonesomeHouseInTheDark_16x12.zip[/URi]1600 x 1200[UR/]', 81, '2004-01-13 20:34:53');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `forum_topic`
+-- 
+
+DROP TABLE IF EXISTS `forum_topic`;
+CREATE TABLE IF NOT EXISTS `forum_topic` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `id_player` bigint(20) NOT NULL default '0',
+  `views` int(10) default NULL,
+  `posts` int(10) default NULL,
+  `board` tinyint(3) NOT NULL default '0',
+  `board_link_id` int(11) NOT NULL default '0',
+  `topic` varchar(75) NOT NULL default '',
+  `lastdate` datetime default NULL,
+  `lastplayer` bigint(20) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `board` (`board`)
+) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=latin1 AUTO_INCREMENT=22 ;
+
+-- 
+-- Daten für Tabelle `forum_topic`
+-- 
+
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (1, '2002-10-19 15:53:25', 2, 119, 5, 0, 0, 'Hallo, das Forum ist er?ffnet', '2003-06-16 20:06:28', 5);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (2, '2002-10-20 20:29:51', 5, 114, 2, 0, 0, 'Team, das Spiel und anderes', '2002-10-20 20:29:51', 5);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (3, '2002-11-14 19:05:24', 5, 94, 1, 1, 0, 'Neue Geschichten ...', '2002-11-14 19:05:24', 5);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (4, '2002-12-12 12:42:37', 8, 114, 3, 2, 0, 'WOLLT'' ICH MAL SAGEN ...', '2003-06-16 12:22:34', 5);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (5, '2003-06-16 20:09:35', 5, 73, 1, 2, 0, 'Bug Reports oder auch Fehlerberichte', '2003-06-16 20:09:35', 5);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (7, '2004-01-06 20:50:58', 81, 4, 5, 5, 0, '2004-1-9', '2004-01-08 23:35:45', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (8, '2004-01-06 20:51:56', 81, 10, 7, 5, 0, '2004-1-6', '2004-01-06 21:08:42', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (9, '2004-01-06 22:50:31', 81, 9, 10, 5, 0, '2004-1-1', '2004-01-06 23:30:55', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (10, '2004-01-06 23:15:11', 81, 3, 4, 5, 0, '2003-12-31', '2004-01-06 23:27:33', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (11, '2004-01-06 23:18:24', 81, 1, 2, 5, 0, '2003-12-30', '2004-01-06 23:20:33', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (12, '2004-01-06 23:20:48', 81, 1, 2, 5, 0, '2003-12-29', '2004-01-06 23:21:42', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (13, '2004-01-06 23:21:50', 81, 1, 2, 5, 0, '2004-1-30', '2004-01-06 23:22:00', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (14, '2004-01-06 23:22:18', 81, 1, 2, 5, 0, '2004-1-31', '2004-01-06 23:22:32', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (15, '2004-01-06 23:23:06', 81, 1, 2, 5, 0, '2003-12-28', '2004-01-06 23:23:40', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (16, '2004-01-06 23:24:07', 81, 1, 2, 5, 0, '2003-12-27', '2004-01-06 23:24:17', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (17, '2004-01-06 23:24:36', 81, 1, 2, 5, 0, '2003-12-26', '2004-01-06 23:24:45', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (18, '2004-01-06 23:37:27', 81, 2, 3, 5, 0, '2004-6-6', '2004-01-06 23:41:46', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (19, '2004-01-08 23:06:51', 81, 5, 6, 5, 0, '2004-1-8', '2004-01-08 23:23:41', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (20, '2004-01-08 23:36:21', 81, 1, 2, 5, 0, '2004-1-7', '2004-01-08 23:37:45', 81);
+INSERT INTO `forum_topic` (`id`, `date`, `id_player`, `views`, `posts`, `board`, `board_link_id`, `topic`, `lastdate`, `lastplayer`) VALUES (21, '2004-01-13 20:28:02', 81, 4, 5, 5, 0, '2004-1-13', '2004-01-13 20:38:02', 81);
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `funkfish_blog`
+-- 
+
+DROP TABLE IF EXISTS `funkfish_blog`;
+CREATE TABLE IF NOT EXISTS `funkfish_blog` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `language` varchar(8) NOT NULL default 'german',
+  `title` varchar(255) NOT NULL default '',
+  `text` text NOT NULL,
+  `datum` date NOT NULL default '0000-00-00',
+  PRIMARY KEY  (`id`),
+  KEY `language` (`language`)
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+
+-- 
+-- Daten für Tabelle `funkfish_blog`
+-- 
+
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (1, 'german', 'Die Funkfische sind wieder da!', 'Funkfish Games hat wieder eine eigene Seite. [br]Die Projekte sind nicht mehr l?nger in die Homepage von dem Dailylama-Projekt und seinen Geschichten integriert. Vielmehr habe ich mich entschlossen alle meine zuk?nftigen und in Entwicklung befindlichen Spiele hier vorzustellen. [br] [br]Immerhin gibt es mindesten drei Projekt, die hier zu erw?hnen w?ren: [br][br][URi]http://www.dailylama.net[/URi]Das &#187;Dailylama&#171; Projekt[UR/], die Geschichte eine Nagerwelt und des Zweiten Zeitalters.[br] [br][URi]http://www.tentakel-jones.de[/URi]The Fade of(f) LaLaLa [UR/].Aus sehr bekanntem Anlass- wie haben es schon wieder getan -ein brandneues Adventure.[br] [br]Das Funkfish [b]TALEnviroment[/b] und die dazu geh?rigen Java-Pakete.[br][br]Hatte ich noch nicht erw?hnt? Alle meine Spiele erforndern Java. Also holt euch das [URi]http://java.sun.com/getjava/[/URi]J2SDK von Sun[UR/].[br][br]Falls ihr euch wundert, was der blaue Kasten rechts soll:[br]Das ist englisch.', '2004-06-20');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (3, 'german', 'Mini Krawall', '\r[br]\r[br]Scene a("die Strasse"): in einem kleinen Dorfe\r[br] links stehen 4 und rechts 5 H?user("t?r 1"-"t?r 9")\r[br]   vorne wird die Strasse durch ein "grosses Haus" abgeschlossen.\r[br]       Man sieht aber, dass es "links" und "rechts" weiter geht.\r[br]\r[br]Scene b("grosses Haus"): in dem "grossen Haus".\r[br]\r[br]Scene c("vor der Kneipe"): \r[br]  an diesem Ende der Strasse steht eine "Kneipe".\r[br] "rechts" der "Kneipe" f?hrt ein Weg weiter.\r[br]   man sie das Haus links nur ansatzweise\r[br]Scene d ("w?ste W?ste"): eine w?ste W?ste. Geht man Richtung der "Berge",\r[br]      kommen diese nicht n?her.\r[br] In der W?ste befindet sich ein "Skellet". Es fragt einen nach Wasser.\r[br]        Man bekommt selber Durst. \r[br]        Man kann jetzt  [a: umkehren] \r[br]                    [b: verdursten]\r[br]Scene e ("in der Kneipe"):\r[br]\r[br]"rechts" f?hrt jeweil in die  Scene d ("W?ste")\r[br]', '2004-08-30');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (4, 'german', 'im Haus', 'Scene ("im Haus"):[br]wenn man das Geb?ude betritt, sieht man rechts/links/mitte eine "Treppe" [br]hinten links/rechts/ sieht man ein "Fenster" mit "Blumenpott" und "Gardienen"[br]das "Zimmer" ist leer.[br]dreht man sich um, sieht man ein weiteres "Fenster" links/rechts, [br]auf der anderen Seite die "T?r" zur Strasse[br]Scene ("oberes Zimmer"):[br]ein Dachzimmer. Man sicht ein Gauben-"Fenster" und im Boden eine "Klappe"/"T?r".[br]Scene ("die K?che"):[br]Zu betreten durch die Klappe im Dachzimmer.[br]Man sieht eine "T?r" nach drausen (W?ste)[br]die Treppe von hinten[br]die Treppe nach unten den Keller[br]Scene ("im Keller"):', '2004-08-30');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (5, 'german', 'Eine kurze Beschreibung des "Barbarian Times"-Projektes', 'Kurze Beschreibung des Projekts:\r[br]Ganz kurz gesagt handelt es sich um ein "old-school" Adventure.\r[br]Etwas ausf?hrlicher beschrieben handelt es sich um ein Adventure bei dem man eine eigene kleine Welt erkundet. Es kommen 8 gro?e Lokations vor, die in Szenen, Levels und Quests zerlegt gespielt werden. Das Spiel l?uft nicht linear ab, d.h. Quests k?nnen zu jeder beliebigen Zeit(- Level) gel?st werden. \r[br]Zur Story:\r[br]Nachdem das hochtechnisierte "erste Zeitalter", es fertiggebracht hat sich mittels einem Garagenexperiment selbst zu vernichten, fliegt die Welt sprichw?rtlich in Tr?mmern. Nein, sie liegen nicht, die Tr?mmer,  sie fliegen. Es brechen barbarische Zeiten an.\r[br]Die Pedesterrians sind die einzigen intelligenten ?berlebenden. Wir w?rden sie schlichtweg f?r Ratten halten. Sie selber nennen sich unteranderem Doedel(nl.), Dudel, Doodles oder Ratten. Die Doedel sind auf der Suche nach dem verlorenen Buch des Sch?pfers, besser gesagt, nach den einzelnen Seiten dieses Buches...\r[br]\r[br](Geplante) Features:\r[br]Point&Click Steuerung,\r[br]gute, alte 2DGrafik und Musik,\r[br]Spa? ...\r[br]siehe auch Todo-Liste\r[br]\r[br]Technik:\r[br]Java 2(J2Sdk 1.4) und Java 5(JDK 1.5), ich liebe diese Verwirrung die Sun da\r[br]betreibt. Es wurde bereits ein eigens kleines Package erstellt, welches immer\r[br]noch erweitert wird. Das(die) Spiele werden als eigene Resourcen-Packages\r[br]erstellt. Hintergr?nde bevorzugt als JPG-Grafiken, Animationen und\r[br]Objekt-Grafiken als 24Bit-PNGs mit Alpha Tranparenz. Sounds und Musik als\r[br]wav-Dateien. F?r die Musik w?ren auch MIDIs m?glich.\r[br]\r[br]ToDo-Liste (optional):\r[br]Noch eine Menge, als da w?ren: \r[br]Dialoge f?r den Singleplayer-Modus,\r[br]Dialog-System ?berarbeiten.\r[br]Quests ?berarbeiten, teilweise neu storyboarden,\r[br](ohne die grobe Storylinie zu verlassen)\r[br]Z-Maschine f?r die Steuerung von kooperativen NPCs,\r[br]weitere Evaluierung des Mutiplayermodus,\r[br]Datenmodel und Datenbanksystem f?r selbigen.\r[br]Editor(en) f?r das Package (Single und Multiplayermodus) \r[br]\r[br]Verwendete Tools (optional):\r[br]Ein(jeder beliebige) Texteditor mit Syntax-Highlightning und Compiler-\r[br]Einbindung. \r[br]CVS (wird auf Subversions umgestellt)\r[br]F?r die Grafik verwende ich PaintShop Pro 8, demn?chst 9. PSP hat sich als \r[br]erheblich sinvoller erwiesen als die Kombination von Adobe PS und Ilu, \r[br]unteranderem weil man in PSP Vectorgrafik mit Rastergrafik mischen kann. \r[br]\r[br]Systemanforderungen (Prozessor, RAM, HD-Speicher, ... - optional):\r[br]Auf meinem Pentium 133MHz(96MB Ram) geht das Spiel, auf meinem Celeron-Notebook \r[br]1GHz(256MB Ram) nicht. Der ist inzwischen aber auch durchgebrannt. Auf einem PII\r[br]400MHz(512MB Ram) und einem PIV 1,4MHz (1GB Ram) l?uft das Spiel. Mit anderen\r[br]Worten alzu hohe Anforderungen stellt das Spiel nicht. Auf aktuellen System\r[br]sollte die Applikation funktionieren. Es ist keine besondere (3d)Grafikkarte\r[br]notwendig, da das Spiel kommplett 2D ist, viel Arbeitsspeicher ist da\r[br]sinnvoller.\r[br]', '2004-09-09');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (6, 'english', 'A todo-list PART1', 'the project of funkfish TALE[br]a T.extA.dventureL.ovelyE.viroment[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;awip.[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *[br]a z-like-mashine:[br]based on this basic commands:[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GOTO (simular to the crosshair cursor)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HAND (manipulate objects with the hand, eg. MOVE, DROP, PICKUP etc.)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EYE (see, view, lok at the object. Should return a desciption of what you see)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MOUTH (simular to speak to/with the object. Objects can also be persons - npcs)[br]//&nbsp;&nbsp;&nbsp;INVENTORY[br]//&nbsp;&nbsp;&nbsp;LOCATION[br]//&nbsp;&nbsp;&nbsp;FIGURE[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?HELP[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!EXIT[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!QUIT[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;LOAD[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;SAVE[br]COOKIES may used to remember status of the game[br]storing the game to restart where you have been[br][br]location descriptor [br]a written text. Descipts what you see generaly and give you highlighted inline overview about the objects.[br]eg:[br]Some FIVE MEN are standing in a dark room with one CANDLE.[br]They look angry. So you can''t reach the DOOR behind them.[br][br]ACTIONS: blow candle(MOUTH CANDLE), GOTO DOOR[br][br](a) special output and input line(s) simular to statusline,[br]but you may also make decide(select) what to make/speak/see... next[br][br]the normal input line simular to chat[br][br]usefull for a multiplayer games to send desciptins over the internet[br][br]a view of the room picture/maybe the backgroundimage instead', '2004-06-15');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (7, 'english', 'A todo-list PART2', 'the project of funkfish TALE\r[br]a T.extA.dventureL.ovelyE.viroment\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]build a game/location enviroment to run the game\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]a gamepanel sytems with different output -  statusbars\r[br]for checkbox or radiobutton selections\r[br]interaktive text input (commandostyle)\r[br]and output of eventmessages\r[br]the gamepanel will have a general look and feel\r[br]but may be part of the location\r[br]it will clearly by part of the locationview\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]the projectmanager\r[br]before you can load a project you have to build one\r[br]a new project button\r[br](you have to set the project directory, before you can create a project))\r[br]-  input dialoy for the project name\r[br]warning dialogs on:\r[br]delete (project) button \r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- show delete project dialog than\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  a listbox with all projects\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buttons "go" / "cancel"\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ("go") show dialog (you are going to delete the project [projectname])\r[br]run (you have to create a project, before you can test it)\r[br]open (you have to create a project, before you can test it)\r[br]store (you have to create a project, before you can test it)\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  show dialog with all locations in the project\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  if there are any, show warning (choose location and create a new one)\r[br]default font -  show dialog all selectable fonts in the fontfolder and sansserif, serif, monospaced\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in a listbox twice -  one labed default font the other titlefont\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add colorchoosers to select the fontcolors\r[br]default background -  show dialog with a colorchooser&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and a special button to browse for a background image\r[br]', '2004-06-22');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (8, 'german', 'Ratten-Gehirn fliegt Kampfjet', 'zitiert von http://www.golem.de/0410/34388.html\r[br]\r[br]Experiment soll helfen, Funktion und Interaktion von Hirnzellen zu erforschen \r[br]Um einen besseren Einblick in die Funktion von Hirnzellen zu erlangen, entnahm Thomas DeMarse, Professor an der Universit?t Florida, rund 25.000 lebende Neuronen bzw. Nervenzellen aus einem Ratten-Gehirn und kultivierte diese in einer Glasschale. Dennoch konnte das "Ratten-Hirn" ein simuliertes Flugzeug steuern. \r[br]... \r[br]Jetzt sieht man, wo ich die Ideen f?r meine Geschichten her habe -&gt; solchen absonderlichen Meldungen. z.B. 14j?hriger baut Atommeiler in Garage, noch so ein wahrer Fall, US-Milit?rs planen Robotkakerlake, ...\r[br]...\r[br]Das extrahierte Gehirn soll Wissenschaftlern erlauben, die Funktion von Hirnzellen in Echtzeit zu beobachten. Gelingt es, das Zusammenspiel zwischen den Hirnzellen besser zu verstehen, k?nnen sich in Zukunft m?glicherweise Nervenkrankheiten wie beispielsweise Epilepsie besser behandeln lassen. Zudem k?nnen Hirnzellen vielleicht eines Tages als eine Art Mini-Computer eingesetzt werden, um unbemannte Flugzeuge zu steuern oder um Aufgaben zu erf?llen, die f?r Menschen sehr gef?hrlich sind. \r[br]\r[br]"Es geht uns darum, zu untersuchen, wie das Gehirn funktioniert", erkl?rt Thomas DeMarse. Das Gehirn bietet nicht nur eine enorme Speicherkapazit?t, es erlaubt es auch, T?tigkeiten nebenbei auszuf?hren, zu denen ein Computer nicht in der Lage ist. Zwar sind Computer bef?higt, bestimmte Berechnungen sehr schnell durchzuf?hren, an die Flexibilit?t des menschlichen Gehirns reichen sie aber nicht heran. \r[br]\r[br]Das experimentelle "Gehirn" von DeMarse steuert einen F-22-Kampfjet in einer Simulation, wobei 60 Elektroden zum Einsatz kamen. Auf diese wurden die Hirnzellen aufgetragen, die, so DeMarse, sich schnell wieder miteinander verbanden und so ein lebendes neuronales Netz bildeten. Gehirn und Simulator entwickelten dann eine Zwei-Wege-Verbindung, ?hnlich wie Nervenzellen ihre Signale gegenseitig interpretieren, um den menschlichen K?rper zu steuern. Durch Beobachtung der Nervenzellen wollen die Forscher nun die Funktion des neuronalen Netzes dekodieren. \r[br]\r[br]Erstmals an den Simulator angeschlossen war das Gehirn zwar nicht in der Lage, das Flugzeug zu kontrollieren, denn das Flugzeug driftete in zuf?llige Richtungen. Das neuronale Netzwerk reorganisierte sich aber langsam, wodurch es zunehmend in der Lage war, das Flugzeug zu steuern. Dabei konnte es auch auf unterschiedliche Wetterbedingungen reagieren.', '2004-10-27');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (9, 'english', 'Do Not Feel Embarrassed And Ashamed', 'I was shocked too - in the first moments of the election night.[br]Then I was starting thinking. Here are my final results:[br][br]Do not feel ashamed.[br]It is in fact not about Americans, not a typical "American" think.[br]I''m sure that in every other country of the world this could happen too.[br][br]There are indeed more than 56% in your country still believing that G.W.B  is an Idiot. It''s about nearly 100%, accept one. It''s a proven fact. But this idiot has spoken out loud and often enough, that you still do not know anything about the other guy. And this time he was honestly true.\r[br]People do not like to inform their self. They try to avoid this.[br][br]It''s like thinking : a hard job and a lot of work anywhere in the world.[br][br]So that''s why 51% were voting for G.W.B, because they know he''s an idiot.\r[br]\r[br]', '2004-11-05');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (10, 'english', 'Me In The Windows', '[img]http://www.funkfish.net/image/sfcc.jpg[imgw]340[imgh]262[/img]\r\n[br]Look the guy on the right side, that is me.\r\n[br]If you wanna meet up, search for me in the windows or the lobby of the sfcc, Odeonsplatz, munich.\r\n[br]I Usaly stay there on saturdays afternoons and sometimes even on sundays. ', '2004-11-06');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (11, 'german', 'America is still a mirical', 'Trotz englischen Titels, werde ich jetzt nichts ?ber die USA schreiben.[br]Vielmehr geht es hier um das Tentakel-Jones-Projekt.\r\n[br]Ich suche nach: Mitarbeitern und ?bersetzern,[br]...[br]Mit-Grafikern, Mit-Programmierer ,und was man sonst so noch f?r ein Projekt braucht, kurz um Mit-Streitern.[br][br]Hier f?r euch das neueste Bild und ann?hernde Final von Tentakel-Jones:[br][br][img]http://www.tentakel-jones.de/img/tentakel_jones_nv.jpg[imgw]340[imgh]300[/img]', '2004-11-06');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (12, 'german', 'Gehirn-Lawinen helfen bei Gedächnisschwund', 'zitiert von golem: http://www.golem.de/0502/36092.html [br] [br]Versuche mit Rattenhirnen zeigen selbstwachsende Netzwerke[br][br]Bei Experimenten mit Rattenhirnen haben US-Forscher einen neuen Effekt beobachtet, den sie "Gehirn-Lawinen" nennen. Eine einzelne Erinnerung l?st dabei eine Kettenreaktion aus. Die Erkenntnisse sollen sp?ter einmal bei nachlassendem Ged?chtnis helfen.[br][br]Wissenschaftler der Universit?t Indiana hatten Ende 2004 Teile eines Rattenhirns an Mikroelektroden angeschlossen. Dabei stellten sie fest, dass die Nervenzellen sich gegenseitig aktivierten - dies aber nicht langsam und stetig, sondern schubweise. Die Forscher pr?gten daf?r den Begriff der "Gehirn-Lawine" oder "brain avalanche".[br][br]In einer Computersimulation bildeten die Wissenschaftler das Muster der Aktivierung nach. Dabei brachten die Rechner nach kurzer Zeit eine Reihe stabiler Muster zustande, wie sie auch bei fr?heren Versuchen mit den Gehirnen von Affen beobachtet worden waren. Die Primaten zeigten diese Muster, nachdem sie einen Lernprozess abgeschlossen hatten.[br][br]Daher gehen die Forscher jetzt davon aus, dass diese lawinenartigen Abl?ufe auch an dem Mechanismus der Erinnerung beteiligt sind. Das Ziel der Untersuchungen ist es, die neuronalen und chemischen Ausl?ser zu entschl?sseln, um vielleicht einmal Mittel gegen Ged?chtnisschw?che zu finden. Die Ergebnisse aus Indiana werden am 4. Februar 2005 in der Zeitschrift "Physical Review Letters" ausf?hrlich ver?ffentlicht.[br] [br] \r\n[br]Die Funktion von biologischen neuronalen Netzen steht schon l?nger im Zentrum der Gehirnerforschung. Bereits im Oktober 2004 war es in einem ?hnlichen Experiment an der Universit?t von Florida gelungen, Zellen eines Rattenhirns zur Steuerung eines Flugsimulators einzusetzen. Auch dabei organisierte sich das neuronale Netz selbst.[br] [von Nico Ernst][br]  ', '2005-02-11');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (13, 'english', 'A small part of my adventure editor is ready to run', '[img]image/screenshot_1.jpg[/img] [br]\r\n[br]...or should I say this is an standalone tool?\r\n[br]Well, anyway, it''s creates vector images so far, and -  haven''t finished the GUI for the video toolset so far - can create movie-files(*.mov) with and with out sound. You write an imagelist, call tool NO.1 on the console, get a silent movie, merge this movie with a wav file an than finally concatenate that with another movie. On the console ..., but I will change this.[br]Also a dialogeditor is include, a storyboard-writer, too.[br]The format(s) to save all projectfiles is based on XML; SVG for the images, selfmade for the other types.[br] [br]See here a image that I made with the image-editor: [br] [br] [img]image/morgendunst.jpg[imgw]340[/img][br]', '2005-03-06');
+INSERT INTO `funkfish_blog` (`id`, `language`, `title`, `text`, `datum`) VALUES (14, 'german', 'Am Scheideweg', 'Am Scheideweg? Wird das Projekt aufgegeben? Niemals! Von den mehr als 100 Szenen sind 60 bereits "fertig" gezeichnet. Mit anderen Worten, ich weiß,wie sie aussehen werden. Das Storyboard wächst unaufhörlich, was mich allmählich beängstigt. Von den Editoren, ins besondere den grafischen, arbeiten die meisten. Und genau hier liegt das Problem.[br][br]Es gilt folgendes zu entscheiden: Wird die Grafik weiterhin mit Hilfe von PSPro9 entwickelt oder steige ich ganz auf den eigenen SVG-Editor um. Damit ließe sich dann die Grafik beliebig skalieren, die Bildschirmauflösung würde keine Rolle mehr spielen.[br][br]Netter Weise kann man aber auch mit solcher Grafik -reine Vektorgrafik- hervorragend 3 Dimensionen darstellen, ohne dass das ganze nach Pixel-Soße aussieht. Es sieht vielmehr nach 2d Grafik aus.[br][br]Nachdem ich das Problem kurzfristig angerissen habe, PSP, SVG oder gar 3dV, hier meine hoffentlich weise endgültige Entscheidung:[br][br]Ich widme mich ab sofort, wieder vermehrt den Skripten, dem Storyboard und allerlei Skizzen. Sowas sollte nicht übers Knie gebrochen werden ...[br][br]Nebenbei habe ich fast alle Charaktere im Spiel noch einmal, und wahrscheinlich nicht das letzte Mal, überarbeitet. Neben den beiden Hauptcharakeren, "Hamster Dudels" und "I-Rat", werden im Spiel das Lama, Meister Soso, Archie und Noel, Waldbewohner und Hühner, Blumenkinder, Schweine und andere mehr oder minder bekannte Zeitgenossen auftreten.[br] [img]http://www.funkfish.net/spiele/images/pic_of_the_week/hamster_and_rat.gif[imgw]340[imgh]250[/img]', '2005-04-28');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `funkfish_english`
+-- 
+
+DROP TABLE IF EXISTS `funkfish_english`;
+CREATE TABLE IF NOT EXISTS `funkfish_english` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `language` varchar(8) NOT NULL default 'english',
+  `title` varchar(255) NOT NULL default '',
+  `text` text NOT NULL,
+  `datum` date NOT NULL default '0000-00-00',
+  PRIMARY KEY  (`id`),
+  KEY `language` (`language`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+-- 
+-- Daten für Tabelle `funkfish_english`
+-- 
+
+INSERT INTO `funkfish_english` (`id`, `language`, `title`, `text`, `datum`) VALUES (1, 'english', 'A todo-list PART1', 'the project of funkfish TALE[br]a T.extA.dventureL.ovelyE.viroment[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;awip.[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *[br]a z-like-mashine:[br]based on this basic commands:[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GOTO (simular to the crosshair cursor)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HAND (manipulate objects with the hand, eg. MOVE, DROP, PICKUP etc.)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EYE (see, view, lok at the object. Should return a desciption of what you see)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MOUTH (simular to speak to/with the object. Objects can also be persons - npcs)[br]//&nbsp;&nbsp;&nbsp;INVENTORY[br]//&nbsp;&nbsp;&nbsp;LOCATION[br]//&nbsp;&nbsp;&nbsp;FIGURE[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?HELP[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!EXIT[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!QUIT[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;LOAD[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;SAVE[br]COOKIES may used to remember status of the game[br]storing the game to restart where you have been[br][br]location descriptor [br]a written text. Descipts what you see generaly and give you highlighted inline overview about the objects.[br]eg:[br]Some FIVE MEN are standing in a dark room with one CANDLE.[br]They look angry. So you can''t reach the DOOR behind them.[br][br]ACTIONS: blow candle(MOUTH CANDLE), GOTO DOOR[br][br](a) special output and input line(s) simular to statusline,[br]but you may also make decide(select) what to make/speak/see... next[br][br]the normal input line simular to chat[br][br]usefull for a multiplayer games to send desciptins over the internet[br][br]a view of the room picture/maybe the backgroundimage instead', '2004-06-15');
+INSERT INTO `funkfish_english` (`id`, `language`, `title`, `text`, `datum`) VALUES (2, 'english', 'A todo-list PART2', 'the project of funkfish TALE\r[br]a T.extA.dventureL.ovelyE.viroment\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]build a game/location enviroment to run the game\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]a gamepanel sytems with different output -  statusbars\r[br]for checkbox or radiobutton selections\r[br]interaktive text input (commandostyle)\r[br]and output of eventmessages\r[br]the gamepanel will have a general look and feel\r[br]but may be part of the location\r[br]it will clearly by part of the locationview\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]the projectmanager\r[br]before you can load a project you have to build one\r[br]a new project button\r[br](you have to set the project directory, before you can create a project))\r[br]-  input dialoy for the project name\r[br]warning dialogs on:\r[br]delete (project) button \r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- show delete project dialog than\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  a listbox with all projects\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buttons "go" / "cancel"\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ("go") show dialog (you are going to delete the project [projectname])\r[br]run (you have to create a project, before you can test it)\r[br]open (you have to create a project, before you can test it)\r[br]store (you have to create a project, before you can test it)\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  show dialog with all locations in the project\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  if there are any, show warning (choose location and create a new one)\r[br]default font -  show dialog all selectable fonts in the fontfolder and sansserif, serif, monospaced\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in a listbox twice -  one labed default font the other titlefont\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add colorchoosers to select the fontcolors\r[br]default background -  show dialog with a colorchooser&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and a special button to browse for a background image\r[br]', '2004-06-22');
+INSERT INTO `funkfish_english` (`id`, `language`, `title`, `text`, `datum`) VALUES (3, 'english', 'A todo-list PART1', 'the project of funkfish TALE[br]a T.extA.dventureL.ovelyE.viroment[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;awip.[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *[br]a z-like-mashine:[br]based on this basic commands:[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GOTO (simular to the crosshair cursor)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HAND (manipulate objects with the hand, eg. MOVE, DROP, PICKUP etc.)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EYE (see, view, lok at the object. Should return a desciption of what you see)[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MOUTH (simular to speak to/with the object. Objects can also be persons - npcs)[br]//&nbsp;&nbsp;&nbsp;INVENTORY[br]//&nbsp;&nbsp;&nbsp;LOCATION[br]//&nbsp;&nbsp;&nbsp;FIGURE[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?HELP[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!EXIT[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!QUIT[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;LOAD[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;SAVE[br]COOKIES may used to remember status of the game[br]storing the game to restart where you have been[br][br]location descriptor [br]a written text. Descipts what you see generaly and give you highlighted inline overview about the objects.[br]eg:[br]Some FIVE MEN are standing in a dark room with one CANDLE.[br]They look angry. So you can''t reach the DOOR behind them.[br][br]ACTIONS: blow candle(MOUTH CANDLE), GOTO DOOR[br][br](a) special output and input line(s) simular to statusline,[br]but you may also make decide(select) what to make/speak/see... next[br][br]the normal input line simular to chat[br][br]usefull for a multiplayer games to send desciptins over the internet[br][br]a view of the room picture/maybe the backgroundimage instead', '2004-06-15');
+INSERT INTO `funkfish_english` (`id`, `language`, `title`, `text`, `datum`) VALUES (4, 'english', 'A todo-list PART2', 'the project of funkfish TALE\r[br]a T.extA.dventureL.ovelyE.viroment\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]build a game/location enviroment to run the game\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]a gamepanel sytems with different output -  statusbars\r[br]for checkbox or radiobutton selections\r[br]interaktive text input (commandostyle)\r[br]and output of eventmessages\r[br]the gamepanel will have a general look and feel\r[br]but may be part of the location\r[br]it will clearly by part of the locationview\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* * *\r[br]the projectmanager\r[br]before you can load a project you have to build one\r[br]a new project button\r[br](you have to set the project directory, before you can create a project))\r[br]-  input dialoy for the project name\r[br]warning dialogs on:\r[br]delete (project) button \r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- show delete project dialog than\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  a listbox with all projects\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buttons "go" / "cancel"\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ("go") show dialog (you are going to delete the project [projectname])\r[br]run (you have to create a project, before you can test it)\r[br]open (you have to create a project, before you can test it)\r[br]store (you have to create a project, before you can test it)\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  show dialog with all locations in the project\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  if there are any, show warning (choose location and create a new one)\r[br]default font -  show dialog all selectable fonts in the fontfolder and sansserif, serif, monospaced\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in a listbox twice -  one labed default font the other titlefont\r[br]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add colorchoosers to select the fontcolors\r[br]default background -  show dialog with a colorchooser&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and a special button to browse for a background image\r[br]', '2004-06-22');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `longnews`
+-- 
+
+DROP TABLE IF EXISTS `longnews`;
+CREATE TABLE IF NOT EXISTS `longnews` (
+  `id_news` int(14) NOT NULL default '0',
+  `filename` varchar(255) NOT NULL default 'news_.inc',
+  KEY `id_news` (`id_news`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- 
+-- Daten für Tabelle `longnews`
+-- 
+
+INSERT INTO `longnews` (`id_news`, `filename`) VALUES (34, 'news_1.inc');
+INSERT INTO `longnews` (`id_news`, `filename`) VALUES (35, 'english.inc');
+INSERT INTO `longnews` (`id_news`, `filename`) VALUES (42, 'news_2.inc');
+INSERT INTO `longnews` (`id_news`, `filename`) VALUES (46, 'news_3.inc');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `news`
+-- 
+
+DROP TABLE IF EXISTS `news`;
+CREATE TABLE IF NOT EXISTS `news` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `text` text NOT NULL,
+  `datum` datetime NOT NULL default '0000-00-00 00:00:00',
+  `href_more` tinyint(2) NOT NULL default '0',
+  `language` tinyint(4) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=53 DEFAULT CHARSET=latin1 AUTO_INCREMENT=53 ;
+
+-- 
+-- Daten für Tabelle `news`
+-- 
+
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (1, 'Das Doedels Projekt sucht Programmierer.<BR>\r\n<A HREF="http://sourceforge.net/users/lieschen/" TARGET="_new">Hier bewerben.</A>', '2002-07-22 16:31:51', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (2, 'Die Doedels-Geschichten gehen online.', '2002-09-26 22:33:59', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (3, 'Die scharfen Schafe sind los Alles ?ber die Schlacht um Hammeln in den Doedelsgeschichten..', '2002-10-19 00:04:19', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (4, 'Neue DailyLama Bilder und einige neue Eintr?ge im Lexikon.', '2002-10-24 20:09:02', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (5, 'Neuer Teil von &#187;Scharfe Schafe&#171; ist online. Update der Geschichte jetzt w?chentlich Sonntags.', '2002-10-27 12:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (6, 'Ein wenig mehr &#187;Gute Nachrichten&#171; gibt es in den Doedelsgeschichten zu lesen. ', '2002-11-01 00:02:24', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (7, 'Eine kleine ?nderung der Struktur bringt euch  Erfreuliches, etwas mehr Inhalt.', '2002-11-01 02:33:11', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (10, 'Ein kleineres Update erm?glicht ein besseres Design. Verlinkung in den Geschichten wurde verbessert.', '2002-11-14 17:44:40', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (9, 'Super. Der Server l?uft wieder. Puretec hat den Stecker wieder reingesteckt.', '2002-11-05 22:16:24', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (11, 'Jetzt vollst?ndig: Die Geschichten &#187;Gute Nachrichten&#171; und &#187;Scharfe Schafe&#171;', '2002-11-14 18:03:34', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (12, 'Ab heute kommt jede Woche eine neuer Teil der Geschichte um den Herrscher Rattenzahn.', '2002-11-24 03:34:36', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (13, 'Einige Erg?nzungen der Weltkarte (Lexikon -> Geograhie) wurden vorgenommen. ', '2002-11-28 18:04:53', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (14, 'Am 1.Advent wird eine neue Person vorgestellt. Der 2. Teil von &#187;Auch du ...?&#171; geht online. ', '2002-11-28 18:09:05', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (15, 'Mitt etwas Versp?tung ist der dritte Teil von &#187;Auch du ...?&#171; online gegangen. ;-)', '2002-12-08 20:11:57', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (16, 'Der vierte Teil von &#187;Auch du ...?&#171; steht zum lesen bereit. Frohen 3.ten Advent.', '2002-12-15 15:31:58', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (17, 'Frohen 4.ten Advent. &#187;Auch du ...?&#171; der 5.te Teil, die Schlacht gegen die Barbaren wird  geschlagen.', '2002-12-22 19:20:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (18, 'Derweil w?msche ich frohe Weinachten durchlebt zu haben.Ich hoff'', ihr habt sch?ne Geschenke verteilt.', '2002-12-29 11:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (19, 'In Teil 6 der Geschichte &#187;Auch du ...&#171; erfahrt ihr mehr ?ber Rattenzahns Heimkehr.', '2002-12-29 11:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (20, 'Ganz nebenbei: Ich w?nsche schon mal allen, die diese Seite besuchen, &#187;einen guten Rutsch, ...&#171;', '2002-12-31 19:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (21, '&#187;.. und ein frohes neues Jahr 2003&#171;.\r\nDieser Monat ist den Drachen gewidmet.', '2003-01-01 00:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (22, 'Und wieder ein neuer Teil von &#187;Auch du ...?&#171; ist online. Viel Spa?!', '2003-01-05 00:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (23, 'Und wieder ein neuer Teil von &#187;Auch du ...?&#171; ist online. Viel Spa? beim Lesen!', '2003-01-05 00:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (24, 'Es gibt Erg?nzungen im Lexikon zu bestaunen. Wenn ihr wissen wollt, was Sokratie ist, schaut nach.', '2003-01-09 00:00:36', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (25, 'Das gro?e Finale von &#187;Auch du ...?&#171; wird er?ffnet. Alles ?ber Jakubs Plan.', '2003-01-19 00:00:02', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (26, 'Diesen Sonntag gibt es eine neue Geschichte, &#187;Die Kleine Ratte&#171;. Ich w?nsche euch viel Vergn?gen.', '2003-01-26 21:28:47', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (27, 'Update des Servers. Ausfall war nur vor?bergeh- end. Deswegen gibt es heute keine Geschichte.', '2003-02-09 16:55:25', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (30, 'Wie versprochen, auch heute keine Fortsetzung, daf?r zwei alte Spiele als Applets(Projekt & Spiele).', '2003-02-23 15:40:20', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (28, 'Heute keine Fortsetzung. Profile f?r die Spieler bereitgestellt, Projekt-Bereich ?berarbeitet.', '2003-02-16 22:39:12', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (31, 'Seit letzter Woche ist die Geschichte "?ber den Wolken" online.', '2003-03-16 19:22:46', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (32, 'Jeder, der bereits registriert ist, m?ge sich bitte einloggen und sein Profil kontrollieren!', '2003-03-17 19:30:06', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (33, 'Krawall wird voraussichtlich erster Schauplatz des neuen Doedel - Spieles.', '2003-03-16 19:25:03', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (34, 'Leider war ich sehr krank. Deswegen hat sich auf dieser Seite recht wenig getan.', '2003-03-29 21:00:00', 1, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (35, 'Wir suchen immer noch jemanden f?r das Projekt (das Spiel), die/der ins Englische ?bersetzen mag. ', '2003-04-10 19:25:00', 1, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (36, 'Seit zwei Stunden l?uft der Spieleserver.Spiele von eingeloggten Spieler werden mitprotokolliert.', '2003-03-30 20:30:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (37, 'Ab heute wird die Saga von &#187;Willhelm Im Busch&#171; ver?ffentlicht. N?chster Teil: Karfreitag.', '2003-04-11 16:00:23', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (39, 'Der sechste Streich den Willhelm f?hrte und der siebte am n?chsten Sonntag. Lest die Geschichten.', '2003-05-18 22:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (38, 'Der vierte Streich der &#187;Willhelm Im Busch&#171; Saga. Der f?nfte folgt zugleich am n?chsten Sonntag.', '2003-05-04 00:00:01', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (40, 'Die neuste Version des Doedels- Adventure findet ihr auf <a href="http://sourceforge.net/projects/doedels/" tartget="_blank">sourgeforge</a>. Bitte herunterladen und testen.\r\n', '2003-05-18 22:02:49', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (42, 'Wie wohl jeder bemerkt hat, war der Stecker gezogen. Diesmal der ganz gro?e ...', '2003-05-20 19:42:27', 1, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (46, 'Vollst?ndig spielbare Demo des Adventures auf <a href="http://sourceforge.net/projects/doedels/" tartget="_blank">sourgeforge</a>. Mehr dazu <a href="http://www.doedels.de/index.php?str=11&newsid=46"  tartget="_blank">hier</a>.', '2003-10-29 04:04:04', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (44, 'Wieder eine neue Version des Adventures findet ihr auf <a href="http://sourceforge.net/projects/doedels/" tartget="_blank">sourgeforge</a>. Bitte downloaden und testen.', '2003-06-12 20:33:35', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (45, 'Das erkl?rt auch warum auf der Seite sowenig geschieht. Ich bereite Informationen ?ber Krawall vor. ', '2003-06-12 20:36:01', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (47, 'Testweise ist die neue Entwickler- seite "Funkfisch" online gegangen. Die Funktionen sind nicht eingebaut.', '2003-07-24 22:10:27', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (48, 'Nur so nebenbei. Der Schlu? der Wilhelm im Busch Story ist ver?ffentlicht.\r\n', '2003-09-30 22:40:52', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (49, 'Bei den Geschichten habe ich heute &#187;die Geschichte von Drecksloch&#171; eingestellt. Demn?chst mehr ...', '2003-11-02 20:55:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (50, 'Heute habe ich einige kleinere Umbauten am Design der Seite vorgenommen, wie ihr mit Sicherheit seht.', '2003-11-23 23:00:00', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (51, 'Mit einiger Versp?tung beginnt nun die Adventsgeschichte &#187;Der zoringe Nick&#171;. Den n?chsten Teil gibt es n?chsten Advent.', '2003-12-07 20:01:59', 0, NULL);
+INSERT INTO `news` (`id`, `text`, `datum`, `href_more`, `language`) VALUES (52, 'Seit heute ist das Tagebuch im Bereich Spiele-Projekt in Betrieb. Eine Kommentar - M?glichkeit wird folgen.  ', '2004-01-06 23:45:00', 0, NULL);
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `person_month`
+-- 
+
+DROP TABLE IF EXISTS `person_month`;
+CREATE TABLE IF NOT EXISTS `person_month` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `datum_von` date NOT NULL default '0000-00-00',
+  `datum_bis` date NOT NULL default '0000-00-00',
+  `imagepath` varchar(255) NOT NULL default '',
+  `teaser` text NOT NULL,
+  `id_docu` int(11) NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1 AUTO_INCREMENT=14 ;
+
+-- 
+-- Daten für Tabelle `person_month`
+-- 
+
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (1, '2003-10-31', '2003-12-01', 'story/images/schuettelbier.jpg', 'Dieser Monat ist gewidmet Willicombaldus Schuettelbier, Vielbereister, Schriftsteller und Geograph. Erfahre die Wahrheit dar?ber, wie es zu der Gr?ndung des Otogon-X Theaters kam. Lese alles ?ber seine fabul?sen Geschichten, Geld, Skandale und Intrigen.', 5, 'W. Schuettelbier');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (2, '2002-11-30', '2003-01-01', 'story/images/schwarzebraut.jpg', 'Dieser Monat widmet sich ihrer D?sternis, der Schwarzen Braut des Schwarzen Windes. Alles ?ber ihre dunklen Seiten, ihre dunklesten Geheimnisse. Die wahrhaft d?stere Seite dieser Welt ...', 20, 'Schwarze Braut');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (3, '2002-12-31', '2003-02-01', 'story/images/drachen.jpg', 'Nein, diesmal ist der Monat nicht einer Person, sondern gleich einer ganzen Gruppe gewidmet: <BR>\r\nDen Drachen\r\n<BR>\r\nAlles ?ber die Herren der heisen Luft und der Freund- lichkeit an sich. ', 32, 'Die Drachen');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (4, '2003-01-31', '2003-03-01', 'story/images/gunfried.jpg', 'Viel g?be es ?ber wahre Helden zu berichten. Nat?rlich sind professionelle Helden eher bescheiden, wie ihr am Beispiel von Gunfried erfahren k?nnt. Hier offenbart sich nun das geheime Leben eines Doedels, der den Kampf um die Gerechtigkeit zu seinem Beruf gemacht hat.', 41, 'Gunfried');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (5, '2003-02-28', '2003-04-01', 'story/images/krawall.jpg', 'Zu Aller Verwunderung hat es dieses Mal eine Stadt, jawohl eine Stadt, geschafft Person des Monats zu werden. Mag es an der lebendigen Geographie liegen, die auf dieser Welt herrscht, \r\noder ist es reiner Eigennutz und Marketingstrategie dieser Gr??ten aller Handelsmetropolen?', 44, 'Krawall');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (6, '2003-03-31', '2003-05-01', 'story/images/sheep.gif', 'Es ist allgemein bekannt, welche Rolle die Schafe im modernen Wirtschaftsleben dieser Welt seit Anbeginn der Zeitrechnung spielen. Sei es als treuer Weggef?hrte oder Zugtier auf Reisen, sei es ihre Wolle oder ihr Leder in der Bekleidungsbranche. Aus unserem Leben sind sie nicht mehr wegzudenken. Beim Essen geniesen wir  sie als schmackhaften Braten oder trinken die Milch und verzehren deren Produkte. Woher stammte ansonsten all der K?se auf dieser Welt?', 6, 'Die Schafe');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (7, '2003-04-30', '2003-06-01', 'story/images/mahlstrom.jpg', 'Wir wagen es kaum auszusprechen, doch dieses Mal besch?ftigen wir uns mit einer der gewaltigsten Personen der Zeitgeschichten. Nicht der Zeit selbst, doch einem ihrer sehr nahen Verwandten, wir wagen es kaum auszusprechen:<BR> <FONT COLOR="#EEEEEE">Dem Mahlstrom!</FONT><BR>\r\nJene tiefste aller Urgewalten ?ber und auf dem alles schwebt oder der ungewissen Zukunft entgegensieht, in seinen endlosen Tiefen zermalmt zu werden.', 48, '<FONT COLOR="#EEEEEE">Der Mahlstrom</FONT>');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (8, '2003-05-31', '2003-07-01', 'story/images/huhn.jpg', 'Auch dem d?mmsten Vertreter aller lebenden Arten soll mal die Ehre wiederfahren, hier erw?ht zu werden:<BR>\r\nDas Huhn<BR>\r\nWarum das Huhn als dumm gilt, warum es zum Gesp?tt der ganzen Vogelschar geworden ist ...', 54, 'Das Huhn');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (9, '0000-00-00', '2003-08-01', 'story/images/soso_1.jpg', 'S.N.C.s popul?rste Person des ?ffentlichen Lebens war, jede Widerrede ist aussichtslos, der Weise Soso. Wie er dieses Ansehen erlangte und einiges mehr ...', 56, 'Weiser Soso');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (10, '2003-07-30', '2003-09-01', 'story/images/schwein_e.jpg', 'Sprichw?rtlich in aller Munde steht das Schwein f?r Erfolg, gro?es Gl?ck und guten Geschmack. Es l??t sich dar?ber nicht streiten, das Schwein ist seit den Zeiten von Krawall beliebt. Wie es dazu kam, erfahren sie hier...', 57, 'Schwein');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (11, '2003-08-31', '2003-10-01', 'story/images/krawall_tempel.jpg', 'Auch Geb?ude sind es gelegentlich Wert, n?her betrachtet zu werden. Und so beschauen wir uns diesen Monat den Tempel von Krawall, den zentralen, spirituellen Rettungsanker aller Gl?ubigen von Krawall. Und wer glaubt nicht an irgendetwas? Nun, zum Beispiel der ungl?ubige Thomas, aber selbst an diesen glauben einige ...', 59, 'Der Tempel');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (12, '2003-09-30', '2003-11-01', 'story/images/yeti.jpg', 'Von allen D?monen Krawalls der Grausamste, Gescheiteste und Gr??te. Er ist wirklich sehr gro? und er ist wei?. Wer h?tte das gedacht?\r\nWeit mehr undenkbares ?ber den Yeti  ...', 61, 'Der Yeti');
+INSERT INTO `person_month` (`id`, `datum_von`, `datum_bis`, `imagepath`, `teaser`, `id_docu`, `name`) VALUES (13, '0000-00-00', '2004-12-01', 'story/images/zornig_0.jpg', 'Es war einmal...<br />\r\nSo beginnen viele M?rchen. Nun:<br /> Dieses nicht.<br />\r\nEs ist mal wieder Winter in Drecksloch, der gro?en Stadt. Zeit f?r die Kirche ein klein wenig f?r ihren Glauben, ihre Kasse und ihr Ansehen zu unternehmen. Also wird geklingelt, getingelt und gemeutert? <br />\r\n', 67, 'DERRR <i>ZORNIGE</i>&nbsp;&nbsp;<b>NICK</b>');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `player`
+-- 
+
+DROP TABLE IF EXISTS `player`;
+CREATE TABLE IF NOT EXISTS `player` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `nick` varchar(30) NOT NULL default '',
+  `pass` varchar(30) NOT NULL default '',
+  `email` varchar(200) NOT NULL default '',
+  `rights` tinyint(3) unsigned zerofill NOT NULL default '001',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `nick` (`nick`,`pass`)
+) ENGINE=MyISAM AUTO_INCREMENT=82 DEFAULT CHARSET=latin1 AUTO_INCREMENT=82 ;
+
+-- 
+-- Daten für Tabelle `player`
+-- 
+
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (1, 'Gast', '********', '', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (2, 'lieschen', 'sunshine', 'lieschen@doedels.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (3, 'Gott_doedels', 'aloha56', '', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (4, 'doedel', 'my#pass', '', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (5, 'Rincewind', 'javasoft', 'lieschen@doedels.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (32, 'Kittiara', 'fighter', 'Leora@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (7, 'maettu', 'polini', 'pabersold@yahoo.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (8, 'der_Tod', 'discworldic', 'claudius.reinert@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (9, 'ferryx', 'melanie', 'mklawonn@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (10, 'redcrosser', '16011942', 'redcrosser@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (11, 'deathknight', 'nikki333', '03263@student.msd.k12.wi.us', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (12, 'Zyphrus', 'doedels69', 'zyphrus@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (13, 'Elofelof', 'elofelof', 'elof@eldorin.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (14, 'sissi-socke', 'cats0303', 'sissi.socke@gmx.net', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (17, 'B.Rabbit', 'enigma', 'Masterskibbe@uboot.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (18, 'Sunstar', '300401', 'suse84@arcor.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (19, 'markos', 'fische', 'markos2820@west.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (20, 'schubie', 'paul123', 'tom.dragon@lycos.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (21, 'Kruemel', 'loveyou', 'kruemelxxl86@yahoo.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (33, 'Tarlwen', '100489', 'eldori-die-elbe@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (38, 'Deus7058', 'Kalinka', 'Ilona7058@tpp24.net', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (39, 'Acclaim', '01212092', 'Arthurseven@we.bde', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (40, 'DerOliver969', '444555', 'webmaster@unreale.info', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (41, 'Wingslap', 'teju79', 'Sebastian-Hammer1@epost.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (42, 'leebos', 'jomedi', 'deleeb@gmx.net', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (43, 'antonia', 'SIMONAK!', 'antoniak1@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (44, 'Tapec1', 'd1dl26', 'Computerfloh@aol.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (45, 'RioBravo', '7171418', 'Matmin@gmx.ch', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (46, 'grunzer', '7351589', 'kevin.butzko@freenet.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (47, 'elzack', 'mimi33', 'elzack33@aol.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (48, 'Aleria', 'yourcode', 'aleria1989@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (49, 'leventaytekin', 'levent', 'leventaytekin@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (50, 'BenMAR', 'lichtenrade', 'Mark.r@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (51, 'Michi1980', 'eckstein', 'michihoesel@hotmail.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (52, 'Aleatha', 'Moppelchen', 'TokioAE@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (53, 'Golo13', 'qwertz', 'felix.home@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (54, 'Sanne681', 'simone', 'SusannePrager_681@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (55, 'huhu007', 'ichliebedich', 'stefanmichaelhuber@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (56, 'Riedhammer', 'riedhammer', 'Bc1986@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (57, 'pistolen', '123456', 'pistolem@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (58, 'lieschen_2', 'subito', 'lieschen@doedels.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (59, 'grillomat', 'clemens', 'gregor.sprenger@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (60, 'mircea', 'mittim', 'mirceat@active.ro', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (61, 'Alyssa', 'Mirja80', 'MirjaFerrera@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (62, 'Zhoragh', 'passwort', 'schmidtchen1982@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (63, 'freddy', 'jailbreak', 'm.m.hollstein@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (64, 'manuel', 'marlboro', 'spam@makasy.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (65, 'Jerdob', '123456789', 'jerudi@gmx.net', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (66, 'Derina', 'pummel', 'webmaster@tina20.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (67, 'dummdoedel', 'volldepp', 'bigbowser@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (68, 'Pyrothess', 'lalalula', 'GermanVampire@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (69, 'bysandy', 'bysandy', 'lyberty5@freenet.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (70, 'Wisdom', 'Puzzle', 'Dominiquerose@onlinehome.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (71, 'specky', '666666', 'www.speck@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (72, 'testify', 'suppenhun', 'lieschen@doedels.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (73, 'Master_Trunks', '24101984', 'daniel_ambach@t-online.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (74, 'jimking', 'judith', 'james79@gmx.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (75, 'isaviv', 'seepark', 'isagleich@hotmail.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (76, 'Manuel.T', 'tonner', 'manueltonner@hotmail.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (77, 'pegasus', 'dolomit', 'filu-@web.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (78, 'Rapper2face', 'ahcsas', 'meisterball@aol.com', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (79, 'Takrum', 'oermel', 'toshi@01019freenet.de', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (80, 'Carrier_to_Hell', '5juni76', 'GTFighter@gmx.net', 001);
+INSERT INTO `player` (`id`, `nick`, `pass`, `email`, `rights`) VALUES (81, 'hma', 'wet49+web', 'malte.kosian@dailylama.net', 255);
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `player_profile`
+-- 
+
+DROP TABLE IF EXISTS `player_profile`;
+CREATE TABLE IF NOT EXISTS `player_profile` (
+  `id_player` bigint(20) unsigned NOT NULL default '0',
+  `showmail` varchar(10) default NULL,
+  `getnews` varchar(10) default 'ja',
+  `image` int(11) NOT NULL default '0',
+  `home` varchar(255) default NULL,
+  `autor` varchar(255) default NULL,
+  `hobby` varchar(255) default NULL,
+  `sonst` varchar(255) default NULL,
+  PRIMARY KEY  (`id_player`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='the personal profile of the player';
+
+-- 
+-- Daten für Tabelle `player_profile`
+-- 
+
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (5, 'nicht', '', 12, 'www.doedels.de', 'Trerry Pratchett,  Isaac Asimov, E.Kaestner und W.Shakespeare', 'Computer Lesen und, man sollte es nicht glauben, soviel wie m?glich bewegen.', 'Ich hasse Winter! Schnupfen ... und HURRA es ist Fr?hling!');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (20, 'nicht', '', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (19, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (18, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (17, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (14, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (13, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (12, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (11, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (10, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (7, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (8, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (9, 'nicht', 'ja', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (32, 'nicht', 'ja', 8, '-', 'David Gemmell', 'Lesen, Zoggen, Reiten', 'Die Phantasie ist viel wichtiger als das Wissen. Wissen ist begrenzt, Phantasie umspannt die Welt.');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (33, 'nicht', 'ja', 5, NULL, 'J.R.R. Tolkien', 'Reiten, singen, tanzen, musik und gitarre spielen', NULL);
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (38, 'nicht', '', 12, '', 'Hesse', 'Tiere', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (39, 'nicht', '', 7, 'Nein, ich besietze keine Homepage', 'Stephen King', 'Basketball', 'Ich sehe gut aus');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (40, 'nicht', '', 5, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (41, '', '', 8, '', 'Terry Pratchet', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (42, 'nicht', '', 11, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (43, 'nicht', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (44, '', '', 11, '', 'Raimond Feist', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (45, 'nicht', '', 6, '', 'J.R.R.Tolkien', 'Skifahren, Segeln, Biken', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (46, 'nicht', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (47, '', '', 7, '', 'J.R.R.Tolkien', 'surfen,lesen,musik h?ren', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (48, 'nicht', '', 3, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (49, 'nicht', '', 5, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (50, 'nicht', '', 10, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (51, '', '', 3, 'www.hoesel.org', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (52, 'nicht', '', 3, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (53, 'nicht', '', 9, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (54, '', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (55, 'nicht', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (56, 'nicht', '', 11, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (58, 'nicht', '', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (59, 'nicht', '', 12, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (61, 'nicht', '', 11, '', '', 'segel fliegen', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (62, 'nicht', '', 3, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (63, 'nicht', '', 4, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (64, 'nicht', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (65, 'nicht', '', 1, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (66, 'nicht', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (67, 'nicht', '', 6, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (68, 'nicht', '', 3, '', 'Hohlbein, Tolkien', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (69, 'nicht', '', 12, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (70, 'nicht', '', 7, '', 'J.K.Rolling', 'Fernsehen, Freunde treffen', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (71, 'nicht', '', 7, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (72, 'nicht', '', 3, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (73, 'nicht', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (75, 'nicht', '', 5, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (76, 'nicht', '', 1, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (77, 'nicht', '', 3, '', 'joan.k.rowling', 'reiten', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (79, 'nicht', '', 10, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (80, 'nicht', '', 8, '', '', '', '');
+INSERT INTO `player_profile` (`id_player`, `showmail`, `getnews`, `image`, `home`, `autor`, `hobby`, `sonst`) VALUES (81, 'nicht', '', 12, 'www.dailylama.net', 'Trerry Pratchett,  Isaac Asimov, E.Kaestner, W.Shakespeare, William Gibson ...Fantasy und Fiction allgemein', 'Computer Lesen und, man sollte es nicht glauben, soviel wie m?glich bewegen.', 'Die M?glichkeit hier sonstiges zu schreiben wollen wir doch gleich genutzt haben.');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `rabbi_blog`
+-- 
+
+DROP TABLE IF EXISTS `rabbi_blog`;
+CREATE TABLE IF NOT EXISTS `rabbi_blog` (
+  `id_blog` int(11) unsigned NOT NULL auto_increment,
+  `datum` datetime NOT NULL default '0000-00-00 00:00:00',
+  `is_frontpage` tinyint(1) default '0',
+  `is_active` tinyint(4) default '0',
+  `blog_title` varchar(255) default NULL,
+  `blog_description` text,
+  `blog_content` text,
+  `id_author` int(11) default '0',
+  `id_blog_type` int(11) default '0',
+  PRIMARY KEY  (`id_blog`),
+  KEY `datum` (`datum`,`is_active`,`id_author`,`id_blog_type`),
+  KEY `is_frontpage` (`is_frontpage`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- 
+-- Daten für Tabelle `rabbi_blog`
+-- 
+
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `rabbi_blog_to_blog`
+-- 
+
+DROP TABLE IF EXISTS `rabbi_blog_to_blog`;
+CREATE TABLE IF NOT EXISTS `rabbi_blog_to_blog` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_blog_source` int(11) NOT NULL default '0',
+  `id_blog_reference` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- 
+-- Daten für Tabelle `rabbi_blog_to_blog`
+-- 
+
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `rabbi_player`
+-- 
+
+DROP TABLE IF EXISTS `rabbi_player`;
+CREATE TABLE IF NOT EXISTS `rabbi_player` (
+  `id_player` int(11) unsigned NOT NULL auto_increment,
+  `nickname` varchar(255) NOT NULL default '',
+  `passwort` varchar(255) NOT NULL default '',
+  `last_login` datetime default '0000-00-00 00:00:00',
+  `first_login` datetime default '0000-00-00 00:00:00',
+  `birthday` date default NULL,
+  `email` varchar(255) default NULL,
+  `id_session` int(10) unsigned zerofill default NULL,
+  `is_banned` tinyint(4) default '0',
+  `banned_until` datetime default '0000-00-00 00:00:00',
+  `is_active` tinyint(1) default '0',
+  PRIMARY KEY  (`id_player`),
+  KEY `is_active` (`is_active`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+-- 
+-- Daten für Tabelle `rabbi_player`
+-- 
+
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (1, 'guest', 'sunshine1234', '2008-11-11 01:22:50', '2008-11-11 01:05:17', '1965-01-09', 'malte.kosian@luckyrats.com', 0000000004, 0, '0000-00-00 00:00:00', 1);
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (2, 'test', 'sunshine1234', '2008-11-11 01:22:50', '2008-11-11 01:05:17', '1965-01-09', 'malte.kosian@luckyrats.com', 0000000004, 0, '0000-00-00 00:00:00', 1);
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (3, 'tester', 'sunshine1234', '2008-11-11 01:22:50', '2008-11-11 01:05:17', '1965-01-09', 'malte.kosian@luckyrats.com', 0000000004, 0, '0000-00-00 00:00:00', 1);
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (4, 'gast', 'sunshine1234', '2008-11-11 01:22:50', '2008-11-11 01:05:17', '1965-01-09', 'malte.kosian@luckyrats.com', 0000000004, 0, '0000-00-00 00:00:00', 1);
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (5, 'malte.kosian', 'sunshine77', '2009-02-25 22:59:34', '2008-11-11 00:26:12', '1965-01-09', 'malte.kosian@luckyrats.com', 0000000196, 0, '0000-00-00 00:00:00', 1);
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (6, 'malte_kosian', 'sunshine77', '2008-11-11 01:22:50', '2008-11-11 01:05:17', '1965-01-09', 'malte.kosian@luckyrats.com', 0000000004, 0, '0000-00-00 00:00:00', 1);
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (8, 'sushiushi', 'usagi06', '2009-02-25 23:21:43', '2009-02-25 23:21:14', '1965-01-09', 'malte.kosian@acmetoons.com', 0000000197, 0, '0000-00-00 00:00:00', 1);
+INSERT INTO `rabbi_player` (`id_player`, `nickname`, `passwort`, `last_login`, `first_login`, `birthday`, `email`, `id_session`, `is_banned`, `banned_until`, `is_active`) VALUES (9, 'wurzelmann', 'sushiushi', '0000-00-00 00:00:00', '2009-03-07 19:08:20', '1965-01-09', 'malte.kosian@funkfishgame.com', 0000000210, 0, '0000-00-00 00:00:00', 0);
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `rabbi_session`
+-- 
+
+DROP TABLE IF EXISTS `rabbi_session`;
+CREATE TABLE IF NOT EXISTS `rabbi_session` (
+  `id_session` int(11) unsigned zerofill NOT NULL auto_increment,
+  `last_login` datetime default '0000-00-00 00:00:00',
+  `first_login` datetime default '0000-00-00 00:00:00',
+  `is_logged` tinyint(1) default '0',
+  `remote_ip` varchar(55) NOT NULL default '0.0.0.0',
+  PRIMARY KEY  (`id_session`)
+) ENGINE=InnoDB AUTO_INCREMENT=248 DEFAULT CHARSET=latin1 AUTO_INCREMENT=248 ;
+
+-- 
+-- Daten für Tabelle `rabbi_session`
+-- 
+
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000001, '2008-11-10 23:32:50', '2008-11-10 23:25:45', 0, '77.6.107.93');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000002, '2008-11-11 01:04:58', '2008-11-10 23:35:51', 0, '77.6.107.93');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000003, '2008-11-11 01:09:15', '2008-11-11 01:04:58', 0, '77.6.107.93');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000004, '2008-11-11 01:25:28', '2008-11-11 01:09:15', 0, '77.6.107.93');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000005, '2008-11-11 01:41:10', '2008-11-11 01:25:28', 1, '77.6.107.93');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000006, '2008-11-11 13:17:38', '2008-11-11 13:17:38', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000007, '2008-11-11 15:19:44', '2008-11-11 15:19:44', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000008, '2008-11-11 15:53:36', '2008-11-11 15:53:36', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000009, '2008-11-11 15:53:37', '2008-11-11 15:53:37', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000010, '2008-11-11 15:53:37', '2008-11-11 15:53:37', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000011, '2008-11-11 17:21:49', '2008-11-11 17:21:49', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000012, '2008-11-11 17:52:20', '2008-11-11 17:52:20', 0, '66.249.71.65');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000013, '2008-11-13 00:35:11', '2008-11-13 00:35:11', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000014, '2008-11-13 01:22:57', '2008-11-13 01:22:57', 0, '66.249.71.65');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000015, '2008-11-13 04:34:35', '2008-11-13 04:34:35', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000016, '2008-11-21 15:16:02', '2008-11-13 13:08:46', 0, '194.97.41.36');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000017, '2008-11-14 08:37:34', '2008-11-14 08:37:34', 0, '69.58.178.30');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000018, '2008-11-14 08:39:06', '2008-11-14 08:39:06', 0, '69.58.178.30');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000019, '2008-11-14 08:40:41', '2008-11-14 08:40:41', 0, '69.58.178.30');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000020, '2008-11-15 21:47:27', '2008-11-15 21:47:27', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000021, '2008-11-15 23:33:46', '2008-11-15 23:33:46', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000022, '2008-11-16 03:06:14', '2008-11-16 03:06:14', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000023, '2008-11-17 00:58:15', '2008-11-17 00:58:15', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000024, '2008-11-17 01:54:15', '2008-11-17 01:54:15', 0, '66.249.71.65');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000025, '2008-11-17 16:48:23', '2008-11-17 16:48:23', 0, '66.249.71.65');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000026, '2008-11-18 13:18:23', '2008-11-18 13:18:23', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000027, '2008-11-18 15:19:28', '2008-11-18 15:19:28', 0, '66.249.71.65');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000028, '2008-11-18 18:00:47', '2008-11-18 18:00:47', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000029, '2008-11-19 07:15:30', '2008-11-19 07:15:30', 0, '65.55.211.120');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000030, '2008-11-20 09:08:24', '2008-11-20 09:08:24', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000031, '2008-11-21 02:17:53', '2008-11-21 02:17:53', 0, '66.249.71.65');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000032, '2008-11-21 08:07:23', '2008-11-21 08:07:23', 0, '65.55.230.235');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000033, '2008-11-21 23:33:29', '2008-11-21 23:33:29', 0, '66.249.71.65');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000034, '2008-11-22 21:29:45', '2008-11-22 21:28:23', 0, '38.105.83.11');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000035, '2008-11-23 02:21:44', '2008-11-23 02:21:44', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000036, '2008-11-23 04:18:45', '2008-11-23 04:18:45', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000037, '2008-11-23 04:18:47', '2008-11-23 04:18:47', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000038, '2008-11-23 04:18:49', '2008-11-23 04:18:49', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000039, '2008-11-23 06:47:26', '2008-11-23 06:47:26', 0, '65.55.211.114');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000040, '2008-11-23 08:50:19', '2008-11-23 08:50:19', 0, '65.55.211.122');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000041, '2008-11-23 15:50:14', '2008-11-23 15:50:14', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000042, '2008-11-25 22:14:26', '2008-11-25 22:14:26', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000043, '2008-11-26 00:50:29', '2008-11-26 00:50:29', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000044, '2008-11-26 01:54:01', '2008-11-26 01:54:01', 0, '66.249.71.67');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000045, '2008-11-26 18:31:40', '2008-11-26 18:31:40', 0, '66.150.224.245');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000046, '2008-11-26 18:31:40', '2008-11-26 18:31:40', 0, '66.150.224.245');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000047, '2008-11-26 18:31:40', '2008-11-26 18:31:40', 0, '66.150.224.245');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000048, '2008-11-26 22:11:51', '2008-11-26 22:11:51', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000049, '2008-11-28 10:35:15', '2008-11-28 10:35:15', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000050, '2008-11-29 13:47:50', '2008-11-29 13:47:50', 0, '65.55.211.110');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000051, '2008-11-29 17:23:26', '2008-11-29 17:23:26', 0, '65.55.211.120');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000052, '2008-11-30 09:03:53', '2008-11-30 09:03:53', 0, '66.249.71.66');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000053, '2008-12-03 03:21:51', '2008-12-03 03:21:51', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000054, '2008-12-03 09:44:17', '2008-12-03 09:44:17', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000055, '2008-12-03 14:14:02', '2008-12-03 14:14:02', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000056, '2008-12-03 18:58:34', '2008-12-03 18:58:34', 0, '65.55.211.114');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000057, '2008-12-04 08:39:22', '2008-12-04 08:39:22', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000058, '2008-12-04 09:07:01', '2008-12-04 09:07:01', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000059, '2008-12-04 13:45:20', '2008-12-04 13:45:20', 0, '65.55.211.122');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000060, '2008-12-05 13:47:22', '2008-12-05 13:47:22', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000061, '2008-12-07 04:15:37', '2008-12-07 04:15:37', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000062, '2008-12-08 02:06:29', '2008-12-08 02:06:29', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000063, '2008-12-08 10:59:03', '2008-12-08 10:59:03', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000064, '2008-12-08 12:01:20', '2008-12-08 12:01:20', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000065, '2008-12-10 11:03:08', '2008-12-10 11:03:08', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000066, '2008-12-11 18:15:23', '2008-12-11 18:15:19', 0, '82.210.250.194');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000067, '2008-12-12 01:57:14', '2008-12-12 01:57:14', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000068, '2008-12-13 12:56:44', '2008-12-13 12:56:36', 0, '92.50.102.192');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000069, '2008-12-14 02:11:51', '2008-12-14 02:11:51', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000070, '2008-12-14 06:19:12', '2008-12-14 06:19:12', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000071, '2008-12-14 07:21:00', '2008-12-14 07:21:00', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000072, '2008-12-14 08:22:44', '2008-12-14 08:22:44', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000073, '2008-12-15 11:00:34', '2008-12-15 11:00:34', 0, '79.216.249.75');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000074, '2008-12-15 14:59:40', '2008-12-15 14:59:40', 0, '92.198.31.35');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000075, '2008-12-15 14:59:47', '2008-12-15 14:59:47', 0, '92.198.31.35');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000076, '2008-12-15 21:02:22', '2008-12-15 21:02:22', 0, '90.136.171.218');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000077, '2008-12-16 00:38:57', '2008-12-16 00:38:57', 0, '84.58.122.72');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000078, '2008-12-18 22:29:09', '2008-12-18 22:29:09', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000079, '2008-12-19 00:01:40', '2008-12-19 00:01:40', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000080, '2008-12-19 01:34:19', '2008-12-19 01:34:19', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000081, '2008-12-19 01:35:27', '2008-12-19 01:35:27', 0, '69.58.178.29');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000082, '2008-12-19 01:35:28', '2008-12-19 01:35:28', 0, '69.58.178.29');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000083, '2008-12-19 01:35:29', '2008-12-19 01:35:29', 0, '69.58.178.29');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000084, '2008-12-20 17:36:49', '2008-12-20 17:36:49', 0, '65.55.211.110');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000085, '2008-12-22 00:28:54', '2008-12-22 00:28:54', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000086, '2008-12-22 22:13:42', '2008-12-22 22:12:54', 0, '38.105.83.11');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000087, '2008-12-23 01:42:58', '2008-12-23 01:42:58', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000088, '2008-12-23 01:42:58', '2008-12-23 01:42:58', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000089, '2008-12-23 01:42:58', '2008-12-23 01:42:58', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000090, '2008-12-23 07:05:30', '2008-12-23 07:05:30', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000091, '2008-12-23 10:11:29', '2008-12-23 10:11:29', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000092, '2008-12-24 02:37:39', '2008-12-24 02:37:39', 0, '65.55.211.121');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000093, '2008-12-24 03:42:33', '2008-12-24 03:42:33', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000094, '2008-12-27 07:37:55', '2008-12-27 07:37:55', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000095, '2008-12-27 08:11:18', '2008-12-27 08:11:18', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000096, '2008-12-27 16:58:18', '2008-12-27 16:58:18', 0, '38.100.8.51');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000097, '2008-12-27 16:58:19', '2008-12-27 16:58:19', 0, '38.100.8.51');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000098, '2008-12-27 16:58:20', '2008-12-27 16:58:20', 0, '38.100.8.51');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000099, '2008-12-29 08:04:34', '2008-12-29 08:04:34', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000100, '2008-12-31 03:19:33', '2008-12-31 03:19:33', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000101, '2008-12-31 05:28:55', '2008-12-31 05:28:55', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000102, '2008-12-31 06:33:36', '2008-12-31 06:33:36', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000103, '2008-12-31 13:00:42', '2008-12-31 13:00:42', 0, '66.249.65.6');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000104, '2008-12-31 15:09:58', '2008-12-31 15:09:58', 0, '66.249.65.6');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000105, '2008-12-31 18:25:38', '2008-12-31 18:25:38', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000106, '2009-01-02 06:40:20', '2009-01-02 06:40:20', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000107, '2009-01-02 07:57:39', '2009-01-02 07:57:39', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000108, '2009-01-02 16:29:05', '2009-01-02 16:29:05', 0, '65.55.230.235');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000109, '2009-01-03 08:08:08', '2009-01-03 08:08:08', 0, '65.55.230.235');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000110, '2009-01-03 14:44:45', '2009-01-03 14:44:45', 0, '65.55.230.237');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000111, '2009-01-04 03:00:01', '2009-01-04 03:00:01', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000112, '2009-01-04 08:11:53', '2009-01-04 08:11:53', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000113, '2009-01-05 18:02:38', '2009-01-05 17:53:40', 0, '194.97.41.36');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000114, '2009-01-06 05:17:55', '2009-01-06 05:17:55', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000115, '2009-01-08 08:46:05', '2009-01-08 08:46:05', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000116, '2009-01-09 17:15:25', '2009-01-09 17:15:25', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000117, '2009-01-10 15:12:27', '2009-01-10 15:12:27', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000118, '2009-01-12 16:20:07', '2009-01-12 16:20:07', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000119, '2009-01-12 16:20:07', '2009-01-12 16:20:07', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000120, '2009-01-12 16:20:08', '2009-01-12 16:20:08', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000121, '2009-01-13 03:05:20', '2009-01-13 03:05:20', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000122, '2009-01-13 04:13:13', '2009-01-13 04:13:13', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000123, '2009-01-13 07:38:12', '2009-01-13 07:38:12', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000124, '2009-01-15 09:21:29', '2009-01-15 09:21:29', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000125, '2009-01-15 12:03:10', '2009-01-15 12:02:47', 0, '194.97.41.36');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000126, '2009-01-17 20:51:22', '2009-01-17 20:51:22', 0, '66.249.73.9');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000127, '2009-01-18 02:29:39', '2009-01-18 02:29:39', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000128, '2009-01-18 04:44:33', '2009-01-18 04:44:33', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000129, '2009-01-19 19:00:37', '2009-01-19 19:00:37', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000130, '2009-01-19 21:12:52', '2009-01-19 21:12:52', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000131, '2009-01-21 01:43:13', '2009-01-21 01:43:13', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000132, '2009-01-21 17:51:38', '2009-01-21 17:51:38', 0, '65.55.211.120');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000133, '2009-01-22 16:05:53', '2009-01-22 16:05:53', 0, '69.58.178.33');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000134, '2009-01-22 16:08:18', '2009-01-22 16:08:18', 0, '69.58.178.33');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000135, '2009-01-22 16:11:09', '2009-01-22 16:11:09', 0, '69.58.178.33');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000136, '2009-01-22 20:57:49', '2009-01-22 20:57:49', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000137, '2009-01-22 23:54:56', '2009-01-22 23:54:56', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000138, '2009-01-23 01:23:58', '2009-01-23 01:23:58', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000139, '2009-01-23 02:52:43', '2009-01-23 02:52:43', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000140, '2009-01-23 03:36:35', '2009-01-23 03:36:35', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000141, '2009-01-24 23:20:24', '2009-01-24 23:20:24', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000142, '2009-01-25 21:30:13', '2009-01-25 21:30:13', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000143, '2009-01-25 21:30:17', '2009-01-25 21:30:17', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000144, '2009-01-25 21:30:19', '2009-01-25 21:30:19', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000145, '2009-01-27 07:05:17', '2009-01-27 07:05:17', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000146, '2009-01-27 08:45:20', '2009-01-27 08:45:20', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000147, '2009-01-27 22:37:34', '2009-01-27 22:36:00', 0, '38.100.41.112');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000148, '2009-01-29 15:14:16', '2009-01-29 15:14:16', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000149, '2009-01-31 03:16:15', '2009-01-31 03:15:24', 0, '77.6.219.99');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000150, '2009-01-31 14:59:24', '2009-01-31 14:59:24', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000151, '2009-01-31 14:59:25', '2009-01-31 14:59:25', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000152, '2009-01-31 14:59:25', '2009-01-31 14:59:25', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000153, '2009-02-01 06:30:52', '2009-02-01 06:30:52', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000154, '2009-02-01 08:24:14', '2009-02-01 08:24:14', 0, '66.249.67.167');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000155, '2009-02-02 05:52:09', '2009-02-02 05:52:09', 0, '65.55.211.109');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000156, '2009-02-02 23:47:29', '2009-02-02 23:47:29', 0, '65.55.211.117');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000157, '2009-02-03 09:28:32', '2009-02-03 09:28:32', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000158, '2009-02-05 18:43:27', '2009-02-05 18:43:27', 0, '88.128.69.130');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000159, '2009-02-05 19:00:59', '2009-02-05 19:00:59', 0, '195.189.142.217');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000160, '2009-02-05 19:07:25', '2009-02-05 19:07:04', 0, '194.97.41.36');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000161, '2009-02-05 19:37:22', '2009-02-05 19:37:22', 0, '72.46.126.117');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000162, '2009-02-05 23:54:48', '2009-02-05 23:42:02', 0, '77.6.212.206');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000163, '2009-02-06 00:13:47', '2009-02-06 00:00:22', 0, '77.6.212.206');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000164, '2009-02-06 08:30:16', '2009-02-06 08:30:16', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000165, '2009-02-06 09:16:55', '2009-02-06 09:16:55', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000166, '2009-02-06 10:03:40', '2009-02-06 10:03:40', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000167, '2009-02-06 14:33:18', '2009-02-06 14:33:18', 0, '91.203.96.33');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000168, '2009-02-06 23:55:09', '2009-02-06 23:55:09', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000169, '2009-02-08 13:54:24', '2009-02-08 13:54:24', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000170, '2009-02-09 01:09:49', '2009-02-09 01:09:49', 0, '69.84.207.147');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000171, '2009-02-09 01:09:50', '2009-02-09 01:09:50', 0, '69.84.207.147');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000172, '2009-02-09 01:09:50', '2009-02-09 01:09:50', 0, '69.84.207.147');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000173, '2009-02-09 01:09:51', '2009-02-09 01:09:51', 0, '69.84.207.147');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000174, '2009-02-09 01:09:51', '2009-02-09 01:09:51', 0, '69.84.207.147');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000175, '2009-02-11 14:45:53', '2009-02-11 14:45:53', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000176, '2009-02-11 15:35:00', '2009-02-11 15:35:00', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000177, '2009-02-15 05:49:50', '2009-02-15 05:49:50', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000178, '2009-02-16 21:58:34', '2009-02-16 21:58:34', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000179, '2009-02-17 12:06:14', '2009-02-17 12:06:14', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000180, '2009-02-18 01:00:17', '2009-02-18 01:00:17', 0, '69.58.178.32');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000181, '2009-02-18 01:04:15', '2009-02-18 01:04:15', 0, '69.58.178.32');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000182, '2009-02-18 01:08:09', '2009-02-18 01:08:09', 0, '69.58.178.32');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000183, '2009-02-18 01:22:50', '2009-02-18 01:22:50', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000184, '2009-02-18 10:10:30', '2009-02-18 10:10:30', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000185, '2009-02-18 10:10:31', '2009-02-18 10:10:31', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000186, '2009-02-18 10:10:32', '2009-02-18 10:10:32', 0, '66.90.118.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000187, '2009-02-19 04:28:41', '2009-02-19 04:28:41', 0, '65.55.211.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000188, '2009-02-21 11:09:40', '2009-02-21 11:09:40', 0, '91.121.70.155');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000189, '2009-02-21 23:22:15', '2009-02-21 23:21:47', 0, '38.105.83.13');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000190, '2009-02-22 17:16:06', '2009-02-22 17:16:06', 0, '65.55.211.115');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000191, '2009-02-23 09:57:35', '2009-02-23 09:57:35', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000192, '2009-02-23 14:50:36', '2009-02-23 14:50:36', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000193, '2009-02-23 17:31:01', '2009-02-23 17:31:01', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000194, '2009-02-23 20:20:27', '2009-02-23 20:20:27', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000195, '2009-02-25 20:12:25', '2009-02-25 20:12:25', 0, '66.249.66.235');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000196, '2009-02-25 22:59:38', '2009-02-25 22:50:18', 0, '77.6.118.193');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000197, '2009-02-25 23:21:48', '2009-02-25 22:59:38', 0, '77.6.118.193');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000198, '2009-02-26 01:27:52', '2009-02-25 23:21:48', 0, '77.6.118.193');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000199, '2009-02-26 00:12:20', '2009-02-26 00:12:20', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000200, '2009-02-26 00:12:24', '2009-02-26 00:12:24', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000201, '2009-02-26 00:12:26', '2009-02-26 00:12:26', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000202, '2009-02-26 01:55:54', '2009-02-26 01:29:03', 0, '77.6.118.193');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000203, '2009-02-26 20:31:09', '2009-02-26 20:31:09', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000204, '2009-02-27 00:48:18', '2009-02-27 00:48:18', 0, '194.153.113.18');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000205, '2009-02-28 03:26:35', '2009-02-28 03:26:35', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000206, '2009-03-01 05:51:46', '2009-03-01 05:51:46', 0, '66.249.72.76');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000207, '2009-03-01 06:21:57', '2009-03-01 06:21:57', 0, '66.249.72.76');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000208, '2009-03-02 11:49:11', '2009-03-02 11:49:11', 0, '66.249.72.76');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000209, '2009-03-07 13:03:00', '2009-03-07 13:03:00', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000210, '2009-03-07 19:08:19', '2009-03-07 19:02:56', 0, '77.6.113.43');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000211, '2009-03-10 00:17:36', '2009-03-10 00:17:36', 0, '66.150.224.245');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000212, '2009-03-10 00:17:37', '2009-03-10 00:17:37', 0, '66.150.224.245');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000213, '2009-03-10 00:17:37', '2009-03-10 00:17:37', 0, '66.150.224.245');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000214, '2009-03-10 00:19:01', '2009-03-10 00:19:01', 0, '66.249.72.42');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000215, '2009-03-10 00:56:46', '2009-03-10 00:56:46', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000216, '2009-03-10 04:04:56', '2009-03-10 04:04:56', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000217, '2009-03-12 21:05:29', '2009-03-12 21:05:29', 0, '69.58.178.31');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000218, '2009-03-12 21:05:31', '2009-03-12 21:05:31', 0, '69.58.178.31');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000219, '2009-03-12 21:05:32', '2009-03-12 21:05:32', 0, '69.58.178.31');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000220, '2009-03-13 03:17:25', '2009-03-13 03:17:25', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000221, '2009-03-13 03:17:26', '2009-03-13 03:17:26', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000222, '2009-03-13 03:17:27', '2009-03-13 03:17:27', 0, '38.100.8.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000223, '2009-03-14 15:05:55', '2009-03-14 15:05:55', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000224, '2009-03-14 19:13:16', '2009-03-14 19:13:16', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000225, '2009-03-16 19:30:53', '2009-03-16 19:30:53', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000226, '2009-03-19 07:56:17', '2009-03-19 07:56:17', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000227, '2009-03-21 07:36:19', '2009-03-21 07:36:19', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000228, '2009-03-22 18:08:01', '2009-03-22 18:06:49', 0, '38.100.41.112');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000229, '2009-03-28 14:50:57', '2009-03-28 14:50:57', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000230, '2009-03-30 10:42:24', '2009-03-30 10:42:24', 0, '66.249.72.50');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000231, '2009-03-30 16:01:12', '2009-03-30 16:01:12', 0, '65.55.211.109');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000232, '2009-03-30 18:21:50', '2009-03-30 18:21:50', 0, '65.55.211.101');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000233, '2009-04-06 07:03:21', '2009-04-06 07:03:21', 0, '65.55.211.120');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000234, '2009-04-07 17:59:37', '2009-04-07 17:59:37', 0, '66.249.71.57');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000235, '2009-04-08 11:49:36', '2009-04-08 11:49:36', 0, '65.55.211.118');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000236, '2009-04-12 07:44:11', '2009-04-12 07:44:11', 0, '69.58.178.31');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000237, '2009-04-12 07:44:13', '2009-04-12 07:44:13', 0, '69.58.178.31');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000238, '2009-04-12 07:44:15', '2009-04-12 07:44:15', 0, '69.58.178.31');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000239, '2009-04-12 10:22:20', '2009-04-12 10:22:20', 0, '66.249.71.106');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000240, '2009-04-17 05:28:00', '2009-04-17 05:28:00', 0, '195.128.18.18');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000241, '2009-04-17 10:32:41', '2009-04-17 10:32:41', 0, '66.249.71.19');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000242, '2009-04-17 11:27:56', '2009-04-17 11:27:56', 0, '66.249.71.19');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000243, '2009-04-21 22:49:33', '2009-04-21 22:49:33', 0, '66.249.71.19');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000244, '2009-04-22 00:09:54', '2009-04-22 00:09:54', 0, '66.249.71.19');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000245, '2009-04-26 21:54:49', '2009-04-26 21:54:49', 0, '66.249.71.19');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000246, '2009-04-29 09:33:58', '2009-04-29 09:33:58', 0, '65.55.211.120');
+INSERT INTO `rabbi_session` (`id_session`, `last_login`, `first_login`, `is_logged`, `remote_ip`) VALUES (00000000247, '2009-05-01 21:00:52', '2009-05-01 21:00:52', 0, '66.249.72.50');
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `session`
+-- 
+
+DROP TABLE IF EXISTS `session`;
+CREATE TABLE IF NOT EXISTS `session` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `id_player` bigint(20) NOT NULL default '0',
+  `time` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- 
+-- Daten für Tabelle `session`
+-- 
+
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `spielrunden`
+-- 
+
+DROP TABLE IF EXISTS `spielrunden`;
+CREATE TABLE IF NOT EXISTS `spielrunden` (
+  `id` int(14) unsigned NOT NULL auto_increment,
+  `spielname` varchar(100) NOT NULL default '',
+  `pid` int(14) NOT NULL default '0',
+  `datum` date NOT NULL default '0000-00-00',
+  `punkte` int(14) default NULL,
+  `dauer` int(14) default NULL,
+  `identify` int(14) NOT NULL default '0',
+  `game_start` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `starttime` datetime default NULL,
+  `game_stop` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `stoptime` datetime default NULL,
+  `flag` tinyint(3) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `spielname` (`spielname`,`datum`,`punkte`,`dauer`,`identify`,`flag`)
+) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=latin1 AUTO_INCREMENT=28 ;
+
+-- 
+-- Daten für Tabelle `spielrunden`
+-- 
+
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (3, 'Battle', 5, '2003-03-30', 336, 159797, 4342554, '2003-03-30 18:59:45', '2003-03-30 18:57:05', '2000-11-17 04:35:25', '2003-03-30 18:59:45', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (4, 'Hellway', 5, '2003-03-30', -192, 16, 4368065, '2003-03-30 19:01:36', '2003-03-30 19:01:20', '2000-11-17 04:36:36', '2003-03-30 19:01:36', 40);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (5, 'Battle', 5, '2003-03-30', 29, 38141, 4991600, '2003-03-30 20:45:54', '2003-03-30 20:45:16', '2000-11-15 05:39:54', '2003-03-30 20:45:54', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (6, 'Battle', 5, '2003-03-30', 58, 33906, 5147093, '2003-03-30 21:11:45', '2003-03-30 21:11:10', '2000-11-17 05:15:05', '2003-03-30 21:11:45', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (7, 'Hellway', 2, '2003-03-31', 210, 39, 14560197, '2003-03-31 23:20:42', '2003-03-31 23:20:01', '2000-11-17 14:56:42', '2003-03-31 23:20:42', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (8, 'Hellway', 20, '2003-04-09', 0, 23, 89262599, '2003-04-09 14:50:49', '2003-04-09 14:50:25', '2000-11-20 17:26:49', '2003-04-09 14:50:49', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (9, 'Battle', 43, '2003-04-14', NULL, NULL, 32763254, '2000-11-17 09:16:32', '2003-04-14 15:40:32', '2003-04-14 15:40:32', NULL, 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (10, 'Hellway', 43, '2003-04-14', 0, 770, 32779448, '2003-04-14 15:56:50', '2003-04-14 15:43:14', '2000-11-17 09:26:10', '2003-04-14 15:56:50', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (11, 'Battle', 1, '2003-04-19', 6, 57753, 77676928, '2003-04-19 20:27:07', '2003-04-19 20:26:09', '2000-11-19 06:08:27', '2003-04-19 20:27:07', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (12, 'Hellway', 2, '2003-05-01', 0, 26, 80201048, '2003-05-01 17:13:56', '2003-05-01 17:13:30', '2000-11-22 08:20:36', '2003-05-01 17:13:56', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (13, 'Hellway', 2, '2003-05-01', 552, 174, 80285011, '2003-05-01 17:30:28', '2003-05-01 17:27:30', '2000-11-22 08:30:28', '2003-05-01 17:30:28', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (14, 'Battle', 2, '2003-05-01', 2076, 837750, 80310022, '2003-05-01 17:45:41', '2003-05-01 17:31:40', '2000-11-22 08:39:41', '2003-05-01 17:45:41', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (15, 'Battle', 1, '2003-05-08', 2827, 1536235, 41348119, '2003-05-08 19:30:20', '2003-05-08 19:04:41', '2000-11-21 17:50:20', '2003-05-08 19:30:20', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (16, 'Battle', 1, '2003-05-12', 35, 134753, 73917475, '2003-05-12 13:35:09', '2003-05-12 13:32:54', '2000-11-21 02:33:09', '2003-05-12 13:35:09', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (17, 'Battle', 1, '2003-05-12', 13, 199380, 77246183, '2003-05-12 22:51:01', '2003-05-12 22:47:41', '2000-11-23 05:26:01', '2003-05-12 22:51:01', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (18, 'Hellway', 1, '2003-05-12', 182, 130, 77271565, '2003-05-12 22:54:11', '2003-05-12 22:51:55', '2000-11-23 05:28:51', '2003-05-12 22:54:11', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (19, 'Battle', 1, '2003-05-22', 35, 49500, 63273422, '2003-05-22 21:46:24', '2003-05-22 21:45:34', '2000-11-23 15:27:24', '2003-05-22 21:46:24', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (20, 'Battle', 1, '2003-05-23', 4, 50513, 67812012, '2003-05-23 10:22:50', '2003-05-23 10:22:00', '2000-11-21 20:21:10', '2003-05-23 10:22:50', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (21, 'Battle', 1, '2003-05-27', 1, 52052, 3763594, '2003-05-27 14:14:52', '2003-05-27 14:13:55', '2000-11-20 04:16:32', '2003-05-27 14:14:52', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (22, 'Battle', 1, '2003-06-03', NULL, NULL, 66199122, '2000-11-24 18:19:31', '2003-06-03 19:39:51', '2003-06-03 19:39:51', NULL, 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (23, 'Hellway', 1, '2003-06-11', 192, 41, 34113989, '2003-06-11 16:19:41', '2003-06-11 16:18:59', '2000-11-24 10:11:21', '2003-06-11 16:19:41', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (24, 'Battle', 1, '2003-06-11', 3, 44173, 34188966, '2003-06-11 16:32:17', '2003-06-11 16:31:29', '2000-11-24 10:19:37', '2003-06-11 16:32:17', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (25, 'Battle', 1, '2003-06-13', 1, 10625, 50226149, '2003-06-13 13:04:33', '2003-06-13 13:04:21', '2000-11-25 02:22:13', '2003-06-13 13:04:33', 1);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (26, 'Hellway', 1, '2003-06-13', 178, 49, 50232105, '2003-06-13 13:06:16', '2003-06-13 13:05:21', '2000-11-25 02:23:16', '2003-06-13 13:06:16', 0);
+INSERT INTO `spielrunden` (`id`, `spielname`, `pid`, `datum`, `punkte`, `dauer`, `identify`, `game_start`, `starttime`, `game_stop`, `stoptime`, `flag`) VALUES (27, 'Battle', 1, '2003-06-25', NULL, NULL, 56353448, '2000-11-26 08:35:34', '2003-06-25 19:52:14', '2003-06-25 19:52:14', NULL, 0);

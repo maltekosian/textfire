@@ -1,0 +1,29 @@
+package com.hogventure.basic;
+
+import com.hogventure.util.Dumpable;
+
+/**
+ * @author aquila
+ * -image
+	-dimension w,h
+	-position x,y
+	x footPosition
+	x footDimension
+ */
+public class SlideObject 
+	implements Dumpable
+{
+	String name;
+	String uid;
+	String imageRef;
+	String iconRef;
+	int width;
+	int height;
+	int posX;
+	int posY;
+	int footPosWidth;
+	int footPosHeight;
+	int footPosX;
+	int footPosY;
+	String targetUid;
+}

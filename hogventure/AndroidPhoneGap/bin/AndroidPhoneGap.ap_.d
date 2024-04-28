@@ -1,0 +1,20 @@
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/bin/AndroidPhoneGap.ap_ \
+ : /Users/ficken/NetBeansProjects/AndroidPhoneGap/res/drawable-hdpi/icon.png \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/res/drawable-ldpi/icon.png \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/res/drawable-mdpi/icon.png \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/res/layout/main.xml \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/res/values/strings.xml \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/res/xml/config.xml \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/bin/res/drawable-hdpi/icon.png \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/bin/res/drawable-ldpi/icon.png \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/bin/res/drawable-mdpi/icon.png \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/cordova-2.0.0.js \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/index.html \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/js \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/main.js \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/master.css \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/js/base64.js \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/js/filesystem.js \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/js/gamethread.js \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/assets/js/webstorage.js \
+/Users/ficken/NetBeansProjects/AndroidPhoneGap/bin/AndroidManifest.xml \

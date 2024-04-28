@@ -1,0 +1,59 @@
+Drei Schweinchen Brettspiel
+
+Ein Brettspiel für 3 Schweinchen und 2 - 6 Spieler die es werden wollen.
+
+Start ist bei Hotel Mama.
+Home Sweet Home ist das Ziel.
+
+Jeder Spieler erhält eine Spielfigur und einen Würfel.
+
+Ziel ist es von Hotel Mama nach Hause zu gelangen.
+Wer als Erster ins Ziel gelangt gewinnt. Das Spiel ist aber erst, vorbei wenn alle Spieler im Ziel sind.
+
+ Augenzahl 2	bedeutet der Spieler zieht zwei vor und baut hier dann ein Haus.
+		Er kann es erst dann verlassen, wenn er eine 4 wirft und eine Wolfskarte zieht oder eine 6 würfelt.
+ Augenzahl 4	der Spieler muss eine Eventkarte ziehen. Es gibt
+		Schweinchen- Wolfs- und Schicksalskarten. Je nach Karte darf er 4 Felder weiterziehen, oder auch nicht.
+ Augenzahl 6	Der Spieler kann ein jedes Haus verlassen - Hotel Mama und seine
+		Hütte an der Strecke. Ist er in keinem Haus, so darf er nochmal würfeln. 6 Felder weit kann man nicht ziehen.
+
+Spekulanten-Sonderregel: mit Geld spielen. Jeder Spieler erhält ein Darlehen von der Bank in Höhe von einigen Chips. Wann immer ein anderer Spieler auf ein Feld mit einem Häuschen eines anderen Spielers kommt, so zahlt er Miete von x Chips. Hierzu kann man Poker- oder Kartoffelchips nehmen.
+Ist der Hausherr zu gegen zahlt er doppelt.
+Sind anderere Spieler anwesend, zahlt er pro Spieler x Chips mehr - schließlich hat man sich an der Wiedersehensfeier zu beteiligen.
+Am Ende des Spiels ist das Darlehen zurückzuzahlen.
+
+Eventkarten:
+11 Schweinchenkarten müssen direkt in den Stapel zurück.
+11 Wolfskarten können gesammelt werden.
+11 Schicksalskarten.
+
+Fürchte den Wolf 1 bis 6Felder zurück und spezial Back to Hotel Mama (Schweinchenkarten)
+7 karten
+
+4 weiter Schweinchenkarten.
+Home Sweet Home  baue hier ein Haus und setze eine Runde aus (zahle 5*x Chips an die Bank)
+
+Bei den Eventkarten gibt es 4 Gewinnkarten. Sie ändern die Gewinnbedingung.
+Sie sind sofort vor dem jeweiligen Spieler aufzudecken und werden bei einer neuen Gewinnbedingung verdeckt. Wer alle 4 Karten gesammelt hat, hat sofort gewonnen. Die Karten können mit eingesammelt werden!
+
+Slaughterhouse - Wer als leztes ins Ziel gelangt hat gewonnen. Alle anderen
+erhalten 100*x Chips extra.
+HotDog - wer die meisten Wölfe gesammelt hat, Wolfssteine und -karten, gewinnt.
+Professor Schwein - Der Spieler mit den meisten Häusern gewinnt.
+Bankrott - der Spieler mit dem meisten Geld oder wer als Erster ins Ziel gelangt gewinnt
+(Du bleibst stehen)
+
+7 Humilationkarten Schicksal
+1. Sammele alle Wölfe ein inklusive der von den Spielern gefangenen.
+2. Sammele alle von den Spielern gefangenen Wölfe ein.
+3. Sammele alle Wölfe ein verteile sie vom Ziel aus neu inklusive Ziel (Abstand wird erwürfelt) die übriggebliebenen Wölfe kommen zurück in den Wald
+4. Reiße alle Hütten ab. (Big bad Wolf extra wolfskarte)
+5. Sammele alle Karten ein, inklusive Winkarten, und mische sie unter den Stapel.
+6. Sammele alle Karten ein und mische sie unter den Stapel. Exklusive Winkarten!
+7. Du allein fängst das Spiel nochmal ganz von vorne an.
+Du ziehst 4 Felder zurück.
+
+Wolfskarten
+Capture the Wolf, 4 karten der Spieler kann einen Wolf vom spielfeld nehmen,	aber dann muss er die Karte abgeben. Er kann die Karte auch im Vorbeiziehen spielen und so den Wolf einsammln. (Ziehe außerdem 4 Felder weiter)
+Plazier den Wolf 1 bis 6 Felder vor dem Spieler + ein spezial wo immer du einen Wolf plazieren willst - 7 Karten. (Du bleibst stehen)
+

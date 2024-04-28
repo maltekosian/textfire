@@ -1,0 +1,12 @@
+/**
+ * 
+ */
+package com.hogventure.game;
+
+/**
+ * @author aquila
+ *
+ */
+public class GameListElement {
+
+}

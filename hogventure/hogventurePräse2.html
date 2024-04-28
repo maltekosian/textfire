@@ -1,0 +1,311 @@
+<html>
+<head>
+<style type="text/css">
+	body, div, h1, h2, a, li {
+		font-family: Arial, Verdana, Helvetica, sans-serif;
+	}
+	body {
+		background: #000;
+	}
+	div {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		font-size: 20px;
+		color: #333;
+		width: 800px;
+		height: 600px;
+		visibility: hidden;
+		display: none;
+		overflow: hidden;
+		background-image: url(mwho-police_station.jpg);
+		background-size: 100%;
+		text-shadow: 5px 5px 5px rgba(204,204,204,0.5);
+	}
+	span {
+		padding-left: 5px;
+	}
+	h1 {
+		font-size: 48px;
+		font-style: italic;
+		color: #d00;
+		text-align: center; 
+		text-shadow: 5px 5px 5px rgba(104,54,51,0.5);
+	}
+	h2 {
+		position: relative;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 50px;
+		font-size: 36px;
+		color: #333;
+		background-color: rgba(204,204,204,0.5);
+		text-align: center; 
+		text-shadow: 5px 5px 5px rgba(54,54,51,0.5);
+		margin: 0px;
+	}
+	#page_0 {
+		visibility: visible;
+		display: block;
+		text-align: center; 
+	}
+	.center {
+		text-align: center;
+	}
+</style>
+<!--[if IE]>
+ <style type="text/css">
+	h1 {
+		font-size: 48px;
+		font-style: italic;
+		color: #d00;
+		text-align: center; 
+		text-shadow: 5px 5px 5px rgb(128,0,0);
+	}
+	h2 {
+		position: relative;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 50px;
+		font-size: 36px;
+		color: #333;
+		text-align: center; 
+		text-shadow: 5px 5px 5px rgb(153,153,153);
+		background-color: rgb(204,204,204);
+		margin: 0px;
+	}
+ </style>
+<![endif]-->
+
+<script type="text/javascript">
+
+	var fontsize = 20;
+	
+	function goToNext(_id, _id_next) {
+		if (_id_next == 'undefined' || _id_next == '' || _id == '')
+		{
+			return;
+		}
+		var element = getElement(_id);
+		element.style.display = 'none';
+		element.style.visibility = 'hidden';
+
+		element = getElement(_id_next);
+		element.style.display = 'block';
+		element.style.visibility = 'visible';
+		
+	}
+
+	function goToActivity(_method, _values) {
+		//showURL
+		if (_values == 'undefined')
+		{
+			return false;
+		}
+		switch (_method)
+		{
+		case 'showURL':
+			window.open(_values, '_blank');
+			break;
+		default:
+			//do nothing
+			break;
+		}
+		return false;
+	}
+
+	function getElement(_id) {
+		return document.getElementById(_id);
+	}
+
+	function resize() {
+		//800 600
+		var w = window.innerWidth - 5;
+		var h = window.innerHeight - 5;
+		if (!w) {
+			w = document.body.clientWidth - 5;
+			h = document.body.clientHeight - 5;
+		}
+		var h2 = w / 16 * 9;// w / 4 * 3;
+		var w2 = h / 9 * 16;//h / 3 * 4;
+		if (h2 < h) {
+			h = Math.floor(h2);
+		} else if (w > w2) {
+			w = Math.floor(w2);
+		}
+
+		fontsize = Math.ceil(20 * h / 600);//20px
+
+		var eles = document.getElementsByTagName('div');
+		for (var i = 0; i < eles.length; i++)
+		{
+			eles[i].style.fontSize = Math.ceil(fontsize * 1.5)+'px';
+			eles[i].style.width = w;
+			eles[i].style.height = h;
+			eles[i].style.color = '#ddd';
+			eles[i].style.textShadow = Math.ceil(fontsize * 0.1)+'px '+Math.ceil(fontsize * 0.1)+'px '+Math.ceil(fontsize * 0.2)+'px rgba(204,204,200,0.5)';
+		}
+		eles = document.getElementsByTagName('h1');
+		for (var i = 0; i < eles.length; i++)
+		{
+			eles[i].style.fontSize = Math.ceil(fontsize * 3.2)+'px';
+			eles[i].style.textShadow = Math.ceil(fontsize * 0.25)+'px '+Math.ceil(fontsize * 0.25)+'px '+Math.ceil(fontsize * 0.25)+'px rgba(128,0,0,0.5)';
+		}
+		eles = document.getElementsByTagName('h2');
+		for (var i = 0; i < eles.length; i++)
+		{
+			eles[i].style.fontSize = Math.ceil(fontsize * 2.5)+'px';
+			eles[i].style.height = Math.ceil(fontsize * 2.75)+'px';
+			eles[i].style.textShadow = Math.ceil(fontsize * 0.2)+'px '+Math.ceil(fontsize * 0.2)+'px '+Math.ceil(fontsize * 0.2)+'px rgba(54,54,50,0.5)';
+		}
+		eles = document.getElementsByTagName('span');
+		for (var i = 0; i < eles.length; i++)
+		{
+			eles[i].style.paddingLeft = Math.ceil(fontsize * 0.25)+'px';
+		}
+	}
+
+	function init() {
+		//register events
+		// not mouse up down and move events, but resize window
+		try
+		{			
+			window.addEventListener('resize', resize, true);
+			//log('init ->');
+		}
+		catch (e)
+		{			
+			window.attachEvent('onresize', resize);
+			//log('init');
+		}
+		resize();
+	}
+</script>
+</head>
+<body>
+<div id="page_0">
+<h1 onclick="goToNext('page_0','page_1');"><!--The<br />Hogventure<br />Game<br />Editor--><span style="position: absolute; left: 35%; top: 50%; ">MURDER :: WHO</span><span style="position: absolute; left: 42.5%; top: 47.5%; font-size: 50%;">helps to create an hogventure<span style="font-size: 400%;">?</span></span></h1>
+</div>
+<div id="page_1">
+<h2 onclick="goToNext('page_1','page_2');">What can you do?</h2>
+<br /><span>
+in general create a storytelling game</span><br /><span>
+</span><br /><span>
+it is a sort of small HTML5 based "adventure" engine </span><br /><span>
+that might be used for hidden object games, too</span><br /><span>
+</span><br /><span>
+games are driven by dialogs, objects or combination of both</span><br />
+</div>
+<div id="page_2">
+<h2 onclick="goToNext('page_2','page_3');">How does it work?</h2>
+<br /><span>
+a game is build as a "slideshow"</span><br /><span>
+</span><br /><span>
+slides - you may say scenes, rooms, stages are attached</span><br /><span>
+(o)N(e) after another</span><br /><span>
+</span><br /><span>
+so you have multiple paths</span><br />
+</div>
+<div id="page_3">
+<h2 onclick="goToNext('page_3','page_4');">How does a game look alike?</h2>
+<br /><span>
+the top shows title, points and some other information or general options</span><br /><span>
+</span><br /><span>
+on the left hand you see the visited slides</span><br /><span>
+</span><br /><span>
+on the right the players bag with the collected objects</span><br /><span>
+</span><br /><span>
+the dialogs will popup at the bottom always</span><br />
+</div>
+<div id="page_4">
+<h2 onclick="goToNext('page_4','page_5');">What happens inside a slide?</h2>
+<br /><span>
+dialogs provide the basic way for selections, options and choices</span><br /><span>
+</span><br /><span>
+simular to the slides you may have multiple paths</span><br /><span>
+</span><br /><span>
+each choice is a text</span><br /><span>
+</span><br /><span>
+each text has a target</span><br /><span>
+</span><br /><span>
+objects, dialogs and slides are targets</span><br /><span>
+</span><br /><span>
+"activities" are targets, too</span><br />
+</div>
+<div id="page_5">
+<h2 onclick="goToNext('page_5','page_6');">What's an activity?</h2>
+<br /><span>
+activities are special targets for objects</span><br /><span>
+</span><br /><span>
+you can hide and show objects</span><br /><span>
+</span><br /><span>
+add them to the bag and drop them from the bag to the current slide</span><br /><span>
+</span><br /><span>
+you may combine them with other present objects</span><br /><span>
+</span><br /><span>
+objects are present if they are in the bag or in the current slide</span><br />
+</div>
+<div id="page_6">
+<h2 onclick="goToNext('page_6','page_7');">Sometimes ...</h2>
+<br /><span>
+a target can be conditional</span><br /><span>
+</span><br /><span>
+you can check if specific objects are in the bag</span><br /><span>
+</span><br /><span>
+you want to link to an url - you can do that</span><br />
+</div>
+<div id="page_7"class="center">
+<h2 onclick="goToNext('page_7','page_8');">Do you want to build your now?</h2>
+<br /><span onclick="goToActivity('showURL','http://hogventure.com'); return false;">
+Goto http://hogventure.com</span><br /><span>
+</span><br /><span>
+else</span><br /><span>
+</span><br /><span>
+here are some explenations HOW TO</span><br />
+</div>
+<div id="page_8"><h2 onclick="goToNext('page_8','page_9');">HOW TO editor</h2>
+</div>
+<div id="page_9"><h2 onclick="goToNext('page_9','page_10');">HOW TO project</h2>
+</div>
+<div id="page_10"><h2 onclick="goToNext('page_10','page_11');">HOW TO slideshow</h2>
+</div>
+<div id="page_11"><h2 onclick="goToNext('page_11','page_12');">HOW TO image</h2>
+</div>
+<div id="page_12"><h2 onclick="goToNext('page_12','page_13');">HOW TO slide</h2>
+</div>
+<div id="page_13"><h2 onclick="goToNext('page_13','page_14');">HOW TO dialog</h2>
+</div>
+<div id="page_14"><h2 onclick="goToNext('page_14','page_15');">HOW TO object</h2>
+</div>
+<div id="page_15"><h2 onclick="goToNext('page_15','page_16');">HOW TO analyse</h2>
+</div>
+<div id="page_16"><h2 onclick="goToNext('page_16','page_17');">HOW TO test</h2>
+</div>
+<div id="page_17"><h2 onclick="goToNext('page_17','page_18');">HOW TO metadata</h2>
+</div>
+<div id="page_18"><h2 onclick="goToNext('page_18','page_19');">HOW TO preferences</h2>
+</div>
+<div id="page_19"><h2 onclick="goToNext('page_19','page_20');">HOW TO im- and export</h2>
+</div>
+<div id="page_20"><h2 onclick="goToNext('page_20','page_21');">HOW TO cooperate</h2>
+</div>
+<div id="page_21">
+<h2 onclick="goToNext('page_21','page_22');">HOW TO publish</h2>
+</div>
+<div id="page_22"class="center">
+<h2 onclick="goToNext('page_22','page_0');">finaly</h2>
+<br /><span>
+Malte Kosian</span><br /><span>
+</span><br /><span onclick="goToActivity('showURL','mailTo:malte.kosian@luckyrats.com');">
+malte.kosian@luckyrats.com</span><br /><br /><span onclick="goToActivity('showURL','http://hogventure.com');">
+http://hogventure.com</span><br /></span><br /><span onclick="goToActivity('showURL','https://twitter.com/#!/maltekosian');">
+twitter @maltekosian</span><br /></span><br /><span onclick="goToActivity('showURL','https://plus.google.com/s/malte%20kosian');">
+google+ </span><br />
+</div>
+<script type="text/javascript">
+	window.onload = init;
+</script>
+</body>
+</html>

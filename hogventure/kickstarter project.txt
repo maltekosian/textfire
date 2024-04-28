@@ -1,0 +1,269 @@
+
+Project image
+At least 560x420 4:3 aspect ratio
+
+Short blurb 135 letters
+HOGventure is the easiest way to create your story games online. Collaborate
+with your friends. Show them to world right away. (127)
+-OR-
+Tell your stories and explore the world of storytelling. Collaborate with your 
+friends. Show the results to the world right away. (131)
+
+Blurb 280 letters:
+With the HOGventure Editor tools you can experience storytelling in the 
+new media, especially games. It is build in HTML5 javascript, so you do not have 
+to install any special software. It works with every modern browser. 
+Game-player-apps can run on different plattforms. (277)
+//like Windows, MacOs, Linux, iOS, Android and your browser. Enjoy your games!
+
+
+1
+PLEDGE $5 OR MORE
+A virtual thank you bacon for your support. If someone, who has full unlimited
+access already, invites you, you will get access, too. This a tricky way
+granting groups of students a cheaper access to the tools.
+
+2
+PLEDGE $29 OR MORE 
+Full unlimited access to the all versions of the tool in all stages including
+the game-player for android and the editor for android tablets and the 'HELP'.
+This is what a teacher should choose at least. But feel free to provide more
+help by pledging more anyway.
+
+//	PLEDGE $35 OR MORE Dropped
+//	3 episodes of the first season of an episodic game released by me. That 
+//	will be	5 short episodes of 'MURDER :: WHO ...?' or 'THE SECRET LIFES OF 
+//	© MONKEYS'. If you want to play all episodes, add an extra fee of 8$ for 
+//	each episode.
+
+3
+PLEDGE $65 OR MORE
+Limited Reward: 50 of 50 remaining
+First season of an episodic game released by me. That will be 5 short episodes
+of the game that has been chosen including you in the 'special credits'. Full 
+beta access to the editor tool.
+
+//	PLEDGE $75 OR MORE Drop
+//	Full unlimited access to the all versions of the tool in all stages 	
+//	including the player for android and the editor for android tablets and 
+//	the 'HELP'. As the extra bonus you get a copy HOGventure Storytelling 	
+//	Card Game. For international shipping add 10$.
+
+4
+PLEDGE $125 OR MORE
+Limited Reward: 50 of 50 remaining
+Full unlimited access to the all versions of the tool in all stages including
+the game-player for android and the editor for android tablets and the 'HELP'.
+First season of an episodic game released by me. That will be 5 short episodes
+of the game of the choice including you in the 'special credits'-Easter egg by 
+name and link. An awesome way to promote yourself.
+
+5
+PLEDGE $250 OR MORE
+The hardcopy pack includes a DVD copy of a sources of the full access pack and
+the first season, the HOGventure Storytelling Card Game. It also contains a
+rules book for the card game. Abd all above. Free international shipping!
+	
+6
+PLEDGE $2,700 OR MORE
+Limited Reward: 5 of 5 remaining
+A original unique piece of Art: one of 5 hand drawn HOG paintings 60 on 60 cm
+(ca 22x22 inches) each. You choose, which one you get on first comes, first
+serves basis. The full access pack, the first season pack and a copy HOGventure
+Storytelling Card Game with the rule book. 
+//For secure or/and international shipping add 100$.
+
+7
+PLEDGE $7,500 OR MORE
+Limited Reward: 1 of 1 remaining
+Free the tool: you get a special thank you by the community and will be
+mentioned as an heroic donator to the public in 'HELP - THE DEMO'. Complete with 
+link your name and a special appearance in the HELP game. You and everyone will 
+get full unlimited access to the all versions of the tool in all stagesincluding 
+the player for HTML. Maybe for Android and the editor for android tablets, too.
+
+8
+PLEDGE $9,500 OR MORE
+Limited Reward: 1 of 1 remaining
+You might get murdered or headless! Depending on the result of the vote, 
+you can have a special appearance in one of the games. I have four games in 
+mind: 'COCK ROACH & LADY BUG', 'THE SECRET LIFE OF © MONKEYS', 'MURDER :: WHO 
+...?' or 'PROJECT RUNAWAY'. The fifth one, 'HELP - THE DEMO', will be produced 
+as a single episode anyway and is part of the editor. If you want one of the 
+mentioned games to become true, you should promote your choice while the 
+election campaign is running. This includes also the hardcopy pack and a copy of 
+the HOGventure Storytelling Card Game.
+
+//	PLEDGE $10,000 Drop
+//	Limited Reward: 1 of 1 remaining
+//	'VIDEO HALL', a storytelling arcade game collection, where 
+//	everyone/thing runs nuts.
+
+//PLEDGE $12,500 OR MORE Something personal like a character
+//Limited Reward: 4 of 4 remaining
+//I have four game in mind: 'COCK ROACH & LADY BUG', 'THE SECRET LIFE OF ©
+//MONKEYS', 'MURDER :: WHO ...?' or 'PROJECT RUNAWAY'. The fifth one, 'HELP - 
+//THE DEMO', will be produced as a single episode anyway. If you want one of 
+//these games to become true, tell me your choice. This is on first comes, first 
+//servesn basis. Any other game chosen, will the next in line (wait another 3-6 
+//months).
+
+GOAL = $9950
+
+
+
+Project video 500MB-File-Size limit
+
+make a HOGventure home video explaining what you can do with that editor
+and how easy this is.
+
+make a introduction to the card game
+
+//	build a hogventure slotmashine/acarde palace game 'VIDEO HALL'
+
+explain the 4 possible games series
+
+'MURDER :: WHO ...?', a crime stories episodical seasson - nobody knows Dog, but
+he has a bureau of investigations. Eberhard(or you) runs the office, and the 
+three pigs are doing their job a the detectives. Sometimes Dog interupts their 
+works via old fashined phone, loudspeakers or something similar. No angels will 
+be harmed, if we make this stories: 'MURDER :: WHO eats bacon and cheese?', 
+'MURDER :: WHO smells like a fish?', 'MURDER :: WHO talks to loud and sings like 
+a sistrum?', 'MURDER :: WHO likes love, labor, lost?', 'MURDER :: WHO hears the 
+news today?'
+
+'The Secret Life of the © Monkeys', a nature reportage
+seassonal about the secret life of the copyrighted monkeys. The © monkeys live
+on a little vulcano island near by that continent beginning with the capital
+'A'. You can join Professor McJimmac on his expedition. Help to detect the © 
+monkeys, investigate their natural environment with those scary lifeforms and 
+plants - bees and peas - take awesome photoshots for documentary and solve 
+incredible puzzles based on the number 3. This is not another bejeweled clone. 
+In short - run for you life.
+
+'Cock Roach & Lady Bug', a love story.
+Cock is an American seaman 'new' to the habour city. A guy without work. He
+finds no ship anymore. Than he meets a lady, so he thinks, Lady Bug, and so he
+treads her. But she is an prostitute. Both they are just stranded people in a
+big city, bigger than life. This is tragical epic love story from the
+underground, if you know Mecki Messer.
+
+'PROJECT RUNAWAY', an escapade.
+If you are an Easter rabbit girl from the Easter Islands your
+job oppertunities run short. You can work in the EGG-factory. That's it. But
+Bunny Usagi has a dream. As a kid she read a fashion style bible. That was just
+200 years ago. Now as a teen, she wants to be an fashion designer. Once Bunny
+Usagi managed to get up the hole, she travels far away from home to see the
+world and joins a top (pottery) model casting show. That's where everything
+turns strange.
+
+
+//'development', You want me to put all the money into the development of the
+//tools
+
+
+Project description
+
+It is hard to tell your story. 
+
+You may wonder, why this editor tool set is called HOGventure? Here is the
+explanation for name HOGventure: Hidden Object Game Adventures. At least this is
+why I build the editor and what I want to do with it.
+
+But you may create a storytelling jump'n'run, a shooter with dialog puzzles, an 
+interactibve childrens book, any kind of stories and games and flavor.
+
+HOGventure is not a game, it is a toolbox to create games. Your games.
+Strangely enough these tools enables everyone to create storytelling games,
+indeed. All stages of experiences may apply as the entry level. Students from
+schools, collages, universities, your grandma and pa? Everyone, who knows to
+write, read, draw, paint, sing, make music and use a computer, should give the 
+HOGventure editor a try. Even professionals.
+
+Game-writers, narrative designers and students of those crafts can write, test
+and analyze their story, dialogs and object contributions. Any kind of game
+designer can use this editor to build a play test of her game. (How can someone 
+avoid sexual discrimination here?)
+
+Because this tool will include a raw sketch editor, anyone can create a full
+visual representation of the game. The ability to include and 'manipulate'
+audios will also be given. Movies might be used as backgrounds.
+Finally plugins can be written in javascript easily.
+
+In the last stage of the development 3d environments will be supported, too.
+
+For the HELP a 'game' will explain how to work with the tools. It explains 
+how you and your friends can work together, because HOGventure is not planed as 
+a single user tool. Groups of coworkers with different talents can elaborate a 
+game together. Educators may watch the projects of their students and give 
+advice.
+
+The data is export in the JSON data format. You can run the games with the build
+in HTML5 game player. You might use this player to show your game on your
+webpage or include it on facebook. But you are free to import the data into your 
+own game engine to. (This is not part of the project!)
+
+The player and the editor will run in any modern browser.
+Also the player will run as an standalone app on Android devices. On Android 
+tablets the editor will run a an app. Touchscreens are supported.
+
+Full unlimited access to the all versions of the tool in all stages including
+the game-player for android and the editor for android tablets and the 'HELP' is
+granted for lifetime for all, who have backed the project via kickstarter with 
+at least 29$.
+
+Backing $65 via kickstarter grants you the full unlimited access to the first 
+season of an episodic game, that I've written.
+
+Once this project get seriously overfunded I have four games in mind: 
+'COCK ROACH & LADY BUG'
+'THE SECRET LIFE OF © MONKEYS'
+'MURDER :: WHO ...?' 
+'PROJECT RUNAWAY'
+If you want one of the mentioned games to become true, you should promote your 
+choice, while the election campaign is running(insert link and dates here).
+With a pledge of 9500$ you will have a special appearance in all 5 episodes!
+See the stage plan.
+
+Some technical words: I use HTML5, javascript for the basic programming,
+Dropbox, Firebase and other public available internet plattforms to save and
+share the data between you and your coworkers. In the future some of those might
+cost some money. As long they don't, everything will stay free. Otherwise I will
+run a second founding campaign.
+
+The data-format, the player and the editor will be open source, if this project
+get founded. So this shall be a free tool. This project requires your support!
+
+Stage plan:
+
+Stage 1: We get the 9850$. The tool will be released in a free version.
+
+Stage 2: If the projects gets more money, let's say 12.750$ something, I will
+build Android and Apple iOS players and the iOS editor for the Android and Apple 
+tablets.
+
+Stage 3: Once the founding breaks the 18.000$ barrier, I will create one of the
+games until May 2013. Which one, depends one your choice. Do not forget to vote!
+
+Stage 4: The 27.500$ barrier enables me to create better art, music, sounds. Yes 
+art and music are expensive.
+
+Stage 5, 6, ... : For another pocket full of 25.000$ more, another game will be
+produced.
+
+Final Stage: Once I can engage programmers, 3d support will be build in as soon
+as possible. That's about 100.000$ or more.
+
+Choices:
+
+MURDER :: WHO ...?
+
+The Secret Life Of The © Monkeys
+
+Cock Roach & Lady Bug
+
+PROJECT RUNAWAY
+
+//	development
+
+//	VIDEO HALL

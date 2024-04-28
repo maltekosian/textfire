@@ -1,0 +1,78 @@
+package com.hogventure.basic;
+
+import java.util.Properties;
+
+import com.hogventure.util.Dumpable;
+
+/**
+ * @author aquila
+ * -image
+	-dimension w,h
+	-position x,y
+	x footPosition
+	x footDimension
+ */
+public class SlideObject 
+	implements Dumpable
+{
+	String name;
+	String uid;
+	String imageRef;
+	String iconRef;
+	int width;
+	int height;
+	int posX;
+	int posY;
+	int footPosWidth;
+	int footPosHeight;
+	int footPosX;
+	int footPosY;
+	String targetUid;
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Dumpable#load(com.hogventure.basic.Slideshow, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Object load(Slideshow slideshow, String path, String filename) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Dumpable#save(java.lang.String)
+	 */
+	@Override
+	public void save(String path) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#getUid()
+	 */
+	@Override
+	public String getUid() {
+		return uid;
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#hasUid(java.lang.String)
+	 */
+	@Override
+	public boolean hasUid(String _uid) {	
+		return this.uid.equals(_uid);
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#load(java.util.Properties)
+	 */
+	@Override
+	public void load(Properties p) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#store(java.util.Properties)
+	 */
+	@Override
+	public Properties store(Properties p) {
+		// TODO Auto-generated method stub
+		return p;
+	}
+	
+}

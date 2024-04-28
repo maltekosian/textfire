@@ -1,0 +1,160 @@
+What can you do?
+....................
+in general create a storytelling game
+
+it is a sort of small HTML5 based "adventure" engine 
+that might be used for hidden object games, too
+
+games are driven by dialogs, objects or combination of both
+--------------------
+How does it work?
+....................
+a game is build as a "slideshow"
+
+slides - you may say scenes, rooms, stages are attached
+(o)N(e) after another
+
+so you have multiple paths
+--------------------
+How does a game look alike?
+....................
+the top shows title, points and some other information or general options
+
+on the left hand you see the visited slides
+
+on the right the players bag with the collected objects
+
+the dialogs will popup at the bottom always
+--------------------
+What happens inside a slide?
+....................
+dialogs provide the basic way for selections, options and choices
+
+simular to the slides you may have multiple paths
+
+each choice is a text
+
+each text has a target
+
+objects, dialogs and slides are targets
+
+"activities" are targets, too
+--------------------
+Whats an activity?
+....................
+activities are special targets for objects
+
+you can hide and show objects
+
+add them to the bag and drop them from the bag to the current slide
+
+you may combine them with other present objects
+
+objects are present if they are in the bag or in the current slide
+--------------------
+Sometimes ...
+....................
+a target can be conditional
+
+you can check if specific objects are in the bag
+
+you want to link to an url - you can do that
+--------------------
+Do you want to build your now?
+....................
+Goto http://hogventure.com
+
+	else
+
+here are some explenations HOW TO
+--------------------
+Finally
+....................
+malte.kosian@luckyrats.com
+
+Twitter: @maltekosian & @hogventure
+
+Also on Google+ and facebook
+
+http://hogventure.com
+--------------------
+Social network integration
+....................
+The current state of social networks integration:
+
+Available is twitter, Google+ and facebook
+
+Google+ or facebook are used for account verification
+
+You can share files with dropbox
+--------------------
+Account Verification
+....................
+verify your account for hogventure.com with Google+ or facebook
+
+An email will be send for double opt in
+
+Click on the link in the email to verify yourself
+
+Now you can fully use the editor online and offline
+
+A chat symbol appears on the right side
+--------------------
+Ex- and import with dropbox
+....................
+create a dropbox-account and login to
+
+creates automatically an "Apps/hogventure" folder in your dropbox
+
+save your files with export in the "Apps/hogventure/[your story's title]" folder
+
+send a update message after export to your dropbox!
+
+you can save while you are offline
+
+synchronozations follows when your are online (again)
+--------------------
+The hogventure chat
+....................
+A simple online chat system 
+
+You can chat with your friends and everyone else, who is online
+--------------------
+The very first step
+
+login with twitter, google+
+or stay offline
+--------------------
+Im- and export your game
+....................
+once you've been logged in, you may use
+dropbox -log in there, too- 
+or your local file system
+for saving your story's files
+--------------------
+Saving your story's files
+....................
+press the import button for loading 
+
+press the export button for saving
+
+if you are offline, choose the repository from your local file system  
+--------------------
+Create a slideshow
+....................
+set the title of the slideshow and import the title image
+--------------------
+Now you should add a slide to the slideshow
+....................
+Set the title of the slide. The title will be shown at the top position
+
+Choose a background image for this slide.
+
+If you do not choose one, the background image of the slide visited before will be shown. 
+
+That might be the title image.
+--------------------
+Add one or more selelections to the current slide
+....................
+
+--------------------

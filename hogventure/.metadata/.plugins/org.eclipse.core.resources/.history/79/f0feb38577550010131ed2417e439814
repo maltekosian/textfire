@@ -1,0 +1,76 @@
+/**
+ * 
+ */
+package com.hogventure.game;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import com.hogventure.util.GameThread;
+import com.hogventure.util.GameThreadListener;
+
+/**
+ * @author aquila
+ *
+ */
+public class SlideshowGame 
+		extends JPanel
+		implements GameThreadListener
+{
+	JFrame jframe;
+	private boolean standalone;
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new SlideshowGame(true);
+	}
+	
+	public SlideshowGame(boolean standalone) {
+		this.standalone = standalone;
+		jframe = new JFrame();
+		if (standalone) {
+			jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		} else {
+			jframe.addWindowListener(new WindowAdapter(){
+				public void windowClosing(WindowEvent we) {
+					kill();
+				}
+			}); 
+		}
+		
+		setLayout(new BorderLayout());
+		add(new GamePane(), BorderLayout.CENTER);
+		jframe.add(this);
+		jframe.pack();
+		jframe.setVisible(true);
+	}
+	
+	public void kill() {
+		jframe.dispose();
+		GameThread.removeGameThreadListener(this);
+	}
+
+	@Override
+	public int getFrequenceTime() {
+		
+		return 25;
+	}
+
+	@Override
+	public boolean isRunning() {
+		
+		return running;
+	}
+
+	@Override
+	public void timeElapsed(long t) {
+		 repaint();
+	}
+}

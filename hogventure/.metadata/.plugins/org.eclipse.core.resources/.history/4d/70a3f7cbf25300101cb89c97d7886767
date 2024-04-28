@@ -1,0 +1,27 @@
+/**
+ * 
+ */
+package com.hogventure.basic;
+
+import com.hogventure.util.DialogsUtil;
+import com.hogventure.util.MediaManager;
+
+/**
+ * @author aquila
+ * slideshow
+	-slides
+	x globalAmbientMusic
+	-player
+	-globalPreferences	
+	-utils:
+		--mediaManager
+		--dialogsUtil
+ */
+public class Slideshow {
+	public ArrayList<Slide>slides;
+	public static MediaManager mediaManger;
+	public static DialogsUtil dialogsUtil;
+	public String globalAmbientMusicRef;
+	public SlideshowPlayer player;
+	
+}

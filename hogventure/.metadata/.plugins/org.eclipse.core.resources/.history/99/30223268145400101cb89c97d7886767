@@ -1,0 +1,14 @@
+package com.hogventure.basic;
+
+/**
+ * @author aquila
+ * player
+	x figures
+	x points
+	x bag
+	x visitedSlides
+	x usedTargets
+ */
+public class SlideshowPlayer {
+
+}

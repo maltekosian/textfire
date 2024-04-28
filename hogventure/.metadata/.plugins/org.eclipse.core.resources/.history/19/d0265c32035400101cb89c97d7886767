@@ -1,0 +1,13 @@
+/**
+ * 
+ */
+package com.hogventure.basic;
+
+/**
+ * @author aquila
+ *
+ */
+public class SlideTarget {
+	String uid;
+	String targetUid;
+}

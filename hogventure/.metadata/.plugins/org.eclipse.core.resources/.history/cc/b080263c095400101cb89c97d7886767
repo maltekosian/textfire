@@ -1,0 +1,222 @@
+package com.hogventure.basic;
+
+import java.util.Properties;
+
+import com.hogventure.util.Dumpable;
+
+/**
+ * @author aquila
+ * -image
+	-dimension w,h
+	-position x,y
+	x footPosition
+	x footDimension
+ */
+public class SlideObject 
+	implements Dumpable
+{
+	String name;
+	String uid;
+	String imageRef;
+	String iconRef;
+	int width;
+	int height;
+	int posX;
+	int posY;
+	int footPosWidth;
+	int footPosHeight;
+	int footPosX;
+	int footPosY;
+	String targetUid;
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Dumpable#load(com.hogventure.basic.Slideshow, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Object load(Slideshow slideshow, String path, String filename) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Dumpable#save(java.lang.String)
+	 */
+	@Override
+	public void save(String path) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#getUid()
+	 */
+	@Override
+	public String getUid() {
+		return uid;
+	}
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	/**
+	 * @return the imageRef
+	 */
+	public String getImageRef() {
+		return imageRef;
+	}
+	/**
+	 * @param imageRef the imageRef to set
+	 */
+	public void setImageRef(String imageRef) {
+		this.imageRef = imageRef;
+	}
+	/**
+	 * @return the iconRef
+	 */
+	public String getIconRef() {
+		return iconRef;
+	}
+	/**
+	 * @param iconRef the iconRef to set
+	 */
+	public void setIconRef(String iconRef) {
+		this.iconRef = iconRef;
+	}
+	/**
+	 * @return the width
+	 */
+	public int getWidth() {
+		return width;
+	}
+	/**
+	 * @param width the width to set
+	 */
+	public void setWidth(int width) {
+		this.width = width;
+	}
+	/**
+	 * @return the height
+	 */
+	public int getHeight() {
+		return height;
+	}
+	/**
+	 * @param height the height to set
+	 */
+	public void setHeight(int height) {
+		this.height = height;
+	}
+	/**
+	 * @return the posX
+	 */
+	public int getPosX() {
+		return posX;
+	}
+	/**
+	 * @param posX the posX to set
+	 */
+	public void setPosX(int posX) {
+		this.posX = posX;
+	}
+	/**
+	 * @return the posY
+	 */
+	public int getPosY() {
+		return posY;
+	}
+	/**
+	 * @param posY the posY to set
+	 */
+	public void setPosY(int posY) {
+		this.posY = posY;
+	}
+	/**
+	 * @return the footPosWidth
+	 */
+	public int getFootPosWidth() {
+		return footPosWidth;
+	}
+	/**
+	 * @param footPosWidth the footPosWidth to set
+	 */
+	public void setFootPosWidth(int footPosWidth) {
+		this.footPosWidth = footPosWidth;
+	}
+	/**
+	 * @return the footPosHeight
+	 */
+	public int getFootPosHeight() {
+		return footPosHeight;
+	}
+	/**
+	 * @param footPosHeight the footPosHeight to set
+	 */
+	public void setFootPosHeight(int footPosHeight) {
+		this.footPosHeight = footPosHeight;
+	}
+	/**
+	 * @return the footPosX
+	 */
+	public int getFootPosX() {
+		return footPosX;
+	}
+	/**
+	 * @param footPosX the footPosX to set
+	 */
+	public void setFootPosX(int footPosX) {
+		this.footPosX = footPosX;
+	}
+	/**
+	 * @return the footPosY
+	 */
+	public int getFootPosY() {
+		return footPosY;
+	}
+	/**
+	 * @param footPosY the footPosY to set
+	 */
+	public void setFootPosY(int footPosY) {
+		this.footPosY = footPosY;
+	}
+	/**
+	 * @return the targetUid
+	 */
+	public String getTargetUid() {
+		return targetUid;
+	}
+	/**
+	 * @param targetUid the targetUid to set
+	 */
+	public void setTargetUid(String targetUid) {
+		this.targetUid = targetUid;
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#hasUid(java.lang.String)
+	 */
+	@Override
+	public boolean hasUid(String _uid) {	
+		return this.uid.equals(_uid);
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#load(java.util.Properties)
+	 */
+	@Override
+	public void load(Properties p) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.hogventure.util.Loadable#store(java.util.Properties)
+	 */
+	@Override
+	public Properties store(Properties p) {
+		// TODO Auto-generated method stub
+		return p;
+	}
+	
+}

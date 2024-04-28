@@ -1,0 +1,8 @@
+package com.hogventure.basic;
+
+import java.util.ArrayList;
+
+public class SlideDialog {
+	ArrayList<SlideText> texts;
+	String uid;
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<!--
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+-->
+<html>
+  <head>
+    <!--meta name="viewport" content="width=320; user-scalable=no" /-->
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Simple Hogventure Editor</title>
+      <link rel="stylesheet" href="master.css" type="text/css" media="screen" title="no title">
+      <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+      <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/webstorage.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/filesystem.js"></script>
+<script type="text/javascript" charset="utf-8" src="main.js"></script>
+<script type="text/javascript">
+	window.onload = function() { setTimeout('init2();', 100 ); };
+	/*
+	--done 2012-09-01 update  selection select on delete of a selection
+    --done selection title to fullsize
+    --done 2012-09-02 build page_2 for full text
+    --done 2012-09-02 build page_3 for all selections
+    --build slide(show) preferences page_0 for start up
+	--done 2012-09-02 create new link selection
+	--done paging for pages 0, 1, 2, 3
+
+	missing features:
+
+    show link target in link select if selected
+    full text editing for text and script
+	build filestore and webstorage references
+	ex & import
+	page edit full text with script
+	enable html preference
+	ignore script preference
+	*/
+</script>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+<div id="page_0" class="content" >
+the slideshow panel<br>
+<hr class="w100" />
+<input type="text" value="" id="title" class="w100" onkeyup="updateTitle();" placeholder="enter the title of the slideshow" /><br />
+<hr class="w100" />
+<span class="w50" onclick="showAllSelections();">show all selections</span><span class="w50" onclick="newSlideshow();">new</span><br />
+<div id="preferences">
+<span class="w50">enable html preference</span><span class="w50" style="text-align: center;"><input type="checkbox" onchange=""></span><br />
+<span class="w50">ignore script preference</span><span class="w50" style="text-align: center;"><input type="checkbox" onchange=""></span><br />
+</div>
+</div>
+
+<div id="page_1" class="hidden">
+the selection panel<br />
+<hr class="w100" />
+<input type="text" value="selection_name" id="selection_name" class="w100" onkeyup="updateSelectionName();" placeholder="enter the name of this selection" />
+<br />
+<div class="w50">id = <span id="selection_id"></span></div>
+<select id="select_selections" class="w50" onchange="selectSelections();"><option value="---">---</option><option value="show_all_selections">show_all_selections</option><option value="add_new_selection">add_new_selection</option><option value="delete_this_selection">delete_this_selection</option></select>
+<br /><hr class="w100" />
+<span id="new_text" class="w50" onclick="newText();">add new text</span><br />
+<div id="#id#_text" style="display: none; visibility: hidden;"><div class="w50">id = <span id="#id#_text_id">#id#</span></div><span id="text_delete_#id#"  class="w50" onclick="deleteText('#id#');">delete text</span><br />
+<span id="text_delete_#id#"  class="w50" onclick="editFullText('#id#');">edit text</span>
+<select id="select_text_target_#id#" onchange="setTextTarget('#id#');" class="w50"><option value="---">-set a link-</option></select>
+<br /><textarea id="#id#_textarea" class="w100" onkeyup="updateText('#id#');"></textarea><br /></div>
+<div id="text_parent"><div id="texts"></div></div>
+<div style="position: absolute; bottom: 3.5%; left: 0; min-width: 100%; width: 100%;">
+<span id="back_to_slideshow" class="w50" onclick="closeAllSelections();">back to slideshow</span>
+</div>
+</div>
+
+<div id="page_#id#" class="hidden" >
+<select id="#id#_select_text_target" onchange="setFullTextTarget('#id#');" class="w50"><option value="---">-set a link-</option><option value="link_selection">create selection link</option></select><br />
+<hr class="w100" />
+<span class="w50">edit the text</span><br />
+<textarea id="textarea_#id#" onkeyup="updateFullText('#id#');" class="w100" style="height: 32.5%; min-height: 32.5%; max-height: 32.5%;"></textarea><br />
+<span class="w50">edit scripts here</span><br />
+<textarea id="textarea_script_#id#" onkeyup="updateFullScript('#id#');" class="w100" style="font-size: 50%; font-family: monospace; height: 32.5%; min-height: 32.5%; max-height: 32.5%;"></textarea>
+<div style="position: absolute; bottom: 3.5%; left: 0; min-width: 100%; width: 100%;">
+<span id="close_full_text" class="w50" onclick="closeFullText();">close full text edit</span>
+</div>
+</div>
+<div id="page_2" class="hidden" ></div>
+
+<div id="page_3" class="hidden" >
+all selections
+<hr class="w100" />
+<div id="selection_#id#" class="hidden">
+<input type="text" id="selection_name_#id#" value="" placeholder="enter selection name" class="w100" /><br />
+<span id="selection_edit_#id#"  class="w50" onclick="editSelection('#id#');">edit</span><div class="w50">id = <span id="selection_id_#id#">#id#</span></div><br /><span id="selection_delete_#id#"  class="w50" onclick="deleteThisSelection('#id#');">delete selection</span><br />
+</div>
+<div id="selections"></div>
+<div style="position: absolute; bottom: 3.5%; left: 0; min-width: 100%; width: 100%;">
+<span id="close_all_selections" class="w50" onclick="closeAllSelections();">close all selections</span>
+</div>
+</div>
+
+<div id="prompt" class="hidden" ></div>
+<div id="output" class="w100"></div>
+</body>
+</html>

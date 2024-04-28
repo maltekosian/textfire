@@ -1,0 +1,1896 @@
+<html>
+ <head>
+  <title>online hogventure game editor</title>
+  <meta name="generator" content="Malte Kosian hogventure.com" />
+  <meta name="author" content="Malte Kosian" />
+  <meta name="keywords" content="adventure,game,editor,hidden,object,hog,malte,kosian,online,offline,application,html5,javascript,json" />
+  <meta name="description" content="An html5 based application " />
+  <meta name="title" content="online hogventure game editor" />
+ </head>
+<script type="text/javascript" src="http://hogventure.com/slideshow/base64.js"></script>
+<script type="text/javascript" src="http://hogventure.com/slideshow/json2.js"></script>
+<script type="text/javascript">
+	/*
+	Class: MediaManager
+
+	A KeyValue Storage for images, audio, animations, video
+	game-wide and slide-only
+
+	implemented game-wide images
+	*/
+	function MediaManager() {
+		this.imageDatas = new Array();
+		/*
+		Function: addImage
+
+		Params: _uid, _data
+		*/
+		this.addImage = function(_uid, _data) {
+			if (!this.contains(_uid))
+			{
+				var kv = new KeyValue( _uid , _data);
+				this.imageDatas[this.imageDatas.length] = kv;
+				console.log('media manager '+ kv.key + ' # ' + kv.value.substr(0,100));
+			} else {
+				console.log('media manager has uid '+ _uid + ' # ' + _data);
+				this.getKeyValue(this.imageDatas, _uid).value = _data;
+			}			
+		}
+		/*
+		Function: getImage
+
+		Params: _uid - the image reference key
+
+		Returns: the image or undefined
+		*/
+		this.getImage = function(_uid) {
+			return this.getKeyValue(this.imageDatas, _uid).value;
+		}
+		/*
+		Function: contains
+
+		Params: a key uid
+
+		Returns: true or false
+		*/
+		this.contains = function( _key) {
+			var _dataObj = this.imageDatas;
+			for (var i = 0; i < _dataObj.length; i++)
+			{
+				if (_dataObj[i].key == _key)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		/*
+		Function: getKeyValue
+
+		Params: a key value array, the key
+
+		Returns: a key value pair or false
+		*/
+		this.getKeyValue = function(_dataObj, _key) {
+			for (var i = 0; i < _dataObj.length; i++)
+			{
+				if (_dataObj[i].key == _key)
+				{
+					return _dataObj[i];
+				}
+			}
+			return false;
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.imageDatas = new Array();
+			if (json['imagesDatas'] != 'undefined')
+			{
+				for (var i = 0; i < json['imagesDatas'].length; i++)
+				{
+					this.imageDatas[i] = new KeyValue(json['imagesDatas'][i]['key'], json['imagesDatas'][i]['value']);
+				}
+			} else {
+				for (var i = 0; i < json['images'].length; i++)
+				{
+					this.imageDatas[i] = new KeyValue(json['images'][i], false);
+				}
+			}
+		}
+
+		this.store = function() {
+			var keys = new Array();
+			for (var i = 0; i < this.imageDatas.length; i++)
+			{
+				keys[i] = this.imageDatas[i].key;
+			}
+			var m = {"images": keys}
+			return JSON.stringify(m);
+		}
+	}	
+	/*
+	Class: DialogManager
+	*/
+	function DialogManager() {
+		this.languageDialogs = new Array();
+		this.currentLanguage = 'en';
+		this.currentDialogs = new Dialog('en');
+		this.languageDialogs[this.languageDialogs.length] = this.currentDialogs;
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.languageDialogs = new Array();
+			for (var i = 0; i < json['languageDialogs'].length; i++)
+			{
+				this.languageDialogs[i] = new Dialog(json['languageDialogs'][i]['language']);
+				this.languageDialogs[i].load(json['languageDialogs'][i]);
+			}
+			//console.log('languageDialogs = '+json['languageDialogs'].length+' '+json['currentLanguage']);
+			
+			this.currentLanguage = json['currentLanguage'];
+			this.currentDialogs = this.getLanguageDialogs(this.currentLanguage);
+			//console.log('this.currentDialogs '+this.currentDialogs.language+' '+this.currentDialogs.dialogs.length);
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function(key, value) {
+				return value;
+			});
+		}
+		/*
+		Function: getLanguageDialogs
+
+		Params: lan
+		*/
+		this.getLanguageDialogs = function(lan) {
+			//console.log('getlanguageDialogs = '+lan+' '+this.languageDialogs.length);
+			for (var i = 0; i < this.languageDialogs.length; i++)
+			{
+				//console.log('getlanguageDialogs = '+this.languageDialogs[i].hasLanguage(lan)+' '+this.languageDialogs[i].language);
+				if (this.languageDialogs[i].hasLanguage(lan))
+				{
+					return this.languageDialogs[i];
+				}
+			}
+			return false;
+		}
+		/*
+		Function: addDialog
+
+		Params: key, value
+		*/
+		this.addDialog = function(key, value) {
+			this.currentDialogs.addDialog(key, value);
+		}
+		/*
+		Function: getDialog
+
+		Params: key
+		*/
+		this.getDialog = function(key) {
+			//console.log(key+' '+this.currentDialogs.dialogs.length);
+			return this.currentDialogs.getDialog(key);
+		}
+		/*
+		Function: getDialogValue
+
+		Params: key
+		*/
+		this.getDialogValue = function(key) {
+			return this.currentDialogs.getDialogValue(key);
+		}
+	}
+	/*
+	Class: Dialog
+
+	Params: lan
+	*/
+	function Dialog(lan) {
+		this.language = lan;
+		this.dialogs = new Array();
+		/*
+		Function: hasLanguage
+
+		Params: lan
+
+		Returns: true or false
+		*/
+		this.hasLanguage = function(lan) {
+			return this.language == lan;
+		}
+		/*
+		Function: addDialog
+
+		Params: key, value
+		*/
+		this.addDialog = function(key, value) {
+			if (this.containsDialog(key))
+			{
+				this.getDialog(key).setValue(Base64.encode(value));
+			} else {
+				this.dialogs[this.dialogs.length] = new KeyValue(key, Base64.encode(value));
+			}
+		}
+		/*
+		Function: getDialog
+
+		Params: key
+		*/
+		this.getDialog = function(key) {
+			for (var i = 0; i < this.dialogs.length; i++)
+			{
+				//console.log('getDialog = '+this.dialogs[i].hasKey(key)+' '+this.dialogs[i].key+' '+key);
+				if (this.dialogs[i].hasKey(key))
+				{
+					return this.dialogs[i];
+				}
+			}
+			return null;
+		}
+		/*
+		Function: getDialogValue
+
+		Params: key
+		*/
+		this.getDialogValue = function(key) {
+			for (var i = 0; i < this.dialogs.length; i++)
+			{
+				if (this.dialogs[i].hasKey(key))
+				{
+					return Base64.decode(this.dialogs[i].getValue());
+				}
+			}
+			return null;
+		}
+		/*
+		Function: containsDialog
+
+		Params: key
+		*/
+		this.containsDialog = function(key) {
+			for (var i = 0; i < this.dialogs.length; i++)
+			{
+				if (this.dialogs[i].hasKey(key))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.language = json['language'];
+			this.dialogs = new Array();
+			for (var i = 0; i < json['dialogs'].length; i++)
+			{
+				this.dialogs[i] = new KeyValue(json['dialogs'][i]['key'],json['dialogs'][i]['value']);
+			}
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function(key, value) {
+				return value;
+			});
+		}
+	}
+	/*
+	Class: KeyValue
+
+	Params: key, value
+	*/
+	function KeyValue(k, val) {
+		this.key = k;
+		this.value = val;
+		/*
+		Function: hasKey
+
+		Params: key
+
+		Returns: true if the given key the same as key of this object
+		*/
+		this.hasKey = function(k) {
+			return (this.key == k);
+		}
+		/*
+		Function: getValue
+
+		Returns: the value
+		*/
+		this.getValue = function() {
+			return this.value;
+		}
+		/*
+		Function: setvalue
+
+		Params: value
+		*/
+		this.setValue = function(_value) {
+			this.value = _value;
+		}
+	}
+	/*
+	Function: Array.prototype.inArray
+
+	Returns true if the passed value is found in the
+	array. Returns false if it is not.
+
+	Params: value
+	*/
+	Array.prototype.inArray = function (value)
+	{
+		for (var i = 0; i < this.length; i++) {
+			if (this[i] === value) {
+				return true;
+			}
+		}
+		return false;
+	};
+	/*
+	Class: UidCounter
+
+	creates and stores all used uids.
+	a single uid is 5 letters long
+	*/
+	function UidCounter() {
+		this.uids = new Array();
+		
+		/*
+		Function: createUid
+
+		creates a new uid and stores it in the uids array
+
+		Returns: new uid
+		*/
+		this.createUid = function() {
+			var newUid = '';
+			var abc = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			while (this.hasUid(newUid) || newUid.length < 5)
+			{
+				newUid = '';
+				for (var i = 0; i < 5; i++)
+				{
+					newUid = newUid + abc.substr(Math.floor(Math.random()*abc.length),1);
+				}
+			}
+			this.uids[this.uids.length] = newUid;
+			return newUid;
+		}
+		/*
+		Function: setUids
+
+		Params: _uids
+		*/
+		this.setUids = function(_uids) {
+			this.uids = _uids;
+		}
+		/*
+		Function: hasUid
+
+		Params: _uid an unique identifier
+
+		Returns: true if the given uid is contained in the uids array
+		*/
+		this.hasUid = function(_uid) {
+			for (var i = 0; i < this.uids.length; i++)
+			{
+				if (_uid == this.uids[i])
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.uids = json['uids'];
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function(key, value) {
+				return value;
+			});
+		}
+	}
+
+	/***********************************************************
+	 *
+	 *
+	 *
+	 *
+	***********************************************************/
+
+	/*
+	Class: Slide
+
+	Params: uid
+	*/
+	function Slide(_uid) {
+		this.uid = _uid;
+		this.name = false;
+		this.selections = new Array();
+		this.startSelectionUid = false;
+		this.currentSelection = false;
+		this.backgroundImageRef = false;
+		/*
+		Function: getUid
+
+		Returns: the uid of this object
+		*/
+		this.getUid = function() {
+			return this.uid;
+		}
+		/*
+		Function: getUid
+
+		Params: uid
+
+		Returns: true if the given uid is equal to the uid of this object
+		*/
+		this.hasUid = function(_uid) {
+			return (this.uid == _uid);
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.name = json['name'];
+			this.selections = new Array();
+			for (var i = 0; i < json['selections'].length; i++)
+			{
+				//this.selections[i] = new SlideSelection(json['selections'][i]['uid']);
+				this.selections[i] = new SlideSelection(json['selections'][i]['uid'] != 'undefined' ? json['selections'][i]['uid'] : json['selections'][i]);
+				this.selections[i].load(json['selections'][i]);
+			}
+			this.currentSelection = this.getSelection(json['currentSelection']);
+			this.backgroundImageRef = json['backgroundImageRef'];
+		}
+		/*
+		Function: setName
+
+		Params: the name of this object
+		*/
+		this.setName = function(name) {
+			dialogmanager.addDialog(this.uid, name);
+			this.name = this.uid;
+		}
+		/*
+		Function: getName
+
+		Returns: the title of the slide
+		*/
+		this.getName = function() {
+			return dialogmanager.getDialogValue(this.name);
+		}
+		/*
+		Function: setCurrentSelection
+
+		Params: the current selection object
+		*/
+		this.setCurrentSelection = function(_sel) {
+			this.currentSelection = _sel;
+		}
+		/*
+		Function: getCurrentSelection
+
+		Returns: the current selection of this slide
+		*/
+		this.getCurrentSelection = function() {
+			return this.currentSelection;
+		}
+		/*
+		Function: setBackgroundImageRef;
+
+		Params: ref - the reference uid
+		*/
+		this.setBackgroundImageRef = function(_ref) {
+			this.backgroundImageRef = _ref;
+		}
+		/*
+		Function: getBackgroundImageRef;
+
+		Returns: the reference uid for the background image 
+		*/
+		this.getBackgroundImageRef = function() {
+			return this.backgroundImageRef;		
+		}
+		/*
+		Function: getSelections
+
+		Returns: the selections array
+		*/
+		this.getSelections = function() {
+			return this.selections;
+		}
+		/*
+		Function: getSelection
+
+		Params: uid
+
+		Returns: the correspondig selection for the given uid
+		*/
+		this.getSelection = function(_uid) {
+			for (var i = 0; i < this.selections.length; i++)
+			{
+				if (this.selections[i].hasUid(_uid))
+				{
+					return this.selections[i];
+				}
+			}
+			return null;
+		}
+		/*
+		Function: addSelection
+
+		Params: selection
+		*/
+		this.addSelection = function(_selection) {
+			this.selections[this.selections.length] = _selection;
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function(key, value) {
+				if (value instanceof SlideSelection) {
+					return value.getUid();
+				}
+				return value;
+			});
+		}
+	}
+	/*
+	Class: SlideSelection
+	*/
+	function SlideSelection(_uid) {
+		this.uid = _uid;
+		this.name = false;
+		this.texts = new Array();
+		/*
+		Function: getUid
+
+		Returns: the uid of this object
+		*/
+		this.getUid = function() {
+			return this.uid;
+		}
+		/*
+		Function: getUid
+
+		Params: uid
+
+		Returns: true if the given uid is equal to the uid of this object
+		*/
+		this.hasUid = function(_uid) {
+			return (this.uid == _uid);
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.name = json['name'];
+			this.texts = new Array();
+			for (var i = 0; i < json['texts'].length; i++)
+			{
+				this.texts[i] = new SlideText(json['texts'][i]['uid']);
+				this.texts[i].load(json['texts'][i]);
+			}
+		}
+		/*
+		Function: setName
+
+		Params: the name of this object
+		*/
+		this.setName = function(name) {
+			dialogmanager.addDialog(this.uid, name);
+			this.name =this.uid;
+		}
+		/*
+		Function: getName
+
+		Returns: the title of this object
+		*/
+		this.getName = function() {
+			return dialogmanager.getDialogValue(this.name);
+		}
+		/*
+		Function: getSlide
+		
+		Params: uid
+
+		Returns: the corresponding text from the texts array
+		*/
+		this.getText = function(_uid) {
+			for (var i = 0; i < this.texts.length; i++)
+			{
+				if (this.texts[i].hasUid(_uid))
+				{
+					return this.texts[i];
+				}
+			}
+			return null;
+		}
+		/*
+		Function: addText
+		
+		Params: text - a SlideText
+		*/
+		this.addText = function(_text) {
+			this.texts[this.texts.length] = _text;
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function(key, value) {
+				return value;
+			});
+		}
+	}
+	/*
+	Class: SlideText
+	*/
+	function SlideText(_uid) {
+		this.uid = _uid;
+		this.target = false;
+		/*
+		Function: getUid
+
+		Returns: the uid of this object
+		*/
+		this.getUid = function() {
+			return this.uid;
+		}
+		/*
+		Function: getUid
+
+		Params: uid
+
+		Returns: true if the given uid is equal to the uid of this object
+		*/
+		this.hasUid = function(_uid) {
+			return (this.uid == _uid);
+		}
+		/*
+		Function: setText
+		
+		Params: text
+		*/
+		this.setText = function(_text) {
+			dialogmanager.addDialog(this.uid, _text);
+		}
+		/*
+		Function: getText
+
+		Returns: the text
+		*/
+		this.getText = function() {
+			return dialogmanager.getDialogValue(this.uid);
+		}
+		/*
+		Function: setTarget
+		
+		Params: target
+		*/
+		this.setTarget = function(_target) {
+			this.target = _target;
+		}
+		/*
+		Function: getTarget
+		
+		Returns: target
+		*/
+		this.getTarget = function() {
+			return this.target;
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+		
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function(key, value) {
+				return value;
+			});
+		}
+	}
+	/*
+	Class: SlideTarget
+	*/
+	function SlideTarget(_uid) {
+		this.uid = _uid;
+		this.targetUid = false;
+		this.targetMethod = false;
+		this.values = false;		
+		/*
+		Function: getUid
+
+		Returns: the uid of this object
+		*/
+		this.getUid = function() {
+			return this.uid;
+		}
+		/*
+		Function: getUid
+
+		Params: uid
+
+		Returns: true if the given uid is equal to the uid of this object
+		*/
+		this.hasUid = function(_uid) {
+			return (this.uid == _uid);
+		}
+		/*
+		Function: setValues
+
+		the value string - an json object representation
+		{"points":"234", .. }
+
+		Params: values
+		*/
+		this.setValues = function(_values) {
+			this.values = _values;
+		}
+		/*
+		Function: getValues
+
+		Returns: the value string - an json representation
+		*/
+		this.getValues = function() {
+			return this.values;
+		}
+		/*
+		Function: setTargetMethod
+
+		
+
+		Params: method
+		*/
+		this.setTargetMethod = function(_method) {
+			this.targetMethod = _method;
+		}
+		/*
+		Function: getTargetMethod
+
+		Returns: targetMethod
+		*/
+		this.getTargetMethod = function() {
+			return this.targetMethod;
+		}
+		/*
+		Function: setTargetUid		
+
+		Params: targetUid
+		*/
+		this.setTargetUid = function(_uid) {
+			this.targetUid = _uid;
+		}
+		/*
+		Function: getTargetuid
+
+		Returns: targetUid
+		*/
+		this.getTargetUid = function() {
+			return this.targetUid;
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.targetUid = json['targetUid'];
+			this.targetMethod = json['targetMethod'];
+			this.values = json['values'];
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function (key, value) {
+				return value;
+			});
+		}
+	}
+	/*
+	Class: Slideshow
+	*/
+	function Slideshow() {
+		this.slides = new Array();
+		this.name = false;
+		this.uid = false;
+		this.startSlideUid = false;
+		this.currentSlide = false;
+		this.titleImageRef = false;
+		/*
+		Function: setName
+
+		Params: the name of this object
+		*/
+		this.setName = function(name) {
+			dialogmanager.addDialog(this.uid, name);
+			this.name = this.uid;
+		}
+		/*
+		Function: getName
+
+		Returns: the the title of the slideshow
+		*/
+		this.getName = function() {
+			//console.log('getName = '+this.name+'* *'+dialogmanager.currentDialogs.getDialogValue(this.name));
+			return dialogmanager.getDialogValue(this.name);
+		}
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			
+			this.slides = new Array();
+			for (var i = 0; i < json['slides'].length; i++)
+			{
+				//this.slides[i] = new Slide(json['slides'][i]['uid']);
+				this.slides[i] = new Slide(json['slides'][i]['uid'] != 'undefined' ? json['slides'][i]['uid'] : json['slides'][i]);
+				this.slides[i].load(json['slides'][i]);
+			}
+			this.name = json['name'];
+			//console.log('loading ... '+this.name+'* *'+json['name']);
+			this.uid = json['uid'];
+			this.startSlideUid = json['startSlideUid'];
+			this.currentSlide = this.getSlide(json['currentSlide']);
+			this.titleImageRef = json['titleImageRef'];;
+		}
+		/*
+		Function: setCurrentSlide
+		
+		Params: slide - a Slide Object
+		*/
+		this.setCurrentSlide = function(_slide) {
+			this.currentSlide = _slide;
+		} 
+		/*
+		Function: getCurrentSlide
+		
+		Returns: the current slide - a Slide Object - or maybe false
+		*/
+		this.getCurrentSlide = function() {
+			return this.currentSlide;
+		} 
+		/*
+		Function: addSlide
+
+		Params: slide
+		*/
+		this.addSlide = function(_slide) {
+			this.slides[this.slides.length] = _slide;
+		}
+		/*
+		Function: getSlide
+		
+		Params: uid
+
+		Returns: the corresponding slide from the slides array
+		*/
+		this.getSlide = function(_uid) {
+			for (var i = 0; i < this.slides.length; i++)
+			{
+				if (this.slides[i].hasUid(_uid))
+				{
+					return this.slides[i];
+				}
+			}
+			return null;
+		}
+		/*
+		Function: setTitleImageRef;
+
+		Params: ref - the reference uid
+		*/
+		this.setTitleImageRef = function(_ref) {
+			this.titleImageRef = _ref;
+		}
+		/*
+		Function: getTitleImageRef;
+
+		Returns: the reference uid for the title image 
+		*/
+		this.getTitleImageRef = function() {
+			return this.titleImageRef;		
+		}
+		/*
+		Function: getPossibleTargets
+
+		Returns: all possible Targets - objects, selections, slides
+		*/
+		this.getPossibleTargets = function() {
+			var targets = new Array();
+			var slides = this.slides;
+
+			var tobj = function(){
+				this.uid = false;
+				this.type = false;
+				this.name = '';
+			};
+			var _t = false;
+			for (var i = 0; i < slides.length; i++)
+			{
+				_t = new tobj();
+				_t.uid = slides[i].getUid();
+				_t.type = 'slide';
+				_t.name = slides[i].getName();
+				targets[targets.length] = _t;
+				var selections = slides[i].getSelections();
+				for (var j = 0; j < selections.length; j++)
+				{
+					_t = new tobj();
+					_t.uid = selections[j].getUid();
+					_t.type = 'selection';
+					_t.name = '';
+					targets[targets.length] = _t;
+				}
+				/*
+				var objects = slides[i].getObjects();
+				for (var j = 0; j < objects.length; j++)
+				{
+					_t.uid = objects[i].getUid();
+					_t.type = 'object';
+					targets[targets.length] = _t;
+				}
+				*/
+			}
+			console.log('getPossibleTargets size = '+targets.length);
+			return targets;
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function (key, value) {
+				if (value instanceof Slide) {
+					return value.getUid();
+				}
+				if (key == 'currentSlide') {
+					return currentSlide.getUid();
+				}
+				return value;
+			});
+		}
+		/*
+		Function: getUid
+
+		Returns: the uid of this object
+		*/
+		this.getUid = function() {
+			return this.uid;
+		}
+		/*
+		Function: setUid
+
+		thie uid of a slideshow look like:
+		Base64.encode(element.value) >= 10 ?
+		Base64.encode(element.value).replace(/=/g, '').substring(0,10)+Date.now() : 
+		uidCounter.createUid()+Date.now() 
+
+		Params: uid 
+		*/
+		this.setUid = function(_uid) {
+			this.uid = _uid;
+		}
+	}
+	/*
+	Class: Project
+	*/
+	function Project() {
+		this.dialogmanager = new DialogManager();
+		this.mediamanager = new MediaManager();
+		this.slideshow = new Slideshow();
+		this.uidCounter = new UidCounter();
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.dialogmanager = new DialogManager();
+			this.dialogmanager.load(json['dialogmanager']);
+			dialogmanager = this.dialogmanager;
+
+			this.mediamanager = new MediaManager();
+			this.mediamanager.load(json['mediamanager']);
+
+			this.uidCounter = new UidCounter();
+			this.uidCounter.load(json['uidCounter']);
+			//uidCounter = this.uidCounter;
+			
+			this.slideshow = new Slideshow();
+			this.slideshow.load(json['slideshow']);
+			//slidesAmount = this.slideshow.slides.length;
+			//slides = this.slideshow.slides;
+			//currentSlide = this.slideshow.currentSlide;
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {			
+			return JSON.stringify(this, function (key, value) {
+				/*if (value instanceof MediaManager)
+				{
+					var keys = new Array();
+					for (var i = 0; i < value.imageDatas.length; i++)
+					{
+						keys[i] = value.imageDatas[i].key;
+					}
+					value = {"images": keys};
+				}*/
+				return value;
+			});	
+		}
+		/*
+		Function: getSlideshow
+
+		Returns: the current slideshow object
+		*/
+		this.getSlideshow = function() {
+			return this.slideshow;
+		}
+	}
+	/*
+	Class: Game
+	*/
+	function Game() {
+		this.dialogmanager = new DialogManager();
+		this.mediamanager = new MediaManager();
+		this.slideshow = new Slideshow();
+		this.started = false;
+		/*
+		Function: load
+
+		Params: json
+		*/
+		this.load = function(json) {
+			this.dialogmanager = new DialogManager();
+			this.dialogmanager.load(json['dialogmanager']);
+			dialogmanager = this.dialogmanager;
+
+			this.mediamanager = new MediaManager();
+			this.mediamanager.load(json['mediamanager']);
+			
+			this.slideshow = new Slideshow();
+			this.slideshow.load(json['slideshow']);
+		}
+		/*
+		Function: store
+
+		Returns: the JSON representation of this object
+		*/
+		this.store = function() {
+			return JSON.stringify(this, function (key, value) {
+				/*if (value instanceof MediaManager)
+				{
+					var keys = new Array();
+					for (var i = 0; i < value.imageDatas.length; i++)
+					{
+						keys[i] = value.imageDatas[i].key;
+					}
+					value = {"images": keys};
+				}*/
+				return value;
+			});
+		}
+		/*
+		Function: isStarted
+
+		Returns: true if started
+		*/
+		this.isStarted = function() {
+			return this.started;
+		}
+		/*
+		Function: setStarted
+
+		Params: started boolean
+		*/
+		this.setStarted = function(_started) {
+			this.started = _started;
+		}
+		/*
+		Function: getSlideshow
+
+		Returns: the current slideshow object
+		*/
+		this.getSlideshow = function() {
+			return this.slideshow;
+		}
+	}
+	
+	/**********************************************************
+	 *
+	 *
+	 *
+	 *
+	**********************************************************/
+
+	var dialogmanager = new DialogManager();
+
+	var project = new Project();
+
+	/*
+	Function: addSlide
+	*/
+	function addSlide() {
+		//slidesAmount++;
+		project.slideshow.setCurrentSlide( new Slide(project.uidCounter.createUid()) );
+		var slides = project.slideshow.slides;
+		slides[slides.length] = project.slideshow.getCurrentSlide();
+		var element = getElement('texts');
+		element.innerHTML = '';
+		element.style.border = '0px';
+		element = getElement('title');
+		element.value = '';
+	}
+	/*
+	Function: addSelection
+	*/
+	function addSelection() {
+		var selection = new SlideSelection(project.uidCounter.createUid());
+		if (!project.slideshow.getCurrentSlide() )
+		{
+			var slide = new Slide(project.uidCounter.createUid());
+			project.slideshow.addSlide( slide);
+			project.slideshow.setCurrentSlide( slide );
+		}
+		project.slideshow.getCurrentSlide().addSelection(selection);
+		project.slideshow.getCurrentSlide().setCurrentSelection(selection);
+		var element = getElement('texts');
+		element.innerHTML = '';
+		element.style.border = '1px solid #999';
+	}
+	/*
+	Function: addText
+	*/
+	function addText() {
+		var text = new SlideText(project.uidCounter.createUid());
+		if (!project.slideshow.getCurrentSlide() )
+		{
+			var slide = new Slide(project.uidCounter.createUid());
+			project.slideshow.addSlide( slide);
+			project.slideshow.setCurrentSlide( slide );
+		}
+		project.slideshow.getCurrentSlide().getCurrentSelection().addText(text);
+		var element = getElement('texts');
+		var _uid = text.getUid();
+		//a box with in a box
+		var _ele = document.createElement('div');
+		_ele.setAttribute('id','div_txt_'+_uid);
+		element.appendChild(_ele);
+		element = _ele;
+		//the user elements
+		_ele = document.createElement('textarea');
+		_ele.setAttribute('type','text');
+		_ele.setAttribute('id',_uid);
+		_ele.setAttribute('onkeyup','editText(\''+_uid+'\')');
+		_ele.style.width = '600px';
+		_ele.style.height = '60px';
+		element.appendChild(_ele);
+		_ele = document.createElement('select');
+		_ele.setAttribute('id','sel_txt_'+_uid);
+		_ele.style.width = '200px';
+		_ele.style.marginRight = '5px';
+		_ele.setAttribute('onchange','addTarget(\''+_uid+'\')');
+		_ele.innerHTML = '<option value="doNothing">do nothing</option>\n<option value="showTarget">show target</option>\n<option value="showURL">show URL</option>\n';
+		element.appendChild(_ele);
+		_ele = document.createElement('select');
+		_ele.setAttribute('id','sel_target_'+_uid);
+		_ele.style.width = '200px';
+		_ele.style.marginRight = '5px';
+		_ele.setAttribute('onchange','editTargetUid(\''+_uid+'\')');
+		var _htm = '';
+		var targets = project.getSlideshow().getPossibleTargets();
+		for (var i = 0; i < targets.length; i++)
+		{
+			_htm = _htm + '<option value="'+targets[i].uid+'">'+targets[i].type+' '+targets[i].uid+' '+targets[i].name+'</option>';
+		}
+		_ele.innerHTML = _htm;
+		element.appendChild(_ele);
+	}
+	/*
+	Function: addTarget
+
+	Params: uid
+	*/
+	function addTarget(_uid) {
+		var element = getElement('sel_txt_'+_uid);
+		var value = element.value;		
+		console.log('addTarget( '+_uid+' ) value is = '+value);
+		var selection = project.getSlideshow().getCurrentSlide().getCurrentSelection();
+		var text = selection.getText(_uid);
+		if (value == 'doNothing')
+		{
+			text.setTarget(false);
+			return;
+		}	
+		var target = text.getTarget();
+		if (!target)
+		{
+			target = new SlideTarget(project.uidCounter.createUid());
+		}		
+		text.setTarget(target);
+		target.setTargetMethod(value);
+		//prompt for this?
+		//that's maybe part of any editTarget[method] function
+		var _targetUid = getElement('sel_target_'+_uid).value;
+		target.setTargetUid(_targetUid);
+		var _points = prompt('Do you want give points for this action','');
+		if ( _points == null || _points =='' || isNaN(_points)) {
+			_points = 0;
+		} 
+		var _values = prompt('Enter the URL here (use mailTo:// or http://)','');
+		if ( _values == null  ) {
+			_values = '';
+		} 
+		var obj = {
+			points : false,
+			values : false
+		}
+		obj.points = _points;
+		obj.values = _values;
+		console.log('addTarget obj values = '+JSON.stringify(obj));
+		target.setValues( JSON.stringify(obj) );
+	}
+	/*
+	Function: editTargetUid
+
+	Params: uid of the text or object
+	*/
+	function editTargetUid(_uid) {
+		var selection = project.getSlideshow().getCurrentSlide().getCurrentSelection();
+		var text = selection.getText(_uid);
+		var target = text.getTarget();
+		if (!target)
+		{
+			return;
+		}
+		var _targetUid = getElement('sel_target_'+_uid).value;
+		target.setTargetUid(_targetUid);
+	}
+	/*
+	Function: editTitle
+	*/
+	function editTitle() {
+		var element = getElement('title');
+		if (!project.slideshow.getCurrentSlide() )
+		{
+			var slide = new Slide(project.uidCounter.createUid());
+			project.slideshow.addSlide( slide);
+			project.slideshow.setCurrentSlide( slide );
+		}
+		project.slideshow.getCurrentSlide().setName(element.value);
+	}
+	/*
+	Function: editText
+	*/
+	function editText(uid) {
+		var element = getElement(uid);
+		project.slideshow.getCurrentSlide().getCurrentSelection().getText(uid).setText(element.value);
+	}
+	/*
+	Function: editSlideshowTitle
+	*/
+	function editSlideshowTitle() {
+		var element = getElement('slideshow_title');
+		var slideshow = project.getSlideshow();
+		if (!slideshow.getUid())
+		{
+			slideshow.setUid( project.uidCounter.createUid()+Base64.encode(element.value).replace(/=/g,'')+project.uidCounter.createUid()+'_'+Date.now());
+			var slide = new Slide(project.uidCounter.createUid());
+			project.slideshow.addSlide( slide);
+			project.slideshow.setCurrentSlide( slide );
+		}		
+		slideshow.setName(element.value);
+	}
+	/*
+	Function: exportSlideshow
+	*/
+	function exportSlideshow() {
+		
+		project.dialogmanager = dialogmanager;
+
+		var slideshow = project.slideshow;
+		var element = getElement('slideshow_title');
+		if (!project.getSlideshow().getUid())
+		{
+		project.slideshow.setUid( Base64.encode(element.value).length >= 10 ?
+							Base64.encode(element.value).substring(0,10).replace(/=/g,'')+'_'+Date.now() : 
+							project.uidCounter.createUid()+'_'+Date.now()
+						);
+		}		
+		slideshow.setName(element.value);
+		//console.log('element.value = '+element.value);
+		element = getElement('export');
+		element.innerHTML = '';
+		var data = encodeURI(slideshow.store());
+		var _ele = document.createElement('br');
+		element.appendChild(_ele);
+		_ele = document.createElement('a');
+		_ele.href = 'data:application/octet-stream;charset=utf-8,'+data;
+		_ele.setAttribute('download','slideshow.json');
+		_ele.setAttribute('title','slideshow.json');
+		_ele.innerHTML = 'slideshow.json';
+		element.appendChild(_ele);
+		//save the dialogmanager, uidCounter, slideshow, slideshow.slides, slideshow.slides.selections
+		data = encodeURI(dialogmanager.store());
+		_ele = document.createElement('br');
+		element.appendChild(_ele);
+		_ele = document.createElement('a');
+		_ele.href = 'data:application/octet-stream;charset=utf-8,'+data;
+		_ele.setAttribute('download','dialogmanager.json');
+		_ele.setAttribute('title','dialogmanager.json');
+		_ele.innerHTML = 'dialogmanager.json';
+		element.appendChild(_ele);
+
+		data = encodeURI(project.uidCounter.store());
+		_ele = document.createElement('br');
+		element.appendChild(_ele);
+		_ele = document.createElement('a');
+		_ele.href = 'data:application/octet-stream;charset=utf-8,'+data;
+		_ele.setAttribute('download','uidCounter.json');
+		_ele.setAttribute('title','uidCounter.json');
+		_ele.innerHTML = 'uidCounter.json';
+		element.appendChild(_ele);
+
+		var slides = project.slideshow.slides;
+
+		for (var i = 0; i < slides.length; i++)
+		{
+			data = encodeURI(slides[i].store());
+			_ele = document.createElement('br');
+			element.appendChild(_ele);
+			_ele = document.createElement('a');
+			_ele.href = 'data:application/octet-stream;charset=utf-8,'+data;
+			_ele.setAttribute('download','slide_'+slides[i].getUid()+'.json');
+			_ele.setAttribute('title','slide_'+slides[i].getUid()+'.json');
+			_ele.innerHTML = 'slide_'+slides[i].getUid()+'.json';
+			element.appendChild(_ele);
+
+			var sels = slides[i].selections;
+			for (var j = 0; j < sels.length; j++)
+			{
+				data = encodeURI(sels[j].store());
+				_ele = document.createElement('br');
+				element.appendChild(_ele);
+				_ele = document.createElement('a');
+				_ele.href = 'data:application/octet-stream;charset=utf-8,'+data;
+				_ele.setAttribute('download','selection_'+slides[i].getUid()+'_'+sels[j].getUid()+'.json');
+				_ele.setAttribute('title','selection_'+slides[i].getUid()+'_'+sels[j].getUid()+'.json');
+				_ele.innerHTML = 'selection_'+slides[i].getUid()+'_'+sels[j].getUid()+'.json';
+				element.appendChild(_ele);
+			}
+		}
+		//later save either slideshow.slides.objects, slideshow.slides.texts.target?, slideshow.slides.objects.target?
+	}
+
+	/************************************************************
+	 *
+	 * IMPORTS OF JSON FILES
+	 *
+	************************************************************/
+
+	var importTitleImage = false;
+	/*
+	/*
+	Function: handleTitleImport
+
+	Pass through for the handleImageImport function
+	sets the var boolean importTitleImage = true
+
+	Params: event
+	*/
+	function handleTitleImport(evt) {   
+		importTitleImage = true;
+		//console.log('handleTitleImport ');
+		handleImageImport(evt);
+	}
+	/*
+	Function: handleBackgroundImport
+
+	Pass through for the handleImageImport function
+	sets the var boolean importTitleImage = false
+
+	Params: event
+	*/
+	function handleBackgroundImport(evt) {   
+		importTitleImage = false;
+		//console.log('handleBackgroundImport ');
+		handleImageImport(evt);
+	}
+	
+	
+	/*
+	Function: handleJsonImport
+
+	Params: event
+	*/
+	function handleJsonImport(evt) {    
+		// Loop through the FileList and render image files as thumbnails.
+		project = new Project();
+		var files = evt.target.files; // FileList object				
+		for (var i = 0, f; f = files[i]; i++) {
+		var reader = new FileReader();
+		reader.onload = (function(theFile) {
+			return function(e) {
+				console.log('handleJsonImport->'+theFile.name);					   
+				loadImportSlideshow(e.target.result);					
+			};
+		})(f);
+		reader.readAsText(f, 'UTF-8');//readAsDataURL(f);//, 'UTF-8');
+		}
+	}
+	/*
+	Function: loadImportProject
+
+	Params: json, filename
+	*/
+	function loadImportProject(json, filename) {
+		switch (fliename)
+		{
+			case 'project.json':
+				project.load(JSON.parse(json));
+				break;
+			case 'slideshow.json':
+				project.slideshow.load(JSON.parse(json));
+				break;
+			case 'uidCounter.json':
+				project.uidCounter.load(JSON.parse(json));
+				break;
+			case 'dialogmanager.json':
+				project.dialogmanager.load(JSON.parse(json));
+				break;
+			case 'mediamanager.json':
+				//project.mediamanager.load(JSON.parse(json));
+				//you have to lo the images too!
+				break;
+			default: break;		
+		}
+		
+		log('loadImportProject imported '+fiename);
+	}
+	/*
+	Function: handleImageImport
+
+	Params: event
+	*/
+	function handleImageImport(evt) {    
+		// Loop through the FileList and render image files as thumbnails.
+		var files = evt.target.files; // FileList object
+		//console.log('handleImageImport '+files.length);
+		// Loop through the FileList and render image files as thumbnails.
+		for (var i = 0, f; f = files[i]; i++) {
+			
+			if (!f.type.substr('image')) {
+				continue;
+			}		
+			//console.log('handleImageImport '+f.type);
+			var reader = new FileReader(); 
+			reader.onload = (function(theFile) {
+				console.log('handleImageImport '+theFile.name);
+				return function(e) {					
+					console.log('handleImageImport '+ e.target.result);
+					addBackgroundImage(e.target.result);
+				};
+			})(f);
+			reader.readAsDataURL(f);
+		}		
+	}
+	/*
+	Function: addBackgroundImage
+
+	Params: imageSource	
+	*/
+	function addBackgroundImage(imgSrc) {
+		console.log('addBackgroundImage '+imgSrc);
+		if (importTitleImage)
+		{
+			_uid = project.getSlideshow().getUid();
+			if (_uid == 'undefined')
+			{
+				_uid = project.uidCounter.createUid()+project.uidCounter.createUid()+'_'+Date.now();
+				project.getSlideshow().setUid( _uid );
+			}
+			project.getSlideshow().setTitleImageRef( _uid );
+		} else {
+			_uid = project.getSlideshow().getCurrentSlide().getUid();
+			project.getSlideshow().getCurrentSlide().setBackgroundImageRef( _uid );
+		}	
+		project.mediamanager.addImage(_uid, imgSrc);
+		//console.log('addBackgroundImage = '+_uid+' '+imgSrc);
+		var element = false;
+		if (importTitleImage) {
+			element = getElement('slideshow_overview_title');
+			element.style.width = '192px';
+			element.style.height = '108px'; 
+			_ele.style.margin = '2px'; 
+			element.src = imgSrc;	
+		} else {
+			element = getElement('slideshow_overview_slides');
+			var _ele = document.createElement('img');
+			_ele.src = imgSrc;
+			_ele.style.width = '192px'; 
+			_ele.style.margin = '2px'; 
+			_ele.style.height = '108px'; 
+			element.addChild(_ele);
+		}
+	}	
+	/************************************************************/
+
+	/*
+	Function: getElement
+
+	short pass for the method document.getElementById
+
+	Params: id of the element
+	*/
+	function getElement(id) {
+		return document.getElementById(id);
+	}
+	/*
+	Function: changeElementDisplay
+
+	change the visibility and block style form
+	'visible' to 'hidden', 'block' to 'none' and vcversa
+
+	Params: id of the element
+	*/
+	function changeElementDisplay(id, block) {
+		var element = getElement(id);
+		if (!block)
+		{
+			element.style.visibility = 'hidden';
+			element.style.display = 'none';
+		} else {
+			element.style.visibility = 'visible';
+			element.style.display = 'block';
+		}
+	}
+	/*
+	Function: showPrompt
+	*/
+	function showPrompt() {
+		var element = getElement('prompt');
+
+		//prompt for this?
+		//that's maybe part of any editTarget[method] function
+		var _targetUid = getElement('sel_target_'+_uid).value;
+		target.setTargetUid(_targetUid);
+		var _points = prompt('Do you want give points for this action','');
+		if ( _points == null || _points =='' || isNaN(_points)) {
+			_points = 0;
+		} 
+		var _values = prompt('Enter the URL here (use mailTo:// or http://)','');
+		if ( _values == null  ) {
+			_values = '';
+		} 
+		var obj = {
+			points : false,
+			values : false
+		}
+		obj.points = _points;
+		obj.values = _values;
+		console.log('addTarget obj values = '+JSON.stringify(obj));
+		target.setValues( JSON.stringify(obj) );
+
+		element.style.display = 'block';
+		element.style.visibility = 'visible';
+		//return ;
+	}
+	/*
+	Function: stripHTML
+
+	Params: id of the html element
+
+	Returns: HTML free value string
+	*/
+	function stripHTML(id) {
+		var re= /<\S[^><]*>/g;// oder /(<([^>]+)>)/ig
+		if (getElement(id).value == 'undefined')
+		{
+			return;
+		}
+		var value = getElement(id).value;
+		return value.replace(re, '');
+	}
+	/****************************************************************
+	 *
+	 *
+	 *
+	 *
+	*****************************************************************/
+
+	var game = false;
+	/*
+	Function: testGame
+	*/
+	function testGame() {
+		var element = getElement('slideshow_title');
+		if (!project.getSlideshow().getUid())
+		{
+			project.slideshow.setUid( Base64.encode(element.value).length >= 10 ?
+							Base64.encode(element.value).substring(0,10).replace(/=/g,'')+'_'+Date.now() : 
+							project.uidCounter.createUid()+'_'+Date.now()
+						);
+		}		
+		project.slideshow.setName(element.value);
+		project.dialogmanager = dialogmanager;
+
+		/*
+		we only test a stored copy of origin project slideshow
+		that is a diffent instance and will not change the sources
+		the dialog manager switches to the game.one
+		always roll back after playing!
+		*/
+		game = new Game();
+		var projectstore = project.store();
+		console.log(projectstore);
+
+		game.load(JSON.parse(projectstore));
+		dialogmanager = game.dialogmanager;
+
+		gameDraw();
+		changeElementDisplay('game_box', true);
+	}
+	/*
+	Function: stopGame
+	*/
+	function stopGame() {
+		changeElementDisplay('game_box', false);
+
+		/*roll back the global dialogmanager to the original one!*/
+		dialogmanager = project.dialogmanager;
+	}
+	/*
+	Function: drawGame
+	*/
+	function gameDraw() {
+		var slideshow = game.slideshow;
+		var slide = game.slideshow.getCurrentSlide();
+		if (game.isStarted())
+		{
+			//console.log('game is started = '+game.isStarted());
+		} else {
+			//show the game title
+			var element = getElement('game_title');
+			element.innerHTML = slideshow.getName();
+			//console.log('slideshow.getName() = '+element.innerHTML);
+
+			changeElementDisplay('game_slide_title', false);
+			changeElementDisplay('game_visited_slides', false);
+			changeElementDisplay('game_bag', false);
+			changeElementDisplay('game_selection', false);
+		}
+
+	}
+	/*
+	Function: gamePerformTarget
+
+	use targetUid, targetMethod and values
+	usally the points and maybe more ...
+
+	Params: uid - the uid of the object or text in the current slide that throws the request
+	*/
+	function gamePerfomTarget(_uid) {
+	
+	}
+
+
+	/********************************************/
+
+	function init() {
+		getElement('slideshow_overview_background_import').addEventListener('change', handleBackgroundImport, false);
+		getElement('slideshow_overview_title_import').addEventListener('change', handleTitleImport, false);
+		console.log('init!');
+	}
+
+	window.onload = function() { setTimeout('init()', 100); };
+	
+</script>
+<style type="text/css">
+
+body, div, a, input, select, option, p, br, table, tr, td, span {
+	color: #000;
+	font-family: Arial, Verdana, Helvetica, Sans-Serif;
+	font-size: 13px;
+}
+
+#slideshow_overview {
+	position: absolute;
+	top: 10px;
+	left: 620px;
+	border: 1px solid #999;
+	width: 200px;
+}
+
+.overview_image {
+	width: 160px;
+	height: 90px;
+}
+
+#game_box {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 800px;
+	height: 450px;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 24px;
+	background: #000;
+	color: #fff;
+	overflow: hidden;
+	visibility: hidden;
+	display: block;
+}
+#game_title {
+	font-size: 48px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	margin: 0px;
+	color: #d00;
+	font-style: italic;
+}
+#game_slide_title {
+	position: absolute;
+	top: 0px;
+	left: 12.5%;
+	width: 75%; 
+	margin: 0px;
+	font-size: 36px;
+	background: #ccc;
+}
+#game_options {
+	position: absolute;
+	top: 10px;
+	left: 72.5%;
+	width: 12.5%; 
+	font-size: 18px;
+	background: #999;
+}
+#game_visited_slides {
+	position: absolute;
+	top: 2.5%;
+	left: 0px;
+	height: 95%; 
+	width: 10.5%; 
+	font-size: 18px;
+	background: #ccc;
+}
+#game_bag {
+	position: absolute;
+	top: 2.5%;
+	left: 89.5%;
+	height: 95%; 
+	width: 10.5%; 
+	font-size: 18px;
+	background: #ccc;
+}
+#game_selection {
+	position: absolute;
+	top: 75%;
+	left: 12.5%;
+	height: 25%; 
+	width: 75%; 
+	font-size: 24px;
+	background: #999;
+}
+
+.w600 {
+	width: 600px;
+}
+</style>
+ <body>
+  slideshow title:<br />
+  <input id="slideshow_title" type="text" class="w600" name="w600" onkeyup="editSlideshowTitle();" /><br />
+  
+  slide title:<br />
+  <input id="title" type="text" class="w600" name="w600" onkeyup="editTitle();" />
+  <br />
+  <input type="button" value="add selection" onclick="addSelection();"/> <input type="button" value="add text" onclick="addText();"/>
+  <br />
+  <div id="texts" class="w600" name="w600">
+  </div><br />
+  <input type="button" value="add Slide" onclick="addSlide();"/>
+
+  <br />
+  <br />
+  <input type="button" value="export Slideshow" onclick="exportSlideshow();"/> <div id="export">the slideshow game download</div>
+  <br />
+  <br />
+  <input type="button" value="test game" onclick="testGame();"/>
+  <br />
+  activities:<br /> 
+  <b>doNothing</b> - simply does not do anything<br />
+  <b>showURL</b> - use with protocol mailTo or http<br />
+  <b>showTarget</b> - a SlideSelection of the currentSlide, any SlideObject of the currentSlide, any other Slide<br />
+  hideTarget - a SlideText of this SlideSelection, an object of the currentSlide<br />
+  combineObject - any SlideObject from the currentSlide or the Bag<br />
+  addToBag - any SlideObject from the currentSlide<br />
+  dropFromBag - any SlideObject from the Bag<br />
+  <br /> 
+  <br />
+  <input type="button" value="stop game" onclick="stopGame();"/>
+
+  <div id="slideshow_overview">
+	Import title image for the slideshow
+	<input type="file" id="slideshow_overview_title_import" />
+	<img src="" id="slideshow_overview_title" class="overview_image" /><br />
+	Import background image for the current slide
+	<input type="file" id="slideshow_overview_background_import" />
+	<div id="slideshow_overview_slides">
+	  
+	</div>
+  </div>
+
+  <div id="game_box">
+	<h1 id="game_title"></h1>
+	<!--top-->
+	<h2 id="game_slide_title"></h2>
+	<div id="game_options"></div>
+	<!--left-->
+	<div id="game_visited_slides">
+	</div>
+	<!--right-->
+	<div id="game_bag">
+	</div>
+	<!--bottom-->
+	<div id="game_selection">
+	</div>
+  </div>
+ </body>
+</html>

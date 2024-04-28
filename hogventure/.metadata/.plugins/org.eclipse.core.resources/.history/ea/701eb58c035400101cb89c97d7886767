@@ -1,0 +1,5 @@
+package com.hogventure.util;
+
+public interface Loadable {
+
+}

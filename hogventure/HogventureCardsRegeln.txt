@@ -1,0 +1,17 @@
+spielregeln:
+
+Dieses Kartenspiel ist kein normales Kartenspiel. Mit diesem 
+Kartenstaz kann man weder Poker noch Bridge  oder ein anderes 
+klassisches Kartenspiel spielen. Vielleicht geht Tarrot, aber 
+selbst das ist nicht vorgesehen.
+
+Vielmehr erzählt man zusammen mit Freunden eine Geschichte.
+
+Jede Karte zeigt auf der Bildseite einen farbigen Charakter und 
+einen Hintergrund. Jeder Charakter und jeder Hintergrund ist 
+einzigartig in diesem Spiel. Auf der Rückseite sieht man einen 
+QR-Code und eine Stichwort Linie.
+Beide sind ebenso einzigartig, wie das Bildmotiv. Sie beschreiben 
+das Bild auf der Karte in englisch, im Internet in mehreren 
+Sprachen, unter anderem auch in deutsch.
+

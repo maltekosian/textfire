@@ -1,0 +1,11 @@
+package com.hogventure.basic;
+
+import java.util.ArrayList;
+
+/**
+ * @author aquila
+ *
+ */
+public class UidCounter {
+	ArrayList<String>uids;
+}

@@ -1,0 +1,248 @@
+package com.hogventure.util;
+
+/**
+ * @author aquila
+ * slideshow
+	-slides
+	x globalAmbientMusic
+	-player
+	-globalPreferences	
+	-utils:
+		--mediaManager
+		--dialogsUtil
+slide
+	-dialogs
+	-title
+	-backgroundImage
+	x ambientMusic
+	x objects
+	x plugin
+
+dialog
+	-texts
+	x iconImage
+text
+	-target
+
+target -> leads to dialog or slide
+
+player
+	x figures
+	x points
+	x bag
+	x visitedSlides
+	x usedTargets
+
+object
+	-image
+	-dimension w,h
+	-position x,y
+	x footPosition
+	x footDimension
+
+plugin
+	<code>
+
+utils:
+	interfaceLoadable
+		implementing load and save. all in one file
+	interfaceDumpable
+		implementing loadDump and saveDump
+		multiple files  
+	dumpHelper
+	dumpParser
+	dumpUtil
+
+dialogUtil
+		-dialogs
+	
+	mediaManager
+		x slideSounds
+		-globalSounds
+		x slideImages
+		-globalImages
+		-iconImages
+		x slideAnimations
+		-globalAnimations
+
+	connection
+		for download, upload and chat
+
+	connectionProtokoll
+
+-is default
+x is optional
+
+the basic interface design
+
+ */
+public class GlobalPreferences {
+
+	private boolean showPoints = false;
+	private boolean showSlidesOverview = false;
+	private boolean showBag = false;
+	private boolean showFigureOverview = false;
+	private boolean showTitle = false;
+	private boolean showSlideTitle = false;
+	private boolean showBackgroundImage = false;
+	private boolean useSlideMedia = false;
+	private boolean useObjects = false;
+	private boolean useObjectFooters = false;
+	private boolean useSortObjects = false;
+
+	
+	/**
+	 * @return the showPoints
+	 */
+	public boolean isShowPoints() {
+		return showPoints;
+	}
+
+	/**
+	 * @return the showSlidesOverview
+	 */
+	public boolean isShowSlidesOverview() {
+		return showSlidesOverview;
+	}
+
+	/**
+	 * @return the showBag
+	 */
+	public boolean isShowBag() {
+		return showBag;
+	}
+
+	/**
+	 * @return the showFigureOverview
+	 */
+	public boolean isShowFigureOverview() {
+		return showFigureOverview;
+	}
+
+	/**
+	 * @return the showTitle
+	 */
+	public boolean isShowTitle() {
+		return showTitle;
+	}
+
+	/**
+	 * @return the showSlideTitle
+	 */
+	public boolean isShowSlideTitle() {
+		return showSlideTitle;
+	}
+
+	/**
+	 * @return the showBackgroundImage
+	 */
+	public boolean isShowBackgroundImage() {
+		return showBackgroundImage;
+	}
+
+	/**
+	 * @param showPoints the showPoints to set
+	 */
+	public void setShowPoints(boolean showPoints) {
+		this.showPoints = showPoints;
+	}
+
+	/**
+	 * @param showSlidesOverview the showSlidesOverview to set
+	 */
+	public void setShowSlidesOverview(boolean showSlidesOverview) {
+		this.showSlidesOverview = showSlidesOverview;
+	}
+
+	/**
+	 * @param showBag the showBag to set
+	 */
+	public void setShowBag(boolean showBag) {
+		this.showBag = showBag;
+	}
+
+	/**
+	 * @param showFigureOverview the showFigureOverview to set
+	 */
+	public void setShowFigureOverview(boolean showFigureOverview) {
+		this.showFigureOverview = showFigureOverview;
+	}
+
+	/**
+	 * @param showTitle the showTitle to set
+	 */
+	public void setShowTitle(boolean showTitle) {
+		this.showTitle = showTitle;
+	}
+
+	/**
+	 * @param showSlideTitle the showSlideTitle to set
+	 */
+	public void setShowSlideTitle(boolean showSlideTitle) {
+		this.showSlideTitle = showSlideTitle;
+	}
+
+	/**
+	 * @param showBackgroundImage the showBackgroundImage to set
+	 */
+	public void setShowBackgroundImage(boolean showBackgroundImage) {
+		this.showBackgroundImage = showBackgroundImage;
+	}
+
+	/**
+	 * @param useSlideMedia the useSlideMedia to set
+	 */
+	public void setUseSlideMedia(boolean useSlideMedia) {
+		this.useSlideMedia = useSlideMedia;
+	}
+
+	/**
+	 * @param useObjects the useObjects to set
+	 */
+	public void setUseObjects(boolean useObjects) {
+		this.useObjects = useObjects;
+	}
+
+	/**
+	 * @param useObjectFooters the useObjectFooters to set
+	 */
+	public void setUseObjectFooters(boolean useObjectFooters) {
+		this.useObjectFooters = useObjectFooters;
+	}
+
+	/**
+	 * @param useSortObjects the useSortObjects to set
+	 */
+	public void setUseSortObjects(boolean useSortObjects) {
+		this.useSortObjects = useSortObjects;
+	}
+
+	/**
+	 * @return the useSlideMedia
+	 */
+	public boolean isUseSlideMedia() {
+		return useSlideMedia;
+	}
+
+	/**
+	 * @return the useObjects
+	 */
+	public boolean isUseObjects() {
+		return useObjects;
+	}
+
+	/**
+	 * @return the useObjectFooters
+	 */
+	public boolean isUseObjectFooters() {
+		return useObjectFooters;
+	}
+
+	/**
+	 * @return the useSortObjects
+	 */
+	public boolean isUseSortObjects() {
+		return useSortObjects;
+	}
+	
+}
